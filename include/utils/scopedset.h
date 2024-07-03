@@ -7,7 +7,7 @@
 #include <ostream>
 #include <set>
 
-#include "fuse_error.h"
+#include "fern_error.h"
 
 namespace fern {
 namespace util {

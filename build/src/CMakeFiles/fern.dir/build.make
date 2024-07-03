@@ -83,17 +83,145 @@ src/CMakeFiles/fern.dir/type.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/fern.dir/type.cpp.s"
 	cd /Users/manyab/fern/build/src && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/manyab/fern/src/type.cpp -o CMakeFiles/fern.dir/type.cpp.s
 
+src/CMakeFiles/fern.dir/dependency_lang/constraint_language_nodes.cpp.o: src/CMakeFiles/fern.dir/flags.make
+src/CMakeFiles/fern.dir/dependency_lang/constraint_language_nodes.cpp.o: ../src/dependency_lang/constraint_language_nodes.cpp
+src/CMakeFiles/fern.dir/dependency_lang/constraint_language_nodes.cpp.o: src/CMakeFiles/fern.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/manyab/fern/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object src/CMakeFiles/fern.dir/dependency_lang/constraint_language_nodes.cpp.o"
+	cd /Users/manyab/fern/build/src && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/fern.dir/dependency_lang/constraint_language_nodes.cpp.o -MF CMakeFiles/fern.dir/dependency_lang/constraint_language_nodes.cpp.o.d -o CMakeFiles/fern.dir/dependency_lang/constraint_language_nodes.cpp.o -c /Users/manyab/fern/src/dependency_lang/constraint_language_nodes.cpp
+
+src/CMakeFiles/fern.dir/dependency_lang/constraint_language_nodes.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/fern.dir/dependency_lang/constraint_language_nodes.cpp.i"
+	cd /Users/manyab/fern/build/src && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/manyab/fern/src/dependency_lang/constraint_language_nodes.cpp > CMakeFiles/fern.dir/dependency_lang/constraint_language_nodes.cpp.i
+
+src/CMakeFiles/fern.dir/dependency_lang/constraint_language_nodes.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/fern.dir/dependency_lang/constraint_language_nodes.cpp.s"
+	cd /Users/manyab/fern/build/src && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/manyab/fern/src/dependency_lang/constraint_language_nodes.cpp -o CMakeFiles/fern.dir/dependency_lang/constraint_language_nodes.cpp.s
+
+src/CMakeFiles/fern.dir/dependency_lang/constraint_language_printer.cpp.o: src/CMakeFiles/fern.dir/flags.make
+src/CMakeFiles/fern.dir/dependency_lang/constraint_language_printer.cpp.o: ../src/dependency_lang/constraint_language_printer.cpp
+src/CMakeFiles/fern.dir/dependency_lang/constraint_language_printer.cpp.o: src/CMakeFiles/fern.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/manyab/fern/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object src/CMakeFiles/fern.dir/dependency_lang/constraint_language_printer.cpp.o"
+	cd /Users/manyab/fern/build/src && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/fern.dir/dependency_lang/constraint_language_printer.cpp.o -MF CMakeFiles/fern.dir/dependency_lang/constraint_language_printer.cpp.o.d -o CMakeFiles/fern.dir/dependency_lang/constraint_language_printer.cpp.o -c /Users/manyab/fern/src/dependency_lang/constraint_language_printer.cpp
+
+src/CMakeFiles/fern.dir/dependency_lang/constraint_language_printer.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/fern.dir/dependency_lang/constraint_language_printer.cpp.i"
+	cd /Users/manyab/fern/build/src && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/manyab/fern/src/dependency_lang/constraint_language_printer.cpp > CMakeFiles/fern.dir/dependency_lang/constraint_language_printer.cpp.i
+
+src/CMakeFiles/fern.dir/dependency_lang/constraint_language_printer.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/fern.dir/dependency_lang/constraint_language_printer.cpp.s"
+	cd /Users/manyab/fern/build/src && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/manyab/fern/src/dependency_lang/constraint_language_printer.cpp -o CMakeFiles/fern.dir/dependency_lang/constraint_language_printer.cpp.s
+
+src/CMakeFiles/fern.dir/dependency_lang/constraint_language_rewriter.cpp.o: src/CMakeFiles/fern.dir/flags.make
+src/CMakeFiles/fern.dir/dependency_lang/constraint_language_rewriter.cpp.o: ../src/dependency_lang/constraint_language_rewriter.cpp
+src/CMakeFiles/fern.dir/dependency_lang/constraint_language_rewriter.cpp.o: src/CMakeFiles/fern.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/manyab/fern/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object src/CMakeFiles/fern.dir/dependency_lang/constraint_language_rewriter.cpp.o"
+	cd /Users/manyab/fern/build/src && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/fern.dir/dependency_lang/constraint_language_rewriter.cpp.o -MF CMakeFiles/fern.dir/dependency_lang/constraint_language_rewriter.cpp.o.d -o CMakeFiles/fern.dir/dependency_lang/constraint_language_rewriter.cpp.o -c /Users/manyab/fern/src/dependency_lang/constraint_language_rewriter.cpp
+
+src/CMakeFiles/fern.dir/dependency_lang/constraint_language_rewriter.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/fern.dir/dependency_lang/constraint_language_rewriter.cpp.i"
+	cd /Users/manyab/fern/build/src && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/manyab/fern/src/dependency_lang/constraint_language_rewriter.cpp > CMakeFiles/fern.dir/dependency_lang/constraint_language_rewriter.cpp.i
+
+src/CMakeFiles/fern.dir/dependency_lang/constraint_language_rewriter.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/fern.dir/dependency_lang/constraint_language_rewriter.cpp.s"
+	cd /Users/manyab/fern/build/src && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/manyab/fern/src/dependency_lang/constraint_language_rewriter.cpp -o CMakeFiles/fern.dir/dependency_lang/constraint_language_rewriter.cpp.s
+
+src/CMakeFiles/fern.dir/dependency_lang/constraint_language_visitor.cpp.o: src/CMakeFiles/fern.dir/flags.make
+src/CMakeFiles/fern.dir/dependency_lang/constraint_language_visitor.cpp.o: ../src/dependency_lang/constraint_language_visitor.cpp
+src/CMakeFiles/fern.dir/dependency_lang/constraint_language_visitor.cpp.o: src/CMakeFiles/fern.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/manyab/fern/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object src/CMakeFiles/fern.dir/dependency_lang/constraint_language_visitor.cpp.o"
+	cd /Users/manyab/fern/build/src && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/fern.dir/dependency_lang/constraint_language_visitor.cpp.o -MF CMakeFiles/fern.dir/dependency_lang/constraint_language_visitor.cpp.o.d -o CMakeFiles/fern.dir/dependency_lang/constraint_language_visitor.cpp.o -c /Users/manyab/fern/src/dependency_lang/constraint_language_visitor.cpp
+
+src/CMakeFiles/fern.dir/dependency_lang/constraint_language_visitor.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/fern.dir/dependency_lang/constraint_language_visitor.cpp.i"
+	cd /Users/manyab/fern/build/src && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/manyab/fern/src/dependency_lang/constraint_language_visitor.cpp > CMakeFiles/fern.dir/dependency_lang/constraint_language_visitor.cpp.i
+
+src/CMakeFiles/fern.dir/dependency_lang/constraint_language_visitor.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/fern.dir/dependency_lang/constraint_language_visitor.cpp.s"
+	cd /Users/manyab/fern/build/src && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/manyab/fern/src/dependency_lang/constraint_language_visitor.cpp -o CMakeFiles/fern.dir/dependency_lang/constraint_language_visitor.cpp.s
+
+src/CMakeFiles/fern.dir/dependency_lang/data-structure-interface.cpp.o: src/CMakeFiles/fern.dir/flags.make
+src/CMakeFiles/fern.dir/dependency_lang/data-structure-interface.cpp.o: ../src/dependency_lang/data-structure-interface.cpp
+src/CMakeFiles/fern.dir/dependency_lang/data-structure-interface.cpp.o: src/CMakeFiles/fern.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/manyab/fern/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object src/CMakeFiles/fern.dir/dependency_lang/data-structure-interface.cpp.o"
+	cd /Users/manyab/fern/build/src && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/fern.dir/dependency_lang/data-structure-interface.cpp.o -MF CMakeFiles/fern.dir/dependency_lang/data-structure-interface.cpp.o.d -o CMakeFiles/fern.dir/dependency_lang/data-structure-interface.cpp.o -c /Users/manyab/fern/src/dependency_lang/data-structure-interface.cpp
+
+src/CMakeFiles/fern.dir/dependency_lang/data-structure-interface.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/fern.dir/dependency_lang/data-structure-interface.cpp.i"
+	cd /Users/manyab/fern/build/src && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/manyab/fern/src/dependency_lang/data-structure-interface.cpp > CMakeFiles/fern.dir/dependency_lang/data-structure-interface.cpp.i
+
+src/CMakeFiles/fern.dir/dependency_lang/data-structure-interface.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/fern.dir/dependency_lang/data-structure-interface.cpp.s"
+	cd /Users/manyab/fern/build/src && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/manyab/fern/src/dependency_lang/data-structure-interface.cpp -o CMakeFiles/fern.dir/dependency_lang/data-structure-interface.cpp.s
+
+src/CMakeFiles/fern.dir/dependency_lang/dep_lang.cpp.o: src/CMakeFiles/fern.dir/flags.make
+src/CMakeFiles/fern.dir/dependency_lang/dep_lang.cpp.o: ../src/dependency_lang/dep_lang.cpp
+src/CMakeFiles/fern.dir/dependency_lang/dep_lang.cpp.o: src/CMakeFiles/fern.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/manyab/fern/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object src/CMakeFiles/fern.dir/dependency_lang/dep_lang.cpp.o"
+	cd /Users/manyab/fern/build/src && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/fern.dir/dependency_lang/dep_lang.cpp.o -MF CMakeFiles/fern.dir/dependency_lang/dep_lang.cpp.o.d -o CMakeFiles/fern.dir/dependency_lang/dep_lang.cpp.o -c /Users/manyab/fern/src/dependency_lang/dep_lang.cpp
+
+src/CMakeFiles/fern.dir/dependency_lang/dep_lang.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/fern.dir/dependency_lang/dep_lang.cpp.i"
+	cd /Users/manyab/fern/build/src && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/manyab/fern/src/dependency_lang/dep_lang.cpp > CMakeFiles/fern.dir/dependency_lang/dep_lang.cpp.i
+
+src/CMakeFiles/fern.dir/dependency_lang/dep_lang.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/fern.dir/dependency_lang/dep_lang.cpp.s"
+	cd /Users/manyab/fern/build/src && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/manyab/fern/src/dependency_lang/dep_lang.cpp -o CMakeFiles/fern.dir/dependency_lang/dep_lang.cpp.s
+
+src/CMakeFiles/fern.dir/dependency_lang/dep_lang_nodes_abstract.cpp.o: src/CMakeFiles/fern.dir/flags.make
+src/CMakeFiles/fern.dir/dependency_lang/dep_lang_nodes_abstract.cpp.o: ../src/dependency_lang/dep_lang_nodes_abstract.cpp
+src/CMakeFiles/fern.dir/dependency_lang/dep_lang_nodes_abstract.cpp.o: src/CMakeFiles/fern.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/manyab/fern/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object src/CMakeFiles/fern.dir/dependency_lang/dep_lang_nodes_abstract.cpp.o"
+	cd /Users/manyab/fern/build/src && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/fern.dir/dependency_lang/dep_lang_nodes_abstract.cpp.o -MF CMakeFiles/fern.dir/dependency_lang/dep_lang_nodes_abstract.cpp.o.d -o CMakeFiles/fern.dir/dependency_lang/dep_lang_nodes_abstract.cpp.o -c /Users/manyab/fern/src/dependency_lang/dep_lang_nodes_abstract.cpp
+
+src/CMakeFiles/fern.dir/dependency_lang/dep_lang_nodes_abstract.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/fern.dir/dependency_lang/dep_lang_nodes_abstract.cpp.i"
+	cd /Users/manyab/fern/build/src && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/manyab/fern/src/dependency_lang/dep_lang_nodes_abstract.cpp > CMakeFiles/fern.dir/dependency_lang/dep_lang_nodes_abstract.cpp.i
+
+src/CMakeFiles/fern.dir/dependency_lang/dep_lang_nodes_abstract.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/fern.dir/dependency_lang/dep_lang_nodes_abstract.cpp.s"
+	cd /Users/manyab/fern/build/src && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/manyab/fern/src/dependency_lang/dep_lang_nodes_abstract.cpp -o CMakeFiles/fern.dir/dependency_lang/dep_lang_nodes_abstract.cpp.s
+
+src/CMakeFiles/fern.dir/dependency_lang/dependency_solver.cpp.o: src/CMakeFiles/fern.dir/flags.make
+src/CMakeFiles/fern.dir/dependency_lang/dependency_solver.cpp.o: ../src/dependency_lang/dependency_solver.cpp
+src/CMakeFiles/fern.dir/dependency_lang/dependency_solver.cpp.o: src/CMakeFiles/fern.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/manyab/fern/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object src/CMakeFiles/fern.dir/dependency_lang/dependency_solver.cpp.o"
+	cd /Users/manyab/fern/build/src && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/fern.dir/dependency_lang/dependency_solver.cpp.o -MF CMakeFiles/fern.dir/dependency_lang/dependency_solver.cpp.o.d -o CMakeFiles/fern.dir/dependency_lang/dependency_solver.cpp.o -c /Users/manyab/fern/src/dependency_lang/dependency_solver.cpp
+
+src/CMakeFiles/fern.dir/dependency_lang/dependency_solver.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/fern.dir/dependency_lang/dependency_solver.cpp.i"
+	cd /Users/manyab/fern/build/src && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/manyab/fern/src/dependency_lang/dependency_solver.cpp > CMakeFiles/fern.dir/dependency_lang/dependency_solver.cpp.i
+
+src/CMakeFiles/fern.dir/dependency_lang/dependency_solver.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/fern.dir/dependency_lang/dependency_solver.cpp.s"
+	cd /Users/manyab/fern/build/src && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/manyab/fern/src/dependency_lang/dependency_solver.cpp -o CMakeFiles/fern.dir/dependency_lang/dependency_solver.cpp.s
+
 # Object files for target fern
 fern_OBJECTS = \
-"CMakeFiles/fern.dir/type.cpp.o"
+"CMakeFiles/fern.dir/type.cpp.o" \
+"CMakeFiles/fern.dir/dependency_lang/constraint_language_nodes.cpp.o" \
+"CMakeFiles/fern.dir/dependency_lang/constraint_language_printer.cpp.o" \
+"CMakeFiles/fern.dir/dependency_lang/constraint_language_rewriter.cpp.o" \
+"CMakeFiles/fern.dir/dependency_lang/constraint_language_visitor.cpp.o" \
+"CMakeFiles/fern.dir/dependency_lang/data-structure-interface.cpp.o" \
+"CMakeFiles/fern.dir/dependency_lang/dep_lang.cpp.o" \
+"CMakeFiles/fern.dir/dependency_lang/dep_lang_nodes_abstract.cpp.o" \
+"CMakeFiles/fern.dir/dependency_lang/dependency_solver.cpp.o"
 
 # External object files for target fern
 fern_EXTERNAL_OBJECTS =
 
 src/libfern.a: src/CMakeFiles/fern.dir/type.cpp.o
+src/libfern.a: src/CMakeFiles/fern.dir/dependency_lang/constraint_language_nodes.cpp.o
+src/libfern.a: src/CMakeFiles/fern.dir/dependency_lang/constraint_language_printer.cpp.o
+src/libfern.a: src/CMakeFiles/fern.dir/dependency_lang/constraint_language_rewriter.cpp.o
+src/libfern.a: src/CMakeFiles/fern.dir/dependency_lang/constraint_language_visitor.cpp.o
+src/libfern.a: src/CMakeFiles/fern.dir/dependency_lang/data-structure-interface.cpp.o
+src/libfern.a: src/CMakeFiles/fern.dir/dependency_lang/dep_lang.cpp.o
+src/libfern.a: src/CMakeFiles/fern.dir/dependency_lang/dep_lang_nodes_abstract.cpp.o
+src/libfern.a: src/CMakeFiles/fern.dir/dependency_lang/dependency_solver.cpp.o
 src/libfern.a: src/CMakeFiles/fern.dir/build.make
 src/libfern.a: src/CMakeFiles/fern.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/manyab/fern/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX static library libfern.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/manyab/fern/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Linking CXX static library libfern.a"
 	cd /Users/manyab/fern/build/src && $(CMAKE_COMMAND) -P CMakeFiles/fern.dir/cmake_clean_target.cmake
 	cd /Users/manyab/fern/build/src && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/fern.dir/link.txt --verbose=$(VERBOSE)
 

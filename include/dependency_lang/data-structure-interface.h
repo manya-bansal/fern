@@ -33,10 +33,10 @@ public:
   virtual std::string getDataQueryInterface() const = 0;
   virtual std::string getDataInsertInterface() const = 0;
   virtual std::string getAllocFreeInterface() const {
-    return "__fuse__not__defined__";
+    return "__fern__not__defined__";
   }
   virtual std::string getQueryFreeInterface() const {
-    return "__fuse__not__defined__";
+    return "__fern__not__defined__";
   }
 
   virtual bool useAllocNotQuery() const { return false; }

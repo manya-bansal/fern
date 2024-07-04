@@ -45,13 +45,11 @@ ConcreteFunctionCall::ConcreteFunctionCall(
   // need to mangle names because one abstract function
   // can be the source of multiple concrete function calls.
 
-  std::cout << "here 3" << std::endl;
-  mangle_abstract_names();
-  std::cout << "here 3" << std::endl;
   populate_inputs();
-  std::cout << "here 3" << std::endl;
+
   populate_output();
-  std::cout << "here 3" << std::endl;
+
+  mangle_abstract_names();
 }
 
 bool ConcreteFunctionCall::sameTypeArguments(std::vector<Argument> a1,
@@ -102,7 +100,7 @@ void ConcreteFunctionCall::mangle_abstract_names() {
   std::map<const DependencyVariableNode *, const DependencyVariableNode *>
       mangled_names;
   auto all_vars = dataRelationship.getVariables();
-  std::cout << "out" << std::endl;
+
   for (auto var : all_vars) {
     mangled_names[var] =
         (new DependencyVariableNode(util::uniqueName(var->name), var->argument,
@@ -124,6 +122,41 @@ void ConcreteFunctionCall::mangle_abstract_names() {
                   "nowhere??");
       arguments[i] = new VariableArg(mangled_names[var]);
       // }
+    }
+  }
+
+  // change the meta nodes to match the arguments passed in
+
+  struct ReplaceRewriter : public DependencyRewriter {
+    using DependencyRewriter::visit;
+    ReplaceRewriter(const AbstractDataStructure *d_abstract,
+                    const AbstractDataStructure *d_concrete)
+        : d_abstract(d_abstract), d_concrete(d_concrete) {}
+
+    void visit(const MetaDataNode *op) {
+      if (op->ds == d_abstract) {
+        expr = DependencyExpr(new MetaDataNode(op->name, d_concrete));
+      } else {
+        expr = DependencyExpr(op);
+      }
+    }
+
+    const AbstractDataStructure *d_abstract;
+    const AbstractDataStructure *d_concrete;
+  };
+
+  util::printIterable(arguments);
+  util::printIterable(abstractArguments);
+
+  for (int j = 0; j < arguments.size(); j++) {
+    auto concrete_arg = arguments[j];
+    auto abstract_arg = abstractArguments[j];
+
+    if (concrete_arg.getArgType() == DATASTRUCTURE) {
+      auto abstract_ds = abstract_arg.getNode<DataStructureArg>()->dsPtr();
+      auto concrete_ds = concrete_arg.getNode<DataStructureArg>()->dsPtr();
+      ReplaceRewriter rw(abstract_ds, concrete_ds);
+      auto new_s = rw.rewrite(dataRelationship);
     }
   }
 }

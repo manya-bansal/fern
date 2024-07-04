@@ -1,4 +1,4 @@
-#include "dependency_lang/dependency_solver.h"
+#include "dependency_resolver/dependency_solver.h"
 
 #include <ginac/ginac.h>
 
@@ -51,7 +51,7 @@ void SolveDependency::solve() {
     }
   }
 
-  std::cout << "verbose " << verbose << std::endl;
+  // std::cout << "verbose " << verbose << std::endl;
   // PRINT OUT SOLUTIONS FOR DEBUGGING
   if (verbose) {
     std::cout << "Solutions:" << std::endl;
@@ -250,7 +250,6 @@ void SolveDependency::populate_names() {
     void populate_names(DependencyExpr expr) { expr.accept(this); }
 
     void visit(const DependencyVariableNode *node) {
-      std::cout << "Pop names " << node->name << std::endl;
       // Just insert, it's fine if we replace!
       auto ginac_symbol = GiNaC::symbol(node->name + suffix);
       names_temp.insert({{node, ginac_symbol}});
@@ -269,12 +268,12 @@ void SolveDependency::populate_names() {
     // pop_names.set_suffix("_func" + std::to_string(i));
     // Populate names for input
     for (auto expr : std::get<0>(dependencies[i])) {
-      std::cout << expr << std::endl;
+      // std::cout << expr << std::endl;
       pop_names.populate_names(expr);
     }
     // Populate names for output
     for (auto expr : std::get<1>(dependencies[i])) {
-      std::cout << expr << std::endl;
+      // std::cout << expr << std::endl;
       pop_names.populate_names(expr);
     }
   }

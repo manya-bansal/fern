@@ -11,9 +11,9 @@
 
 namespace examples {
 
-template <typename T> class Matrix : public fuse::AbstractDataStructure {
+template <typename T> class Matrix : public fern::AbstractDataStructure {
 public:
-  Matrix() : name(fuse::util::uniqueName("var")) {}
+  Matrix() : name(fern::util::uniqueName("var")) {}
   Matrix(const std::string &name) : name(name) {}
 
   std::string getTypeName() const { return getNameInternal<T>(); }

@@ -24,8 +24,6 @@ public:
 
   std::vector<std::string> getMetaData() const { return {"idx", "len"}; }
 
-  // Hacky, but easy to not to do this stupidity MANYA
-  // fix
   std::string getDataQueryInterface() const {
     return {"array_query_no_materialize"};
   }

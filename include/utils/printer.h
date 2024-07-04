@@ -10,7 +10,7 @@ namespace util {
 template <typename Iterable> void printIterable(const Iterable &iterable) {
   // Using auto to automatically deduce the type of elements
   for (const auto &element : iterable) {
-    std::cout << element << " ";
+    std::cout << element << " " << std::endl;
   }
   std::cout << std::endl;
 }

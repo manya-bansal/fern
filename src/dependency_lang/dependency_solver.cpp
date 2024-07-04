@@ -34,8 +34,8 @@ void SolveDependency::solve() {
   // STEP 2: Generate the chained dependencies
   GiNaC::lst chained_deps;
   for (int i = 0; i < dependencies.size() - 1; i++) {
-    auto input_func = get<0>(dependencies[i + 1]);
-    auto output_func = get<1>(dependencies[i]);
+    auto input_func = std::get<0>(dependencies[i + 1]);
+    auto output_func = std::get<1>(dependencies[i]);
     assert(input_func.size() == output_func.size());
 
     for (int i = 0; i < input_func.size(); i++) {
@@ -152,7 +152,7 @@ SolveDependency::list_of_unbound_variables(GiNaC::lst chained_deps) {
   std::set<const DependencyVariableNode *> undefined_symbols;
 
   // all of first output's are undefined
-  for (auto expr : get<0>(dependencies[0])) {
+  for (auto expr : std::get<0>(dependencies[0])) {
     GetSymbols symbol_set;
     undefined_symbols = symbol_set.get_symbols(expr);
   }
@@ -268,12 +268,12 @@ void SolveDependency::populate_names() {
     // DEBUGGING: To check which function the name belongs to
     // pop_names.set_suffix("_func" + std::to_string(i));
     // Populate names for input
-    for (auto expr : get<0>(dependencies[i])) {
+    for (auto expr : std::get<0>(dependencies[i])) {
       std::cout << expr << std::endl;
       pop_names.populate_names(expr);
     }
     // Populate names for output
-    for (auto expr : get<1>(dependencies[i])) {
+    for (auto expr : std::get<1>(dependencies[i])) {
       std::cout << expr << std::endl;
       pop_names.populate_names(expr);
     }

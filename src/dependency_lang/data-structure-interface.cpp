@@ -145,9 +145,6 @@ void ConcreteFunctionCall::mangle_abstract_names() {
     const AbstractDataStructure *d_concrete;
   };
 
-  util::printIterable(arguments);
-  util::printIterable(abstractArguments);
-
   for (int j = 0; j < arguments.size(); j++) {
     auto concrete_arg = arguments[j];
     auto abstract_arg = abstractArguments[j];
@@ -156,7 +153,7 @@ void ConcreteFunctionCall::mangle_abstract_names() {
       auto abstract_ds = abstract_arg.getNode<DataStructureArg>()->dsPtr();
       auto concrete_ds = concrete_arg.getNode<DataStructureArg>()->dsPtr();
       ReplaceRewriter rw(abstract_ds, concrete_ds);
-      auto new_s = rw.rewrite(dataRelationship);
+      dataRelationship = rw.rewrite(dataRelationship);
     }
   }
 }

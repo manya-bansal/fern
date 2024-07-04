@@ -31,7 +31,6 @@ TEST(Eval, HalideBlur) {
   });
 
   pipeline.constructPipeline();
-  pipeline.buildNaivePipeline();
 }
 
 TEST(Eval, ConvMax) {
@@ -57,17 +56,16 @@ TEST(Eval, ConvMax) {
   });
 
   pipeline.constructPipeline();
-  pipeline.buildNaivePipeline();
 }
 
 TEST(Eval, StackedFusedConvMax) {
   examples::Weights input("input");
-  examples::Weights filter("filter");
+  examples::Weights filter("filter0");
   examples::FloatPtr bias("bias");
   examples::Weights output_conv1("output_conv1");
   examples::Weights output_conv2("output_conv2");
   examples::Weights output_max1("output_max1");
-  examples::Weights output("output");
+  examples::Weights output("output_t");
 
   examples::Convolution_Mkl_Fused convolution_mkl_fused;
   examples::Maxpool maxpool;
@@ -85,5 +83,4 @@ TEST(Eval, StackedFusedConvMax) {
   });
 
   pipeline.constructPipeline();
-  pipeline.buildNaivePipeline();
 }

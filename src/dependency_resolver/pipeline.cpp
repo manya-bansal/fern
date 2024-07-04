@@ -1,9 +1,16 @@
 #include "dependency_resolver/pipeline.h"
 #include "dependency_lang/dep_lang.h"
 #include "dependency_lang/dep_lang_nodes.h"
+#include "dependency_lang/dep_lang_rewriter.h"
 #include "utils/printer.h"
 
 namespace fern {
+
+std::ostream &operator<<(std::ostream &os, const IntervalPipe &i) {
+  os << i.var << " in (" << i.start << ", " << i.end << ", " << i.step
+     << std::endl;
+  return os;
+}
 
 void Pipeline::constructPipeline() {
 
@@ -18,6 +25,11 @@ void Pipeline::constructPipeline() {
 }
 
 void Pipeline::buildNaivePipeline() {
+  buildFuncCalls();
+  generateOuterLoops();
+}
+
+void Pipeline::buildFuncCalls() {
 
   // we are going to flip this after we are done
   std::vector<FunctionType> queries;
@@ -85,6 +97,83 @@ void Pipeline::buildNaivePipeline() {
   std::cout << std::endl;
   util::printIterable(free);
   std::cout << std::endl;
+}
+
+static const AbstractDataStructure *
+getConcreteVar(ConcreteFunctionCall call,
+               const AbstractDataStructure *abstract_d) {
+
+  auto arguments = call.getAbstractArguments();
+  for (int i = 0; i < arguments.size(); i++) {
+    auto arg = arguments[i];
+    if (arg.getArgType() == DATASTRUCTURE) {
+      auto a = arg.getNode<DataStructureArg>()->dsPtr();
+      if (a->getVarName() == abstract_d->getVarName()) {
+        return call.getArguments()[i].getNode<DataStructureArg>()->dsPtr();
+      }
+    }
+  }
+
+  // unreachable
+  FERN_ASSERT_NO_MSG(false);
+}
+
+static DependencyExpr
+replaceSelectedMetaNodes(DependencyExpr e,
+                         const AbstractDataStructure *to_replace,
+                         const AbstractDataStructure *new_ds) {
+  struct ReplaceRewriter : public DependencyRewriter {
+    using DependencyRewriter::visit;
+    ReplaceRewriter(const AbstractDataStructure *d_abstract,
+                    const AbstractDataStructure *d_concrete)
+        : d_abstract(d_abstract), d_concrete(d_concrete) {}
+
+    void visit(const MetaDataNode *op) {
+      if (op->ds == d_abstract) {
+        expr = DependencyExpr(new MetaDataNode(op->name, d_concrete));
+      } else {
+        expr = DependencyExpr(op);
+      }
+    }
+
+    const AbstractDataStructure *d_abstract;
+    const AbstractDataStructure *d_concrete;
+  };
+
+  ReplaceRewriter rw(to_replace, new_ds);
+  return rw.rewrite(e);
+}
+
+static DependencyExpr replaceAllMetaNodes(DependencyExpr e,
+                                          ConcreteFunctionCall func) {
+  DependencyExpr new_expr = e;
+  match(e, std::function<void(const MetaDataNode *, Matcher *)>(
+               [&](const MetaDataNode *op, Matcher *ctx) {
+                 auto concrete = getConcreteVar(func, op->ds);
+                 new_expr =
+                     replaceSelectedMetaNodes(new_expr, op->ds, concrete);
+               }));
+
+  return new_expr;
+}
+
+void Pipeline::generateOuterLoops() {
+  // Get the last func and generate the loops with respect to the output
+  auto last_func = functions[functions.size() - 1];
+
+  match(last_func.getDataRelationship(),
+        std::function<void(const IntervalNode *, Matcher *)>(
+            [&](const IntervalNode *op, Matcher *ctx) {
+              Variable v = op->var;
+              DependencyExpr start = op->start;
+              DependencyExpr end = op->end;
+              DependencyExpr step = op->step;
+
+              outer_loops.push_back(IntervalPipe(v, start, end, step));
+              ctx->match(op->child);
+            }));
+
+  util::printIterable(outer_loops);
 }
 
 bool Pipeline::isIntermediate(const AbstractDataStructure *ds) {

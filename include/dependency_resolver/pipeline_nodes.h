@@ -107,6 +107,20 @@ struct ComputeNode : public FunctionTypeNode {
   std::map<const AbstractDataStructure *, std::string> names;
 };
 
+struct IntervalPipe {
+
+  IntervalPipe(Variable var, DependencyExpr start, DependencyExpr end,
+               DependencyExpr step)
+      : var(var), start(start), end(end), step(step) {}
+
+  Variable var;
+  DependencyExpr start;
+  DependencyExpr end;
+  DependencyExpr step;
+};
+
+std::ostream &operator<<(std::ostream &, const IntervalPipe &);
+
 struct Pipeline {
   Pipeline() = default;
   Pipeline(std::vector<ConcreteFunctionCall> functions) : functions(functions) {
@@ -116,7 +130,10 @@ struct Pipeline {
   void constructPipeline();
   void buildDataFlowGraph();
   void buildComputationGraph();
+
   void buildNaivePipeline();
+  void buildFuncCalls();
+  void generateOuterLoops();
 
   std::vector<DependencyExpr>
   getCorrespondingConstraint(ConcreteFunctionCall call,
@@ -152,6 +169,9 @@ struct Pipeline {
   std::map<const DependencyVariableNode *, GiNaC::ex> var_relationships;
   std::set<const DependencyVariableNode *> undefined;
   std::set<const DependencyVariableNode *> defined;
+
+  // The outer loops to wrap the output in
+  std::vector<IntervalPipe> outer_loops;
 };
 
 struct PipelineNode : public FunctionTypeNode {

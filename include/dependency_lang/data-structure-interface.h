@@ -41,6 +41,7 @@ public:
 
   virtual bool useAllocNotQuery() const { return false; }
   virtual std::string getAllocData() const = 0;
+  virtual bool isTranslationInvariant(int index) const { return false; };
 
   // Q: Should I pull this out in a different class?
   virtual std::string getVarName() const { return util::uniqueName("var"); }

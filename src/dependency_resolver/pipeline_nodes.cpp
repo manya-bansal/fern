@@ -43,4 +43,8 @@ void ComputeNode::print(std::ostream &stream) const {
   stream << ")";
 }
 
+void BlankNode::print(std::ostream &stream) const { stream << " BLANK "; }
+
+void PipelineNode::print(std::ostream &stream) const { stream << pipeline; }
+
 } // namespace fern

@@ -79,7 +79,7 @@ void Pipeline::buildFuncCalls() {
     std::string queried_name = output->getVarName() + "_q";
     auto deps = getCorrespondingDependency(call, output);
     if (isIntermediate(output)) {
-      queries.push_back(new AllocateNode(output, deps, queried_name));
+      queries.push_back(new AllocateNode(output, deps, queried_name, call));
       if (output->getAllocFreeInterface() != "__fern__not__defined__") {
         free.push_back(new FreeNode(output, queried_name));
       }
@@ -264,11 +264,6 @@ void Pipeline::generateDependency(
         undefined.insert(undef);
       }
     }
-
-    // // solve dependencies originating from the previous
-    // // func calls.
-    // JUST DO ONE FOR RN
-    // generateDependency(computation_graph[input], dependencies);
   }
 }
 
@@ -291,10 +286,6 @@ Pipeline::getCorrespondingDependency(ConcreteFunctionCall call,
                        .getNode<DataStructureArg>()
                        ->dsPtr();
   }
-
-  // std::cout << "abstract_var = " << *abstract_var << std::endl;
-  // std::cout << "getDataRelationship = " << call.getDataRelationship() <<
-  // std::endl;
 
   // get the constraint corresponding to the data structure.
   std::vector<DependencyExpr> matching_constraint;
@@ -340,8 +331,14 @@ Pipeline::corresponding_abstract_var(ConcreteFunctionCall call,
 
 std::ostream &operator<<(std::ostream &os, const Pipeline &pipe) {
 
+  std::cout << "In pipeline" << std::endl;
+
   for (auto i : pipe.outer_loops) {
     os << i;
+  }
+
+  for (auto d : pipe.derivations) {
+    os << d.first << " = " << d.second << std::endl;
   }
 
   for (auto funcs : pipe.pipeline) {
@@ -371,6 +368,7 @@ Pipeline Pipeline::split(int loop, Variable outer, Variable inner,
   new_pipe.outer_loops[loop] = outer_new;
   new_pipe.outer_loops.insert(new_pipe.outer_loops.begin() + loop + 1,
                               inner_new);
+  new_pipe.derivations[old_loop.var] = outer + inner;
   // std::swap(new_pipe.outer_loops[loop_1], new_pipe.outer_loops[loop_2]);
   return new_pipe;
 }
@@ -386,6 +384,135 @@ Pipeline Pipeline::bind(Variable var, int val) {
   var.setBound(val);
   new_pipe.bounded_vars.insert(var);
   return new_pipe;
+}
+
+Pipeline Pipeline::finalize(bool hoist) {
+  auto new_pipe = *this;
+  if (hoist) {
+    new_pipe.run_hoisting_pass();
+  }
+
+  return new_pipe;
+}
+
+static bool isTranslationInvariant(DependencyExpr e, DependencySubset rel) {
+
+  bool is_invariant = true;
+  match(e, std::function<void(const DependencyVariableNode *, Matcher *)>(
+               [&](const DependencyVariableNode *op, Matcher *ctx) {
+                 if (rel.is_interval_var(Variable(op))) {
+                   is_invariant = false;
+                 }
+               }));
+  return is_invariant;
+}
+
+bool Pipeline::hoist_able(const AllocateNode *node) {
+
+  // Get the data relationships
+  auto expr = getCorrespondingDependency(node->call, node->call.getOutput());
+  // get all the interval nodes
+
+  for (int i = 0; i < node->deps.size(); i++) {
+    if (node->ds->isTranslationInvariant(i)) {
+      // Nothing to check here
+      continue;
+    }
+    // if not translation invariant make sure that it does
+    // not contain any interval nodes
+    if (!isTranslationInvariant(expr[i], node->call.getDataRelationship())) {
+      return false;
+    }
+  }
+  return true;
+}
+
+void Pipeline::run_hoisting_pass() {
+  // First, look at the allocate functions and figure out whether
+  // a candidate can be hoisted
+
+  std::set<const AbstractDataStructure *> to_be_hoisted;
+  for (auto p : pipeline) {
+    if (p.getFuncType() == ALLOCATE) {
+      auto p_alloc = p.getNode<AllocateNode>();
+      if (hoist_able(p_alloc)) {
+        // Add to hoisted
+        to_be_hoisted.insert(p_alloc->ds);
+      }
+    }
+  }
+
+  // Now loop through all the functions again
+  // and set pull out the allocs and frees
+
+  std::vector<FunctionType> hoisted;
+  std::vector<FunctionType> hoisted_free;
+
+  for (int i = 0; i < pipeline.size(); i++) {
+    auto p = pipeline[i];
+    if (p.getFuncType() == ALLOCATE) {
+      auto p_alloc = p.getNode<AllocateNode>()->ds;
+      if (to_be_hoisted.count(p_alloc) > 0) {
+        hoisted.push_back(p);
+        pipeline[i] = new BlankNode();
+      }
+    }
+
+    if (p.getFuncType() == FREE) {
+      auto p_alloc = p.getNode<AllocateNode>()->ds;
+      if (to_be_hoisted.count(p_alloc) > 0) {
+        hoisted_free.push_back(p);
+        pipeline[i] = new BlankNode();
+      }
+    }
+  }
+
+  util::printIterable(hoisted);
+  util::printIterable(hoisted_free);
+
+  // Now figure out which loops can be hoisted out
+  // We can start to hoist out of loops until the first
+  // parrallel loop is hit
+
+  int outer_loop_index = outer_loops.size() - 1;
+  int i = 0;
+  for (i = outer_loop_index; i >= 0; i--) {
+    if (outer_loops[i].var.isParallel()) {
+      break;
+    }
+  }
+
+  // add one back to i
+  i++;
+
+  std::vector<IntervalPipe> outer_loops_out;
+  std::vector<IntervalPipe> outer_loops_in;
+
+  for (int j = 0; j < outer_loops.size(); j++) {
+    if (j >= i) {
+      outer_loops_in.push_back(outer_loops[j]);
+    } else {
+      outer_loops_out.push_back(outer_loops[j]);
+    }
+  }
+
+  Pipeline inner_pipeline = *this;
+  inner_pipeline.outer_loops = outer_loops_in;
+
+  Pipeline outer_pipeline;
+  auto funcs = outer_pipeline.pipeline;
+  funcs.insert(funcs.end(), hoisted.begin(), hoisted.end());
+  funcs.push_back(new PipelineNode(inner_pipeline));
+  funcs.insert(funcs.end(), hoisted_free.begin(), hoisted_free.end());
+  outer_pipeline.pipeline = funcs;
+  outer_pipeline.outer_loops = outer_loops_out;
+
+  *this = outer_pipeline;
+
+  // std::cout << outer_pipeline << std::endl;
+
+  // util::printIterable(outer_loops_in);
+  // util::printIterable(outer_loops_out);
 }
 
 } // namespace fern

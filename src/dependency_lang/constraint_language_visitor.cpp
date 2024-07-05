@@ -5,14 +5,12 @@
 
 namespace fern {
 void DependencyExprVisitorStrict::visit(const DependencyExpr &expr) {
-  std::cout << "here expr" << std::endl;
   if (expr.defined()) {
     expr.accept(this);
   }
 }
 
 void DependencySubsetVisitorStrict::visit(const DependencySubset &expr) {
-  std::cout << "here subset" << std::endl;
   if (expr.defined()) {
     expr.accept(this);
   }

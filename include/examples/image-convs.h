@@ -34,6 +34,13 @@ public:
   std::string getAllocFreeInterface() const override { return "free_weight"; }
   std::string getQueryFreeInterface() const override { return "free_weight"; }
 
+  bool isTranslationInvariant(int index) const {
+    if (index < 2) {
+      return true;
+    }
+    return false;
+  }
+
   bool useAllocNotQuery() const override { return true; }
 
 private:

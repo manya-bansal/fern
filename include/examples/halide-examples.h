@@ -31,6 +31,13 @@ public:
 
   std::string getAllocFreeInterface() const override { return "destroy"; }
 
+  bool isTranslationInvariant(int index) const {
+    if (index < 2) {
+      return true;
+    }
+    return false;
+  }
+
 private:
   std::string name;
 };

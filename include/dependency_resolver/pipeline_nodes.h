@@ -66,11 +66,14 @@ struct QueryNode : public FunctionTypeNode {
 struct AllocateNode : public FunctionTypeNode {
 
   AllocateNode(const AbstractDataStructure *ds,
-               std::vector<DependencyExpr> deps, std::string name)
-      : FunctionTypeNode(ALLOCATE), ds(ds), deps(deps), name(name) {}
+               std::vector<DependencyExpr> deps, std::string name,
+               ConcreteFunctionCall call)
+      : FunctionTypeNode(ALLOCATE), ds(ds), deps(deps), name(name), call(call) {
+  }
 
   void print(std::ostream &stream) const override;
   const AbstractDataStructure *ds;
+  ConcreteFunctionCall call;
   std::vector<DependencyExpr> deps;
   std::string name;
 };
@@ -107,6 +110,13 @@ struct ComputeNode : public FunctionTypeNode {
   std::map<const AbstractDataStructure *, std::string> names;
 };
 
+// Filler to manipulate objects (like vectors etc)
+// while iterating over them
+struct BlankNode : public FunctionTypeNode {
+  BlankNode() = default;
+  void print(std::ostream &stream) const override;
+};
+
 struct IntervalPipe {
 
   IntervalPipe(Variable var, DependencyExpr start, DependencyExpr end,
@@ -134,6 +144,10 @@ struct Pipeline {
   void buildNaivePipeline();
   void buildFuncCalls();
   void generateOuterLoops();
+
+  Pipeline finalize(bool hoist = true);
+  void run_hoisting_pass();
+  bool hoist_able(const AllocateNode *node);
 
   std::vector<DependencyExpr>
   getCorrespondingConstraint(ConcreteFunctionCall call,
@@ -179,12 +193,14 @@ struct Pipeline {
   // The outer loops to wrap the output in
   std::vector<IntervalPipe> outer_loops;
   std::set<Variable> bounded_vars;
+  std::map<Variable, DependencyExpr> derivations;
 };
 
 std::ostream &operator<<(std::ostream &, const Pipeline &);
 
 struct PipelineNode : public FunctionTypeNode {
   PipelineNode(Pipeline pipeline) : pipeline(pipeline) {}
+  void print(std::ostream &stream) const override;
   Pipeline pipeline;
 };
 

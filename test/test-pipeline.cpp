@@ -46,13 +46,14 @@ TEST(Eval, HalideBlur) {
   // 1: Parrallelize outer loop
   pipeline = pipeline.parrallelize(1);
   FERN_ASSERT_NO_MSG(pipeline.outer_loops[1].var.parrallel == true);
-
   // Bind the value of the inner step to 1
   // compute one row at a time
   pipeline = pipeline.bind(inner_step, 1);
   FERN_ASSERT_NO_MSG(pipeline.bounded_vars.count(inner_step) > 0);
-  // To indicate the end of scheduling we call the finalize functions
-
+  // To indicate the end of scheduling we call the finalize function.
+  // Indicate the end of scheduling code and the beginning of opt
+  // passes
+  pipeline = pipeline.finalize();
   std::cout << pipeline << std::endl;
 }
 
@@ -79,6 +80,7 @@ TEST(Eval, ConvMax) {
   });
 
   pipeline.constructPipeline();
+  pipeline = pipeline.finalize();
   std::cout << pipeline << std::endl;
 }
 
@@ -107,5 +109,6 @@ TEST(Eval, StackedFusedConvMax) {
   });
 
   pipeline.constructPipeline();
+  pipeline = pipeline.finalize();
   std::cout << pipeline << std::endl;
 }

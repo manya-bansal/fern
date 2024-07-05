@@ -45,6 +45,7 @@ public:
 
   // Q: Should I pull this out in a different class?
   virtual std::string getVarName() const { return util::uniqueName("var"); }
+  virtual std::string setVarName() const { FERN_ASSERT_NO_MSG(false); }
 
   // To access metadata of abstract data structures
   DependencyExpr operator[](const std::string &name) const;

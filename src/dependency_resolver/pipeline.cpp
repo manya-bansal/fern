@@ -363,7 +363,7 @@ Pipeline Pipeline::split(int loop, Variable outer, Variable inner,
                          Variable outer_step, Variable inner_step) {
   Pipeline new_pipe = *this;
   IntervalPipe old_loop = new_pipe.outer_loops[loop];
-  IntervalPipe outer_new(outer, old_loop.start, old_loop.end, outer_step);
+  IntervalPipe outer_new(outer, old_loop.start, old_loop.end, old_loop.step);
   IntervalPipe inner_new(inner, outer, outer_step, inner_step);
   new_pipe.outer_loops[loop] = outer_new;
   new_pipe.outer_loops.insert(new_pipe.outer_loops.begin() + loop + 1,
@@ -518,28 +518,50 @@ PipelineNode::get_host_pipeline(const AbstractDataStructure *ds) const {
   return FunctionType();
 }
 
+FunctionType Pipeline::getReusePreamble(const AbstractDataStructure *ds) const {
+
+  // Generate a new pipe but only of functions that compute uptil the
+  // reuse ds.
+  std::vector<ConcreteFunctionCall> new_funcs;
+  for (auto func : functions) {
+    std::cout << functions << std::endl;
+    auto new_func = ConcreteFunctionCall(func.getName(), func.getArguments(),
+                                         func.getDataRelationship(),
+                                         func.getAbstractArguments());
+    new_funcs.push_back(new_func);
+    if (func.getOutput() == ds) {
+      break;
+    }
+  }
+
+  Pipeline p(new_funcs);
+  p.constructPipeline();
+
+  return new PipelineNode(p);
+}
+
 void Pipeline::generate_reuse() {
 
   auto pipe_node = PipelineNode(*this);
   for (int i = 0; i < to_reuse.size(); i++) {
+    auto reuse_ds = to_reuse[i];
     // First, we will look at the candidates for reuse
-    std::cout << to_reuse[i]->getVarName() << std::endl;
-    // locate in pipeline where this is the parent
-    auto host_pipeline = pipe_node.get_host_pipeline(to_reuse[i]);
+    // and locate it in pipeline where the data-structure is the parent.
+    auto host_pipeline = pipe_node.get_host_pipeline(reuse_ds);
     // Check whether this is a valid candidate for reuse in the first plade
-    bool valid_resuse = is_valid_reuse_candidate(to_reuse[i], host_pipeline);
+    bool valid_resuse = is_valid_reuse_candidate(reuse_ds, host_pipeline);
     if (!valid_resuse) {
       FERN_ASSERT(false, "tried to mark an illegal data-structure as reusable");
     }
-
     std::cout << host_pipeline << std::endl;
     // Also get the index of the child, we will rewrite this to actually perform
     // the copy
-    auto index = get_child_pipeline_index(to_reuse[i], host_pipeline);
+    auto index = get_child_pipeline_index(reuse_ds, host_pipeline);
 
     // Generate the preamble for the "starting computation in the host pipeline"
     // Get premable for computing child
-    // FunctionType getReusePreamble();
+    auto preamble = getReusePreamble(reuse_ds);
+    std::cout << preamble << std::endl;
   }
 }
 
@@ -658,6 +680,7 @@ void Pipeline::run_hoisting_pass() {
   outer_pipeline.undefined = undefined;
   outer_pipeline.dataflow_graph = dataflow_graph;
   outer_pipeline.computation_graph = computation_graph;
+  outer_pipeline.functions = functions;
 
   *this = outer_pipeline;
 }

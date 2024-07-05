@@ -160,6 +160,7 @@ struct Pipeline {
   void run_hoisting_pass();
   bool hoist_able(const AllocateNode *node);
   void generate_reuse();
+  FunctionType getReusePreamble(const AbstractDataStructure *ds) const;
 
   std::vector<DependencyExpr>
   getCorrespondingConstraint(ConcreteFunctionCall call,

@@ -39,7 +39,8 @@ ConcreteFunctionCall::ConcreteFunctionCall(
     std::string name, const std::vector<Argument> &arguments,
     DependencySubset dataRelationship, std::vector<Argument> abstractArguments)
     : name(name), arguments(arguments), dataRelationship(dataRelationship),
-      abstractArguments(abstractArguments) {
+      abstractArguments(abstractArguments),
+      dataRelationshipOriginal(dataRelationship) {
   FERN_ASSERT(sameTypeArguments(arguments, abstractArguments),
               "Types of arguments do not match");
   // need to mangle names because one abstract function
@@ -126,7 +127,6 @@ void ConcreteFunctionCall::mangle_abstract_names() {
   }
 
   // change the meta nodes to match the arguments passed in
-
   struct ReplaceRewriter : public DependencyRewriter {
     using DependencyRewriter::visit;
     ReplaceRewriter(const AbstractDataStructure *d_abstract,
@@ -148,8 +148,9 @@ void ConcreteFunctionCall::mangle_abstract_names() {
   for (int j = 0; j < arguments.size(); j++) {
     auto concrete_arg = arguments[j];
     auto abstract_arg = abstractArguments[j];
-
+    std::cout << "What's happening here??" << std::endl;
     if (concrete_arg.getArgType() == DATASTRUCTURE) {
+      std::cout << "inside" << std::endl;
       auto abstract_ds = abstract_arg.getNode<DataStructureArg>()->dsPtr();
       auto concrete_ds = concrete_arg.getNode<DataStructureArg>()->dsPtr();
       ReplaceRewriter rw(abstract_ds, concrete_ds);

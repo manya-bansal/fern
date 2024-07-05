@@ -45,11 +45,45 @@ public:
 
   // Q: Should I pull this out in a different class?
   virtual std::string getVarName() const { return util::uniqueName("var"); }
-  virtual std::string setVarName() const { FERN_ASSERT_NO_MSG(false); }
 
   // To access metadata of abstract data structures
   DependencyExpr operator[](const std::string &name) const;
   //   DataStructureArg operator()(const std::string &name) const;
+};
+
+class MyConcreteDataStructure : public AbstractDataStructure {
+public:
+  MyConcreteDataStructure(const AbstractDataStructure *ds,
+                          const std::string &name)
+      : ds(ds), name(name) {}
+  // Will need to add functions to register and deregister
+  // data querying and data insertion functions
+  std::string getTypeName() const { return ds->getTypeName(); };
+  std::vector<std::string> getMetaData() const { return ds->getMetaData(); };
+  std::string getDataQueryInterface() const {
+    return ds->getDataQueryInterface();
+  };
+  std::string getDataInsertInterface() const {
+    return ds->getDataInsertInterface();
+  };
+
+  std::string getAllocFreeInterface() const {
+    return ds->getAllocFreeInterface();
+  }
+  std::string getQueryFreeInterface() const {
+    return ds->getQueryFreeInterface();
+  }
+
+  bool useAllocNotQuery() const { return ds->useAllocNotQuery(); }
+  std::string getAllocData() const { return ds->getAllocData(); };
+  bool isTranslationInvariant(int index) const {
+    return ds->isTranslationInvariant(index);
+  };
+  std::string getVarName() const { return name; }
+
+private:
+  std::string name;
+  const AbstractDataStructure *ds;
 };
 
 std::ostream &operator<<(std::ostream &, const AbstractDataStructure &);

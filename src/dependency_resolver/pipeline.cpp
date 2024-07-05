@@ -518,15 +518,18 @@ PipelineNode::get_host_pipeline(const AbstractDataStructure *ds) const {
   return FunctionType();
 }
 
-FunctionType Pipeline::getReusePreamble(const AbstractDataStructure *ds) const {
+FunctionType Pipeline::getReusePreamble(const AbstractDataStructure *ds,
+                                        std::string name) const {
 
   // Generate a new pipe but only of functions that compute uptil the
   // reuse ds.
   std::vector<ConcreteFunctionCall> new_funcs;
   for (auto func : functions) {
-    std::cout << functions << std::endl;
-    auto new_func = ConcreteFunctionCall(func.getName(), func.getArguments(),
-                                         func.getDataRelationship(),
+    auto concreteArgs = func.getArguments();
+    concreteArgs[concreteArgs.size() - 1] = new DataStructureArg(
+        DataStructurePtr(new MyConcreteDataStructure(ds, name)));
+    auto new_func = ConcreteFunctionCall(func.getName(), concreteArgs,
+                                         func.getOriginalDataRel(),
                                          func.getAbstractArguments());
     new_funcs.push_back(new_func);
     if (func.getOutput() == ds) {
@@ -560,7 +563,7 @@ void Pipeline::generate_reuse() {
 
     // Generate the preamble for the "starting computation in the host pipeline"
     // Get premable for computing child
-    auto preamble = getReusePreamble(reuse_ds);
+    auto preamble = getReusePreamble(reuse_ds, reuse_ds->getVarName() + "_q");
     std::cout << preamble << std::endl;
   }
 }

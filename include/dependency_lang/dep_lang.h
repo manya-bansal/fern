@@ -305,6 +305,10 @@ public:
     return abstractArguments;
   }
 
+  DependencySubset getOriginalDataRel() const {
+    return dataRelationshipOriginal;
+  }
+
   const AbstractDataStructure *getOutput() const { return output; };
   std::set<const AbstractDataStructure *> getInputs() const { return inputs; };
 
@@ -316,6 +320,7 @@ private:
   const AbstractDataStructure *output;
   std::set<const AbstractDataStructure *> inputs;
   DependencySubset dataRelationship;
+  DependencySubset dataRelationshipOriginal;
 
   void populate_output();
   void populate_inputs();

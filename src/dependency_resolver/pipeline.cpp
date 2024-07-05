@@ -551,6 +551,10 @@ void Pipeline::generate_reuse() {
     // First, we will look at the candidates for reuse
     // and locate it in pipeline where the data-structure is the parent.
     auto host_pipeline = pipe_node.get_host_pipeline(reuse_ds);
+
+    if (host_pipeline.getFuncType() == UNDEFINED) {
+      continue;
+    }
     // Check whether this is a valid candidate for reuse in the first plade
     bool valid_resuse = is_valid_reuse_candidate(reuse_ds, host_pipeline);
     if (!valid_resuse) {
@@ -564,7 +568,13 @@ void Pipeline::generate_reuse() {
     // Generate the preamble for the "starting computation in the host pipeline"
     // Get premable for computing child
     auto preamble = getReusePreamble(reuse_ds, reuse_ds->getVarName() + "_q");
-    std::cout << preamble << std::endl;
+
+    auto host_pipeline_node = host_pipeline.getNode<PipelineNode>();
+
+    auto new_host_pipe = host_pipeline_node->pipeline;
+    new_host_pipe.pipeline.insert(new_host_pipe.pipeline.begin() + index,
+                                  preamble);
+    std::cout << new_host_pipe << std::endl;
   }
 }
 

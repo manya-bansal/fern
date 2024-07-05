@@ -17,7 +17,16 @@ namespace fern {
 struct FunctionTypeNode;
 struct Pipeline;
 
-enum Action { UNDEFINED, COMPUTE, QUERY, ALLOCATE, INSERT, FREE, PIPELINE };
+enum Action {
+  UNDEFINED,
+  COMPUTE,
+  QUERY,
+  ALLOCATE,
+  INSERT,
+  FREE,
+  PIPELINE,
+  BLANK
+};
 // A pointer class for FunctionType provides some operations
 // for all FunctionTypes
 class FunctionType : public util::IntrusivePtr<const FunctionTypeNode> {
@@ -67,15 +76,17 @@ struct AllocateNode : public FunctionTypeNode {
 
   AllocateNode(const AbstractDataStructure *ds,
                std::vector<DependencyExpr> deps, std::string name,
-               ConcreteFunctionCall call)
-      : FunctionTypeNode(ALLOCATE), ds(ds), deps(deps), name(name), call(call) {
-  }
+               ConcreteFunctionCall call, bool reuse = false)
+      : FunctionTypeNode(ALLOCATE), ds(ds), deps(deps), name(name), call(call),
+        reuse(reuse) {}
 
   void print(std::ostream &stream) const override;
+  void set_reuse();
   const AbstractDataStructure *ds;
   ConcreteFunctionCall call;
   std::vector<DependencyExpr> deps;
   std::string name;
+  bool reuse = false;
 };
 
 struct InsertNode : public FunctionTypeNode {
@@ -113,7 +124,7 @@ struct ComputeNode : public FunctionTypeNode {
 // Filler to manipulate objects (like vectors etc)
 // while iterating over them
 struct BlankNode : public FunctionTypeNode {
-  BlankNode() = default;
+  BlankNode() : FunctionTypeNode(BLANK){};
   void print(std::ostream &stream) const override;
 };
 
@@ -148,6 +159,7 @@ struct Pipeline {
   Pipeline finalize(bool hoist = true);
   void run_hoisting_pass();
   bool hoist_able(const AllocateNode *node);
+  void generate_reuse();
 
   std::vector<DependencyExpr>
   getCorrespondingConstraint(ConcreteFunctionCall call,
@@ -175,6 +187,7 @@ struct Pipeline {
                  Variable inner_step);
   Pipeline parrallelize(int loop);
   Pipeline bind(Variable var, int val);
+  Pipeline reuse(const AbstractDataStructure *ds);
 
   std::vector<ConcreteFunctionCall> functions;
 
@@ -189,6 +202,7 @@ struct Pipeline {
   std::map<const DependencyVariableNode *, GiNaC::ex> var_relationships;
   std::set<const DependencyVariableNode *> undefined;
   std::set<const DependencyVariableNode *> defined;
+  std::vector<const AbstractDataStructure *> to_reuse;
 
   // The outer loops to wrap the output in
   std::vector<IntervalPipe> outer_loops;
@@ -199,8 +213,10 @@ struct Pipeline {
 std::ostream &operator<<(std::ostream &, const Pipeline &);
 
 struct PipelineNode : public FunctionTypeNode {
-  PipelineNode(Pipeline pipeline) : pipeline(pipeline) {}
+  PipelineNode(Pipeline pipeline)
+      : pipeline(pipeline), FunctionTypeNode(PIPELINE) {}
   void print(std::ostream &stream) const override;
+  FunctionType get_host_pipeline(const AbstractDataStructure *ds) const;
   Pipeline pipeline;
 };
 

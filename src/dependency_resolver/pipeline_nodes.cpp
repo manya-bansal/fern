@@ -29,6 +29,8 @@ void AllocateNode::print(std::ostream &stream) const {
   stream << ")";
 }
 
+void AllocateNode::set_reuse() { reuse = true; }
+
 void InsertNode::print(std::ostream &stream) const {
   stream << child << " = " << parent << " .insert()";
 }

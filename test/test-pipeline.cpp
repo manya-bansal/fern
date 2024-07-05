@@ -50,11 +50,14 @@ TEST(Eval, HalideBlur) {
   // compute one row at a time
   pipeline = pipeline.bind(inner_step, 1);
   FERN_ASSERT_NO_MSG(pipeline.bounded_vars.count(inner_step) > 0);
+  // Indicate that we would like to compute the reuse of a particular
+  // data-structure
+  pipeline = pipeline.reuse(&out1);
   // To indicate the end of scheduling we call the finalize function.
   // Indicate the end of scheduling code and the beginning of opt
   // passes
   pipeline = pipeline.finalize();
-  std::cout << pipeline << std::endl;
+  // std::cout << pipeline << std::endl;
 }
 
 TEST(Eval, ConvMax) {

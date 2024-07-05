@@ -386,13 +386,161 @@ Pipeline Pipeline::bind(Variable var, int val) {
   return new_pipe;
 }
 
+Pipeline Pipeline::reuse(const AbstractDataStructure *ds) {
+  Pipeline new_pipe = *this;
+  for (auto i = 0; i < new_pipe.pipeline.size(); i++) {
+    auto p = new_pipe.pipeline[i];
+    if (p.getFuncType() == ALLOCATE) {
+      auto p_alloc = p.getNode<AllocateNode>();
+      if (p_alloc->ds == ds) {
+        new_pipe.pipeline[i] = new AllocateNode(
+            p_alloc->ds, p_alloc->deps, p_alloc->name, p_alloc->call, true);
+        new_pipe.to_reuse.push_back(ds);
+        return new_pipe;
+      }
+    }
+  }
+
+  FERN_ASSERT(false, "Trying to reuse a data-structure that does not exist, "
+                     "or is not an intermediate");
+}
+
 Pipeline Pipeline::finalize(bool hoist) {
+
   auto new_pipe = *this;
+
   if (hoist) {
     new_pipe.run_hoisting_pass();
   }
 
+  // Now figure out if any data-structures were marked as reuse.
+  new_pipe.generate_reuse();
+
   return new_pipe;
+}
+
+static bool is_valid_reuse_candidate(const AbstractDataStructure *ds,
+                                     FunctionType func) {
+
+  FERN_ASSERT_NO_MSG(func.getNode<PipelineNode>());
+  auto pipe_node = func.getNode<PipelineNode>();
+
+  // Check 1: Cannot be reused if there is no loops underneath the alloc
+  // So, it must be a pipeline
+
+  // for all the pipeline nodes make this check
+  for (auto f : pipe_node->pipeline.pipeline) {
+    std::cout << f << std::endl;
+    if (f.getFuncType() != PIPELINE) {
+      continue;
+    }
+    auto f_node = f.getNode<PipelineNode>();
+    std::cout << f_node->pipeline << std::endl;
+
+    // Does this pipeline contain a compute on our data-structure?
+    for (auto f_i : f_node->pipeline.pipeline) {
+      if (f_i.getFuncType() != COMPUTE) {
+        continue;
+      }
+      auto f_i_node = f_i.getNode<ComputeNode>();
+      if (f_i_node->func.getOutput() == ds) {
+
+        if (f_node->pipeline.outer_loops.size() == 1 &&
+            !f_node->pipeline.outer_loops[0].var.isParallel()) {
+          return true;
+        }
+      }
+    }
+  }
+
+  return false;
+}
+
+static int get_child_pipeline_index(const AbstractDataStructure *ds,
+                                    FunctionType func) {
+
+  FERN_ASSERT_NO_MSG(func.getNode<PipelineNode>());
+  auto pipe_node = func.getNode<PipelineNode>();
+
+  // Check 1: Cannot be reused if there is no loops underneath the alloc
+  // So, it must be a pipeline
+
+  // for all the pipeline nodes make this check
+  for (int i = 0; i < pipe_node->pipeline.pipeline.size(); i++) {
+    auto f = pipe_node->pipeline.pipeline[i];
+    if (f.getFuncType() != PIPELINE) {
+      continue;
+    }
+    auto f_node = f.getNode<PipelineNode>();
+
+    // Does this pipeline contain a compute on our data-structure?
+    for (auto f_i : f_node->pipeline.pipeline) {
+      if (f_i.getFuncType() != COMPUTE) {
+        continue;
+      }
+      auto f_i_node = f_i.getNode<ComputeNode>();
+      if (f_i_node->func.getOutput() == ds) {
+
+        if (f_node->pipeline.outer_loops.size() == 1 &&
+            !f_node->pipeline.outer_loops[0].var.isParallel()) {
+          std::cout << "Returning the child" << f_node->pipeline << std::endl;
+          return i;
+        }
+      }
+    }
+  }
+
+  // Should be unreached, should be calling is_valid_reuse_candidate
+  // before calling this function!
+  FERN_ASSERT_NO_MSG(false);
+}
+
+FunctionType
+PipelineNode::get_host_pipeline(const AbstractDataStructure *ds) const {
+
+  for (auto func : pipeline.pipeline) {
+    if (func.getFuncType() == ALLOCATE) {
+      auto test = func.getNode<AllocateNode>()->ds;
+      if (test == ds) {
+        return new PipelineNode(pipeline);
+      }
+    }
+
+    if (func.getFuncType() == PIPELINE) {
+      // If we have hit another pipeline, we have no allocas left, so we
+      // will now recurse
+      auto next_pipe = func.getNode<PipelineNode>();
+      return next_pipe->get_host_pipeline(ds);
+    }
+  }
+
+  // If we have not found anything, returned an undefined pipeline
+  return FunctionType();
+}
+
+void Pipeline::generate_reuse() {
+
+  auto pipe_node = PipelineNode(*this);
+  for (int i = 0; i < to_reuse.size(); i++) {
+    // First, we will look at the candidates for reuse
+    std::cout << to_reuse[i]->getVarName() << std::endl;
+    // locate in pipeline where this is the parent
+    auto host_pipeline = pipe_node.get_host_pipeline(to_reuse[i]);
+    // Check whether this is a valid candidate for reuse in the first plade
+    bool valid_resuse = is_valid_reuse_candidate(to_reuse[i], host_pipeline);
+    if (!valid_resuse) {
+      FERN_ASSERT(false, "tried to mark an illegal data-structure as reusable");
+    }
+
+    std::cout << host_pipeline << std::endl;
+    // Also get the index of the child, we will rewrite this to actually perform
+    // the copy
+    auto index = get_child_pipeline_index(to_reuse[i], host_pipeline);
+
+    // Generate the preamble for the "starting computation in the host pipeline"
+    // Get premable for computing child
+    // FunctionType getReusePreamble();
+  }
 }
 
 static bool isTranslationInvariant(DependencyExpr e, DependencySubset rel) {
@@ -467,9 +615,6 @@ void Pipeline::run_hoisting_pass() {
     }
   }
 
-  util::printIterable(hoisted);
-  util::printIterable(hoisted_free);
-
   // Now figure out which loops can be hoisted out
   // We can start to hoist out of loops until the first
   // parrallel loop is hit
@@ -506,13 +651,15 @@ void Pipeline::run_hoisting_pass() {
   funcs.insert(funcs.end(), hoisted_free.begin(), hoisted_free.end());
   outer_pipeline.pipeline = funcs;
   outer_pipeline.outer_loops = outer_loops_out;
+  outer_pipeline.to_reuse = to_reuse;
+  outer_pipeline.var_relationships = var_relationships;
+  outer_pipeline.bounded_vars = bounded_vars;
+  outer_pipeline.defined = defined;
+  outer_pipeline.undefined = undefined;
+  outer_pipeline.dataflow_graph = dataflow_graph;
+  outer_pipeline.computation_graph = computation_graph;
 
   *this = outer_pipeline;
-
-  // std::cout << outer_pipeline << std::endl;
-
-  // util::printIterable(outer_loops_in);
-  // util::printIterable(outer_loops_out);
 }
 
 } // namespace fern

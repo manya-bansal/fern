@@ -132,16 +132,16 @@ struct IntervalNode : public DependencySubsetNode {
                DependencyExpr step, bool recompute = false)
       : var(var), start(start), end(end), step(step), recompute(recompute) {
     // Need to rename
-    FERN_ASSERT(var.isBound(), "Interval Variable must be "
-                               "bound");
+    // FERN_ASSERT(var.isBound(), "Interval Variable must be "
+    //                            "bound");
   }
   IntervalNode(Variable var, DependencyExpr start, DependencyExpr end,
                DependencyExpr step, DependencySubset child,
                bool recompute = false)
       : var(var), start(start), end(end), step(step), child(child),
         recompute(recompute) {
-    FERN_ASSERT(var.isBound(), "Interval Variable must be "
-                               "bound");
+    // FERN_ASSERT(var.isBound(), "Interval Variable must be "
+    //                            "bound");
   }
 
   void accept(DependencySubsetVisitorStrict *v) const { v->visit(this); }

@@ -128,9 +128,18 @@ Datatype Variable::getType() const { return getNode(*this)->type; }
 
 bool Variable::isArgument() const { return getNode(*this)->argument; }
 
-bool Variable::isParallel() const { return getNode(*this)->parallelize; }
+bool Variable::isParallel() const { return parrallel; }
 
-bool Variable::isBound() const { return getNode(*this)->bound; }
+bool Variable::isBound() const { return bound; }
+
+void Variable::setParrallel() { parrallel = true; }
+
+void Variable::setBound(int val) {
+  bound = true;
+  num_bound = val;
+}
+
+int Variable::getBound() { return num_bound; }
 
 template <> bool isa<Variable>(DependencyExpr e) {
   return isa<DependencyVariableNode>(e.ptr);

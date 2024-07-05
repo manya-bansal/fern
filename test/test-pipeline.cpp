@@ -30,7 +30,29 @@ TEST(Eval, HalideBlur) {
       blury(&out1, &out2),
   });
 
+  // Step one is to always construct a pipeline
   pipeline.constructPipeline();
+
+  // Next, we can begin scheduling
+  // 1: Reorder the col and row loops
+  pipeline = pipeline.reorder(0, 1);
+  // 1: Split rows by new var
+  Variable outer("o");
+  Variable inner("i");
+  Variable outer_step("o_s");
+  Variable inner_step("i_s");
+  pipeline = pipeline.split(1, outer, inner, outer_step, inner_step);
+
+  // 1: Parrallelize outer loop
+  pipeline = pipeline.parrallelize(1);
+  FERN_ASSERT_NO_MSG(pipeline.outer_loops[1].var.parrallel == true);
+
+  // Bind the value of the inner step to 1
+  // compute one row at a time
+  pipeline = pipeline.bind(inner_step, 1);
+  FERN_ASSERT_NO_MSG(pipeline.bounded_vars.count(inner_step) > 0);
+  // To indicate the end of scheduling we call the finalize functions
+
   std::cout << pipeline << std::endl;
 }
 

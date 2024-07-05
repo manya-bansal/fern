@@ -156,6 +156,12 @@ struct Pipeline {
 
   bool isIntermediate(const AbstractDataStructure *ds);
 
+  Pipeline reorder(int loop_1, int loop_2);
+  Pipeline split(int loop, Variable outer, Variable inner, Variable outer_step,
+                 Variable inner_step);
+  Pipeline parrallelize(int loop);
+  Pipeline bind(Variable var, int val);
+
   std::vector<ConcreteFunctionCall> functions;
 
   std::vector<FunctionType> pipeline;
@@ -172,6 +178,7 @@ struct Pipeline {
 
   // The outer loops to wrap the output in
   std::vector<IntervalPipe> outer_loops;
+  std::set<Variable> bounded_vars;
 };
 
 std::ostream &operator<<(std::ostream &, const Pipeline &);

@@ -3,11 +3,12 @@
 #include "dependency_lang/dep_lang_nodes.h"
 #include "dependency_lang/dep_lang_rewriter.h"
 #include "utils/printer.h"
+#include <algorithm>
 
 namespace fern {
 
 std::ostream &operator<<(std::ostream &os, const IntervalPipe &i) {
-  os << i.var << " in (" << i.start << ", " << i.end << ", " << i.step
+  os << i.var << " in (" << i.start << ", " << i.end << ", " << i.step << ")"
      << std::endl;
   return os;
 }
@@ -348,6 +349,43 @@ std::ostream &operator<<(std::ostream &os, const Pipeline &pipe) {
   }
 
   return os;
+}
+
+// Scheduling operators
+
+Pipeline Pipeline::reorder(int loop_1, int loop_2) {
+  Pipeline new_pipe = *this;
+  // Need to add a check for reorder
+  // Make sure that you don't swap loops that depend on the values from
+  // previous loops
+  std::swap(new_pipe.outer_loops[loop_1], new_pipe.outer_loops[loop_2]);
+  return new_pipe;
+}
+
+Pipeline Pipeline::split(int loop, Variable outer, Variable inner,
+                         Variable outer_step, Variable inner_step) {
+  Pipeline new_pipe = *this;
+  IntervalPipe old_loop = new_pipe.outer_loops[loop];
+  IntervalPipe outer_new(outer, old_loop.start, old_loop.end, outer_step);
+  IntervalPipe inner_new(inner, outer, outer_step, inner_step);
+  new_pipe.outer_loops[loop] = outer_new;
+  new_pipe.outer_loops.insert(new_pipe.outer_loops.begin() + loop + 1,
+                              inner_new);
+  // std::swap(new_pipe.outer_loops[loop_1], new_pipe.outer_loops[loop_2]);
+  return new_pipe;
+}
+
+Pipeline Pipeline::parrallelize(int loop) {
+  Pipeline new_pipe = *this;
+  new_pipe.outer_loops[loop].var.setParrallel();
+  return new_pipe;
+}
+
+Pipeline Pipeline::bind(Variable var, int val) {
+  Pipeline new_pipe = *this;
+  var.setBound(val);
+  new_pipe.bounded_vars.insert(var);
+  return new_pipe;
 }
 
 } // namespace fern

@@ -102,6 +102,14 @@ public:
   bool isParallel() const;
   bool isBound() const;
 
+  void setParrallel();
+  void setBound(int bound);
+  int getBound();
+
+  bool parrallel = false;
+  bool bound = false;
+  int num_bound = 0;
+
   typedef DependencyVariableNode Node;
 };
 

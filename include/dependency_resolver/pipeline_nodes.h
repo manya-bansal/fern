@@ -174,6 +174,8 @@ struct Pipeline {
   std::vector<IntervalPipe> outer_loops;
 };
 
+std::ostream &operator<<(std::ostream &, const Pipeline &);
+
 struct PipelineNode : public FunctionTypeNode {
   PipelineNode(Pipeline pipeline) : pipeline(pipeline) {}
   Pipeline pipeline;

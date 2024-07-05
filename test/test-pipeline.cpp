@@ -31,6 +31,7 @@ TEST(Eval, HalideBlur) {
   });
 
   pipeline.constructPipeline();
+  std::cout << pipeline << std::endl;
 }
 
 TEST(Eval, ConvMax) {
@@ -56,6 +57,7 @@ TEST(Eval, ConvMax) {
   });
 
   pipeline.constructPipeline();
+  std::cout << pipeline << std::endl;
 }
 
 TEST(Eval, StackedFusedConvMax) {
@@ -83,4 +85,5 @@ TEST(Eval, StackedFusedConvMax) {
   });
 
   pipeline.constructPipeline();
+  std::cout << pipeline << std::endl;
 }

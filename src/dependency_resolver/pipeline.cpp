@@ -91,12 +91,25 @@ void Pipeline::buildFuncCalls() {
     compute.push_back(new ComputeNode(call, names));
   }
 
-  util::printIterable(queries);
-  std::cout << std::endl;
-  util::printIterable(compute);
-  std::cout << std::endl;
-  util::printIterable(free);
-  std::cout << std::endl;
+  // Now, let's flip and store into pipeline
+  for (auto elem = queries.rbegin(); elem != queries.rend(); ++elem) {
+    pipeline.push_back(*elem);
+  }
+
+  for (auto elem = compute.rbegin(); elem != compute.rend(); ++elem) {
+    pipeline.push_back(*elem);
+  }
+
+  for (auto elem = free.rbegin(); elem != free.rend(); ++elem) {
+    pipeline.push_back(*elem);
+  }
+
+  // util::printIterable(queries);
+  // std::cout << std::endl;
+  // util::printIterable(compute);
+  // std::cout << std::endl;
+  // util::printIterable(free);
+  // std::cout << std::endl;
 }
 
 static const AbstractDataStructure *
@@ -173,7 +186,7 @@ void Pipeline::generateOuterLoops() {
               ctx->match(op->child);
             }));
 
-  util::printIterable(outer_loops);
+  // util::printIterable(outer_loops);
 }
 
 bool Pipeline::isIntermediate(const AbstractDataStructure *ds) {
@@ -322,6 +335,19 @@ Pipeline::corresponding_abstract_var(ConcreteFunctionCall call,
               "Not a valid data structure argument");
 
   return abstract_arg.getNode<DataStructureArg>()->dsPtr();
+}
+
+std::ostream &operator<<(std::ostream &os, const Pipeline &pipe) {
+
+  for (auto i : pipe.outer_loops) {
+    os << i;
+  }
+
+  for (auto funcs : pipe.pipeline) {
+    os << '\t' << funcs << std::endl;
+  }
+
+  return os;
 }
 
 } // namespace fern

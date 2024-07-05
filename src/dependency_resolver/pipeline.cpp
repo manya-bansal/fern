@@ -39,9 +39,8 @@ void Pipeline::buildFuncCalls() {
 
   int last_func_index = functions.size() - 1;
 
-  std::map<const AbstractDataStructure *, std::string> names;
-
   for (int i = last_func_index; i >= 0; i--) {
+    std::map<const AbstractDataStructure *, std::string> names;
     auto call = functions[i];
     std::cout << call << std::endl;
     std::vector<
@@ -67,7 +66,6 @@ void Pipeline::buildFuncCalls() {
 
       queries.push_back(new QueryNode(a, deps, a->getVarName(), queried_name));
       // Add to free if required
-
       if (a->getQueryFreeInterface() != "__fern__not__defined__") {
         free.push_back(new FreeNode(a, queried_name));
       }
@@ -364,7 +362,7 @@ Pipeline Pipeline::split(int loop, Variable outer, Variable inner,
   Pipeline new_pipe = *this;
   IntervalPipe old_loop = new_pipe.outer_loops[loop];
   IntervalPipe outer_new(outer, old_loop.start, old_loop.end, old_loop.step);
-  IntervalPipe inner_new(inner, outer, outer_step, inner_step);
+  IntervalPipe inner_new(inner, outer, old_loop.step, inner_step);
   new_pipe.outer_loops[loop] = outer_new;
   new_pipe.outer_loops.insert(new_pipe.outer_loops.begin() + loop + 1,
                               inner_new);

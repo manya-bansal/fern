@@ -160,17 +160,16 @@ struct Pipeline {
   void run_hoisting_pass();
   bool hoist_able(const AllocateNode *node);
   void generate_reuse();
+  Variable getRootParent(Variable var);
   FunctionType getReusePreamble(const AbstractDataStructure *ds,
                                 std::string name) const;
-
-  std::vector<DependencyExpr>
-  getCorrespondingConstraint(ConcreteFunctionCall call,
-                             const AbstractDataStructure *ds,
-                             int arg_place = -1) const;
 
   const AbstractDataStructure *
   corresponding_abstract_var(ConcreteFunctionCall call,
                              const AbstractDataStructure *ds) const;
+
+  const AllocateNode *getAllocateNode(const AbstractDataStructure *ds) const;
+  const ComputeNode *getComputeNode(const AbstractDataStructure *ds) const;
 
   void generateDependency(
       ConcreteFunctionCall call,
@@ -182,6 +181,10 @@ struct Pipeline {
                              const AbstractDataStructure *ds,
                              int arg_place = -1) const;
 
+  void compute_valid_intersections(FunctionType parent, FunctionType pipeline,
+                                   const AbstractDataStructure *ds, Variable v,
+                                   std::string name);
+
   bool isIntermediate(const AbstractDataStructure *ds);
 
   Pipeline reorder(int loop_1, int loop_2);
@@ -189,7 +192,7 @@ struct Pipeline {
                  Variable inner_step);
   Pipeline parrallelize(int loop);
   Pipeline bind(Variable var, int val);
-  Pipeline reuse(const AbstractDataStructure *ds);
+  Pipeline reuse(const AbstractDataStructure *ds, Variable v);
 
   std::vector<ConcreteFunctionCall> functions;
 
@@ -205,11 +208,13 @@ struct Pipeline {
   std::set<const DependencyVariableNode *> undefined;
   std::set<const DependencyVariableNode *> defined;
   std::vector<const AbstractDataStructure *> to_reuse;
+  std::vector<Variable> to_reuse_var;
 
   // The outer loops to wrap the output in
   std::vector<IntervalPipe> outer_loops;
-  std::set<Variable> bounded_vars;
+  std::map<Variable, int> bounded_vars;
   std::map<Variable, DependencyExpr> derivations;
+  std::map<Variable, Variable> derived_from;
 };
 
 std::ostream &operator<<(std::ostream &, const Pipeline &);

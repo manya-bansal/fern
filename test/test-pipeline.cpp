@@ -25,8 +25,10 @@ TEST(Eval, HalideBlur) {
   examples::blur_x blurx;
   examples::blur_y blury;
 
+  auto blur_x_concrete = blurx(&input, &out1);
+
   Pipeline pipeline({
-      blurx(&input, &out1),
+      blur_x_concrete,
       blury(&out1, &out2),
   });
 
@@ -52,7 +54,8 @@ TEST(Eval, HalideBlur) {
   FERN_ASSERT_NO_MSG(pipeline.bounded_vars.count(inner_step) > 0);
   // Indicate that we would like to compute the reuse of a particular
   // data-structure
-  pipeline = pipeline.reuse(&out1);
+  auto all_interval_vars = blur_x_concrete.getIntervalVars();
+  pipeline = pipeline.reuse(&out1, all_interval_vars[0]);
   // To indicate the end of scheduling we call the finalize function.
   // Indicate the end of scheduling code and the beginning of opt
   // passes

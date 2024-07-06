@@ -310,6 +310,7 @@ public:
   }
 
   const AbstractDataStructure *getOutput() const { return output; };
+  std::vector<Variable> getIntervalVars() const;
   std::set<const AbstractDataStructure *> getInputs() const { return inputs; };
 
 private:

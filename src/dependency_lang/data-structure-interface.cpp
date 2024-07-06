@@ -53,6 +53,18 @@ ConcreteFunctionCall::ConcreteFunctionCall(
   mangle_abstract_names();
 }
 
+std::vector<Variable> ConcreteFunctionCall::getIntervalVars() const {
+  std::vector<Variable> all_vars;
+
+  match(dataRelationship, std::function<void(const IntervalNode *, Matcher *)>(
+                              [&](const IntervalNode *op, Matcher *ctx) {
+                                all_vars.push_back(op->var);
+                                ctx->match(op->child);
+                              }));
+
+  return all_vars;
+}
+
 bool ConcreteFunctionCall::sameTypeArguments(std::vector<Argument> a1,
                                              std::vector<Argument> a2) {
 

@@ -339,6 +339,10 @@ std::ostream &operator<<(std::ostream &os, const Pipeline &pipe) {
     os << d.first << " = " << d.second << std::endl;
   }
 
+  for (auto rel : pipe.var_relationships) {
+    std::cout << rel.first->name << " = " << rel.second << std::endl;
+  }
+
   for (auto funcs : pipe.pipeline) {
     os << '\t' << funcs << std::endl;
   }
@@ -359,14 +363,25 @@ Pipeline Pipeline::reorder(int loop_1, int loop_2) {
 
 Pipeline Pipeline::split(int loop, Variable outer, Variable inner,
                          Variable outer_step, Variable inner_step) {
+
   Pipeline new_pipe = *this;
   IntervalPipe old_loop = new_pipe.outer_loops[loop];
-  IntervalPipe outer_new(outer, old_loop.start, old_loop.end, old_loop.step);
-  IntervalPipe inner_new(inner, outer, old_loop.step, inner_step);
+
+  // Cannot split if the loop step is not a pure variable
+  FERN_ASSERT(isa<Variable>(old_loop.step),
+              "Trying to split a loop where the step is a compound expr");
+
+  Variable old_step = to<Variable>(old_loop.step);
+
+  IntervalPipe outer_new(outer, old_loop.start, old_loop.end, outer_step);
+  IntervalPipe inner_new(inner, outer, outer_step, inner_step);
   new_pipe.outer_loops[loop] = outer_new;
   new_pipe.outer_loops.insert(new_pipe.outer_loops.begin() + loop + 1,
                               inner_new);
   new_pipe.derivations[old_loop.var] = outer + inner;
+  new_pipe.derivations[old_step] = inner_step;
+  new_pipe.derived_from[outer] = old_loop.var;
+  new_pipe.derived_from[inner] = old_loop.var;
   // std::swap(new_pipe.outer_loops[loop_1], new_pipe.outer_loops[loop_2]);
   return new_pipe;
 }
@@ -380,11 +395,12 @@ Pipeline Pipeline::parrallelize(int loop) {
 Pipeline Pipeline::bind(Variable var, int val) {
   Pipeline new_pipe = *this;
   var.setBound(val);
-  new_pipe.bounded_vars.insert(var);
+  FERN_ASSERT_NO_MSG(new_pipe.bounded_vars.count(var) == 0);
+  new_pipe.bounded_vars[var] = val;
   return new_pipe;
 }
 
-Pipeline Pipeline::reuse(const AbstractDataStructure *ds) {
+Pipeline Pipeline::reuse(const AbstractDataStructure *ds, Variable v) {
   Pipeline new_pipe = *this;
   for (auto i = 0; i < new_pipe.pipeline.size(); i++) {
     auto p = new_pipe.pipeline[i];
@@ -394,6 +410,7 @@ Pipeline Pipeline::reuse(const AbstractDataStructure *ds) {
         new_pipe.pipeline[i] = new AllocateNode(
             p_alloc->ds, p_alloc->deps, p_alloc->name, p_alloc->call, true);
         new_pipe.to_reuse.push_back(ds);
+        new_pipe.to_reuse_var.push_back(v);
         return new_pipe;
       }
     }
@@ -546,6 +563,7 @@ void Pipeline::generate_reuse() {
   auto pipe_node = PipelineNode(*this);
   for (int i = 0; i < to_reuse.size(); i++) {
     auto reuse_ds = to_reuse[i];
+    auto reuse_var = to_reuse_var[i];
     // First, we will look at the candidates for reuse
     // and locate it in pipeline where the data-structure is the parent.
     auto host_pipeline = pipe_node.get_host_pipeline(reuse_ds);
@@ -573,7 +591,131 @@ void Pipeline::generate_reuse() {
     new_host_pipe.pipeline.insert(new_host_pipe.pipeline.begin() + index,
                                   preamble);
     std::cout << new_host_pipe << std::endl;
+    index++;
+
+    // Now that our host pipeline is ready with the relevant start up, compute
+    // what overlaps occur while computing the data-structure in the child case.
+    new_host_pipe.compute_valid_intersections(
+        host_pipeline, new_host_pipe.pipeline[index], reuse_ds, reuse_var,
+        reuse_ds->getVarName() + "_q");
   }
+}
+
+const AllocateNode *
+Pipeline::getAllocateNode(const AbstractDataStructure *ds) const {
+  for (auto func : pipeline) {
+    if (func.getFuncType() == ALLOCATE) {
+      auto test = func.getNode<AllocateNode>();
+      if (test->ds == ds) {
+        return test;
+      }
+    }
+  }
+
+  // Should never get here
+  FERN_ASSERT_NO_MSG(false);
+}
+
+const ComputeNode *
+Pipeline::getComputeNode(const AbstractDataStructure *ds) const {
+  for (auto func : pipeline) {
+    if (func.getFuncType() == COMPUTE) {
+      auto test = func.getNode<ComputeNode>();
+      if (test->func.getOutput() == ds) {
+        return test;
+      }
+    }
+  }
+
+  // Should never get here
+  FERN_ASSERT_NO_MSG(false);
+}
+
+Variable Pipeline::getRootParent(Variable var) {
+  if (derived_from.count(var) == 0) {
+    return var;
+  }
+
+  return getRootParent(derived_from[var]);
+}
+
+static DependencyExpr generate_new_expr(DependencyExpr e,
+                                        const DependencyVariableNode *v_org,
+                                        const DependencyVariableNode *step,
+                                        int shift_val, bool query = true) {
+
+  struct ReplaceRewriter : public DependencyRewriter {
+    using DependencyRewriter::visit;
+    ReplaceRewriter(const DependencyVariableNode *v_org,
+                    const DependencyVariableNode *step, int shift_val,
+                    bool query)
+        : v_org(v_org), step(step), shift_val(shift_val), query(query) {}
+
+    void visit(const DependencyVariableNode *op) {
+      if (op == v_org) {
+        if (query) {
+          expr = DependencyExpr(step) - shift_val;
+        } else {
+          expr = DependencyExpr(op) + DependencyExpr(step) - shift_val;
+        }
+      } else if (op == step) {
+        if (query) {
+          expr = shift_val;
+        } else {
+          expr = DependencyExpr(op);
+        }
+      } else {
+        expr = DependencyExpr(op);
+      }
+    }
+
+    const DependencyVariableNode *v_org;
+    const DependencyVariableNode *step;
+    int shift_val;
+    bool query;
+  };
+
+  ReplaceRewriter rw(v_org, step, shift_val, query);
+  return rw.rewrite(e);
+}
+
+void Pipeline::compute_valid_intersections(FunctionType parent,
+                                           FunctionType child,
+                                           const AbstractDataStructure *ds,
+                                           Variable v, std::string name) {
+  FERN_ASSERT(child.getFuncType() == PIPELINE,
+              "How is child not a pipeline node? We need one loop at least!");
+  auto p = child.getNode<PipelineNode>()->pipeline;
+  auto p_host = parent.getNode<PipelineNode>()->pipeline;
+
+  // Get the outer loop.
+  auto o_loop = p.outer_loops[0];
+  auto step_var = to<Variable>(o_loop.step);
+  auto computeNode = p.getComputeNode(ds);
+  auto original_step =
+      computeNode->func.getDataRelationship().get_interval_node(v)->step;
+  FERN_ASSERT_NO_MSG(bounded_vars.count(step_var) > 0);
+
+
+
+  // Generate new output query Node for Output
+  // get the allocation node from the host
+  auto alloc_node_ds = p_host.getAllocateNode(ds);
+  std::vector<DependencyExpr> deps_output_query;
+  for (auto q : alloc_node_ds->deps) {
+    deps_output_query.push_back(
+        generate_new_expr(q, getNode(v), getNode(to<Variable>(original_step)),
+                          bounded_vars[step_var], true));
+  }
+
+  // Now generate additional queries on all of the inputs for the compute func
+  // We should already have larger queries ready.
+  
+
+  // First get the allocate query for our ds.
+
+  // Once we know which meta vals are affected, figure out which loop in the
+  // data-rel affects this combination
 }
 
 static bool isTranslationInvariant(DependencyExpr e, DependencySubset rel) {
@@ -692,6 +834,8 @@ void Pipeline::run_hoisting_pass() {
   outer_pipeline.dataflow_graph = dataflow_graph;
   outer_pipeline.computation_graph = computation_graph;
   outer_pipeline.functions = functions;
+  outer_pipeline.derived_from = derived_from;
+  outer_pipeline.to_reuse_var = to_reuse_var;
 
   *this = outer_pipeline;
 }

@@ -340,7 +340,7 @@ std::ostream &operator<<(std::ostream &os, const Pipeline &pipe) {
   }
 
   for (auto rel : pipe.var_relationships) {
-    std::cout << rel.first->name << " = " << rel.second << std::endl;
+    os << rel.first->name << " = " << rel.second << std::endl;
   }
 
   for (auto funcs : pipe.pipeline) {

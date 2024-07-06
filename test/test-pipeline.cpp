@@ -15,6 +15,10 @@
 #include "examples/image-convs.h"
 #include "examples/pointwise-array.h"
 
+#include "utils/printer.h"
+
+#include "global_config.h"
+
 using namespace fern;
 
 TEST(Eval, HalideBlur) {
@@ -62,6 +66,9 @@ TEST(Eval, HalideBlur) {
   pipeline = pipeline.finalize();
   std::cout << "*********" << std::endl;
   std::cout << pipeline << std::endl;
+
+  util::printToFile(pipeline, std::string(SOURCE_DIR) + "/code_sample" +
+                                  "/halide_blur.ir");
 }
 
 TEST(Eval, ConvMax) {
@@ -88,7 +95,10 @@ TEST(Eval, ConvMax) {
 
   pipeline.constructPipeline();
   pipeline = pipeline.finalize();
-  std::cout << pipeline << std::endl;
+  // std::cout << pipeline << std::endl;
+
+  util::printToFile(pipeline,
+                    std::string(SOURCE_DIR) + "/code_sample" + "/conv_max.ir");
 }
 
 TEST(Eval, StackedFusedConvMax) {
@@ -117,7 +127,10 @@ TEST(Eval, StackedFusedConvMax) {
 
   pipeline.constructPipeline();
   pipeline = pipeline.finalize();
-  std::cout << pipeline << std::endl;
+  // std::cout << pipeline << std::endl;
+
+  util::printToFile(pipeline, std::string(SOURCE_DIR) + "/code_sample" +
+                                  "/stacked_conv_max.ir");
 }
 
 TEST(Eval, HalideUnsharp) {
@@ -163,5 +176,7 @@ TEST(Eval, HalideUnsharp) {
   // Indicate the end of scheduling code and the beginning of opt
   // passes
   pipeline = pipeline.finalize();
-  std::cout << pipeline << std::endl;
+  // std::cout << pipeline << std::endl;
+  util::printToFile(pipeline, std::string(SOURCE_DIR) + "/code_sample" +
+                                  "/halide_unsharp.ir");
 }

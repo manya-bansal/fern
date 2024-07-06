@@ -1,0 +1,38 @@
+y56 in (0, out2.logical_cols, y_tile57)
+o in (0, out2.logical_rows, o_s)
+y_tile50 = 2+y_tile57
+y51 = y56
+x52 = x54
+x_tile53 = x_tile55
+x46 = x52
+y47 = y51
+x_tile48 = 2+x_tile53
+y_tile49 = y_tile50
+	gray_out_q = allocate(x46 , y47 , x_tile48 , y_tile49 , )
+	out1_q = allocate(x52 , y51 , x_tile53 , y_tile50 , )
+	{
+i in (o, o_s, i_s)
+x_tile55 = i_s
+x54 = o + i
+y_tile50 = 2+y_tile57
+y51 = y56
+x52 = x54
+x_tile53 = x_tile55
+x46 = x52
+y47 = y51
+x_tile48 = 2+x_tile53
+y_tile49 = y_tile50
+	 BLANK 
+	input_q_9 = input.query(x46 * 3 , y47 * 3 , x_tile48 * 3 + 18 , y_tile49 * 3 + 18 , )
+	 BLANK 
+	out2_q = out2.query(x54 , y56 , x_tile55 , y_tile57 , )
+	gray_mine(gray_out : gray_out_q, input : input_q_9, )
+	naive_blur_y_take_2_vec(out1 : out1_q, )
+	naive_blur_x_take_2_vec(out2 : out2_q, )
+	 BLANK 
+	 BLANK 
+
+}
+
+	gray_out_qfree()
+	out1_qfree()

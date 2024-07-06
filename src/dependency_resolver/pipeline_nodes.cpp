@@ -52,6 +52,8 @@ void ComputeNode::print(std::ostream &stream) const {
 
 void BlankNode::print(std::ostream &stream) const { stream << " BLANK "; }
 
-void PipelineNode::print(std::ostream &stream) const { stream << pipeline; }
+void PipelineNode::print(std::ostream &stream) const {
+  stream << "{" << std::endl << pipeline << std::endl << "}" << std::endl;
+}
 
 } // namespace fern

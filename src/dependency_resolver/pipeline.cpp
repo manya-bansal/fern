@@ -616,6 +616,34 @@ Pipeline::getAllocateNode(const AbstractDataStructure *ds) const {
   FERN_ASSERT_NO_MSG(false);
 }
 
+const QueryNode *Pipeline::getQueryNode(const AbstractDataStructure *ds) const {
+  for (auto func : pipeline) {
+    if (func.getFuncType() == QUERY) {
+      auto test = func.getNode<QueryNode>();
+      if (test->ds == ds) {
+        return test;
+      }
+    }
+  }
+
+  // Should never get here
+  FERN_ASSERT_NO_MSG(false);
+}
+
+const QueryNode *Pipeline::getQueryNode(std::string name) const {
+  for (auto func : pipeline) {
+    if (func.getFuncType() == QUERY) {
+      auto test = func.getNode<QueryNode>();
+      if (test->child == name) {
+        return test;
+      }
+    }
+  }
+
+  // Should never get here
+  FERN_ASSERT_NO_MSG(false);
+}
+
 const ComputeNode *
 Pipeline::getComputeNode(const AbstractDataStructure *ds) const {
   for (auto func : pipeline) {
@@ -659,11 +687,8 @@ static DependencyExpr generate_new_expr(DependencyExpr e,
           expr = DependencyExpr(op) + DependencyExpr(step) - shift_val;
         }
       } else if (op == step) {
-        if (query) {
-          expr = shift_val;
-        } else {
-          expr = DependencyExpr(op);
-        }
+        expr = shift_val;
+
       } else {
         expr = DependencyExpr(op);
       }
@@ -729,6 +754,7 @@ void Pipeline::compute_valid_intersections(FunctionType parent,
       computeNode->func.getDataRelationship().get_interval_node(v)->step;
   FERN_ASSERT_NO_MSG(bounded_vars.count(step_var) > 0);
 
+  std::vector<FunctionType> new_nodes;
   // Generate new output query Node for Output
   // get the allocation node from the host
   auto alloc_node_ds = p_host.getAllocateNode(ds);
@@ -741,11 +767,38 @@ void Pipeline::compute_valid_intersections(FunctionType parent,
 
   auto output_q =
       FunctionType(new QueryNode(ds, deps_output_query, name, name + "_q"));
-  std::cout << output_q << std::endl;
+  new_nodes.push_back(output_q);
+
   // Now generate additional queries on all of the inputs for the compute func
   // We should already have larger queries ready.
+  // Loop through the inputs of the compute nodes
 
+  std::map<const AbstractDataStructure *, std::string> new_names;
   // COME BACK TO THIS
+  for (auto old_names : computeNode->names) {
+    if (old_names.first == ds) {
+      new_names[old_names.first] = name + "_q";
+    }
+
+    else {
+      // This must be an input, we need to generate a new query
+      auto input_q_node = p.getQueryNode(old_names.second);
+      std::vector<DependencyExpr> input_q;
+      for (auto q : input_q_node->deps) {
+        input_q.push_back(generate_new_expr(
+            q, getNode(v), getNode(to<Variable>(original_step)),
+            bounded_vars[step_var], false));
+      }
+      auto i_q = FunctionType(new QueryNode(input_q_node->ds, input_q,
+                                            input_q_node->ds->getVarName(),
+                                            old_names.second));
+      new_names[old_names.first] = old_names.second;
+      new_nodes.push_back(i_q);
+    }
+  }
+
+  new_nodes.push_back(
+      FunctionType(new ComputeNode(computeNode->func, new_names)));
 
   // Now generate the moving queries
   std::vector<DependencyExpr> move_query_src;
@@ -756,7 +809,7 @@ void Pipeline::compute_valid_intersections(FunctionType parent,
   }
   auto output_move_src =
       FunctionType(new QueryNode(ds, move_query_src, name, name + "_move_src"));
-  std::cout << output_move_src << std::endl;
+  new_nodes.push_back(output_move_src);
 
   std::vector<DependencyExpr> move_query_dst;
   for (auto q : alloc_node_ds->deps) {
@@ -766,7 +819,9 @@ void Pipeline::compute_valid_intersections(FunctionType parent,
   }
   auto output_move_insert = FunctionType(
       new InsertNode(ds, move_query_dst, name, name + "_move_src"));
-  std::cout << output_move_insert << std::endl;
+  new_nodes.push_back(output_move_insert);
+
+  util::printIterable(new_nodes);
 }
 
 static bool isTranslationInvariant(DependencyExpr e, DependencySubset rel) {

@@ -172,6 +172,8 @@ struct Pipeline {
 
   const AllocateNode *getAllocateNode(const AbstractDataStructure *ds) const;
   const ComputeNode *getComputeNode(const AbstractDataStructure *ds) const;
+  const QueryNode *getQueryNode(std::string name) const;
+  const QueryNode *getQueryNode(const AbstractDataStructure *ds) const;
 
   void generateDependency(
       ConcreteFunctionCall call,

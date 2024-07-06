@@ -175,7 +175,7 @@ struct Pipeline {
   const ComputeNode *getComputeNode(const AbstractDataStructure *ds) const;
   int getQueryNodeIdx(std::string name) const;
   const QueryNode *getQueryNode(const AbstractDataStructure *ds) const;
-
+  void place_new_host(FunctionType new_host, const AbstractDataStructure *ds);
   void generateDependency(
       ConcreteFunctionCall call,
       std::vector<std::tuple<std::vector<DependencyExpr>,

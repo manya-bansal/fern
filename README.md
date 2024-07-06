@@ -11,3 +11,5 @@ Stuff I am still skipping:
 - There is a bug in the sliding window: need to change together all the deps to 
   figure out which interval var in local output is affected by which var in final
   output.
+-  Place in the spot of the original host in the sliding window output, currently 
+  returns the new host. Will not work if we try multiple.

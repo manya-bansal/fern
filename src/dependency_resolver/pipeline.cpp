@@ -559,6 +559,27 @@ FunctionType Pipeline::getReusePreamble(const AbstractDataStructure *ds,
   return new PipelineNode(p);
 }
 
+void Pipeline::place_new_host(FunctionType new_host,
+                              const AbstractDataStructure *ds) {
+  for (int i = 0; i < pipeline.size(); i++) {
+    auto func = pipeline[i];
+    if (func.getFuncType() == ALLOCATE) {
+      auto test = func.getNode<AllocateNode>()->ds;
+      if (test == ds) {
+        pipeline[i] = new_host;
+        return;
+      }
+    }
+
+    if (func.getFuncType() == PIPELINE) {
+      // If we have hit another pipeline, we have no allocas left, so we
+      // will now recurse
+      auto next_pipe = func.getNode<PipelineNode>();
+      next_pipe->get_host_pipeline(ds);
+    }
+  }
+}
+
 Pipeline Pipeline::generate_reuse() {
 
   auto pipe_node = PipelineNode(*this);
@@ -605,11 +626,12 @@ Pipeline Pipeline::generate_reuse() {
     new_host_pipe.pipeline[index] = new_child;
 
     return new_host_pipe;
-
     // Place in the spot of the original host
+    // pipe_node.pipeline.place_new_host(new PipelineNode(new_host_pipe),
+    //                                   reuse_ds);
   }
 
-  return *this;
+  return pipe_node.pipeline;
 }
 
 const AllocateNode *

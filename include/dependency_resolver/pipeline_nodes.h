@@ -91,12 +91,14 @@ struct AllocateNode : public FunctionTypeNode {
 
 struct InsertNode : public FunctionTypeNode {
 
-  InsertNode(const AbstractDataStructure *ds, const std::string &parent,
-             const std::string &child)
-      : FunctionTypeNode(INSERT), ds(ds), parent(parent), child(child) {}
+  InsertNode(const AbstractDataStructure *ds, std::vector<DependencyExpr> deps,
+             const std::string &parent, const std::string &child)
+      : FunctionTypeNode(INSERT), ds(ds), deps(deps), parent(parent),
+        child(child) {}
 
   void print(std::ostream &stream) const override;
   const AbstractDataStructure *ds;
+  std::vector<DependencyExpr> deps;
   std::string parent;
   std::string child;
 };

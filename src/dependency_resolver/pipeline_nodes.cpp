@@ -32,7 +32,12 @@ void AllocateNode::print(std::ostream &stream) const {
 void AllocateNode::set_reuse() { reuse = true; }
 
 void InsertNode::print(std::ostream &stream) const {
-  stream << child << " = " << parent << " .insert()";
+  stream << parent << ".insert(";
+  for (const auto &d : deps) {
+    stream << d << " , ";
+  }
+  stream << child << ")";
+  // stream << child << " = " << parent << " .insert()";
 }
 
 void FreeNode::print(std::ostream &stream) const { stream << name << "free()"; }

@@ -679,6 +679,39 @@ static DependencyExpr generate_new_expr(DependencyExpr e,
   return rw.rewrite(e);
 }
 
+static DependencyExpr generate_move_expr(DependencyExpr e,
+                                         const DependencyVariableNode *v_org,
+                                         const DependencyVariableNode *step,
+                                         int start_val, int shift_val) {
+
+  struct ReplaceRewriter : public DependencyRewriter {
+    using DependencyRewriter::visit;
+    ReplaceRewriter(const DependencyVariableNode *v_org,
+                    const DependencyVariableNode *step, int start_val,
+                    int shift_val)
+        : v_org(v_org), step(step), start_val(start_val), shift_val(shift_val) {
+    }
+
+    void visit(const DependencyVariableNode *op) {
+      if (op == v_org) {
+        expr = start_val;
+      } else if (op == step) {
+        expr = DependencyExpr(step) - shift_val;
+      } else {
+        expr = DependencyExpr(op);
+      }
+    }
+
+    const DependencyVariableNode *v_org;
+    const DependencyVariableNode *step;
+    int start_val;
+    int shift_val;
+  };
+
+  ReplaceRewriter rw(v_org, step, start_val, shift_val);
+  return rw.rewrite(e);
+}
+
 void Pipeline::compute_valid_intersections(FunctionType parent,
                                            FunctionType child,
                                            const AbstractDataStructure *ds,
@@ -696,8 +729,6 @@ void Pipeline::compute_valid_intersections(FunctionType parent,
       computeNode->func.getDataRelationship().get_interval_node(v)->step;
   FERN_ASSERT_NO_MSG(bounded_vars.count(step_var) > 0);
 
-
-
   // Generate new output query Node for Output
   // get the allocation node from the host
   auto alloc_node_ds = p_host.getAllocateNode(ds);
@@ -708,14 +739,34 @@ void Pipeline::compute_valid_intersections(FunctionType parent,
                           bounded_vars[step_var], true));
   }
 
+  auto output_q =
+      FunctionType(new QueryNode(ds, deps_output_query, name, name + "_q"));
+  std::cout << output_q << std::endl;
   // Now generate additional queries on all of the inputs for the compute func
   // We should already have larger queries ready.
-  
 
-  // First get the allocate query for our ds.
+  // COME BACK TO THIS
 
-  // Once we know which meta vals are affected, figure out which loop in the
-  // data-rel affects this combination
+  // Now generate the moving queries
+  std::vector<DependencyExpr> move_query_src;
+  for (auto q : alloc_node_ds->deps) {
+    move_query_src.push_back(
+        generate_move_expr(q, getNode(v), getNode(to<Variable>(original_step)),
+                           bounded_vars[step_var], bounded_vars[step_var]));
+  }
+  auto output_move_src =
+      FunctionType(new QueryNode(ds, move_query_src, name, name + "_move_src"));
+  std::cout << output_move_src << std::endl;
+
+  std::vector<DependencyExpr> move_query_dst;
+  for (auto q : alloc_node_ds->deps) {
+    move_query_dst.push_back(
+        generate_move_expr(q, getNode(v), getNode(to<Variable>(original_step)),
+                           0, bounded_vars[step_var]));
+  }
+  auto output_move_insert = FunctionType(
+      new InsertNode(ds, move_query_dst, name, name + "_move_src"));
+  std::cout << output_move_insert << std::endl;
 }
 
 static bool isTranslationInvariant(DependencyExpr e, DependencySubset rel) {

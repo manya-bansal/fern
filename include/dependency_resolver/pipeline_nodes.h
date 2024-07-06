@@ -161,7 +161,7 @@ struct Pipeline {
   Pipeline finalize(bool hoist = true);
   void run_hoisting_pass();
   bool hoist_able(const AllocateNode *node);
-  void generate_reuse();
+  Pipeline generate_reuse();
   Variable getRootParent(Variable var);
   FunctionType getReusePreamble(const AbstractDataStructure *ds,
                                 std::string name) const;
@@ -171,8 +171,9 @@ struct Pipeline {
                              const AbstractDataStructure *ds) const;
 
   const AllocateNode *getAllocateNode(const AbstractDataStructure *ds) const;
+  int getComputeNodeIdx(const AbstractDataStructure *ds) const;
   const ComputeNode *getComputeNode(const AbstractDataStructure *ds) const;
-  const QueryNode *getQueryNode(std::string name) const;
+  int getQueryNodeIdx(std::string name) const;
   const QueryNode *getQueryNode(const AbstractDataStructure *ds) const;
 
   void generateDependency(
@@ -185,9 +186,10 @@ struct Pipeline {
                              const AbstractDataStructure *ds,
                              int arg_place = -1) const;
 
-  void compute_valid_intersections(FunctionType parent, FunctionType pipeline,
-                                   const AbstractDataStructure *ds, Variable v,
-                                   std::string name);
+  FunctionType compute_valid_intersections(FunctionType parent,
+                                           FunctionType pipeline,
+                                           const AbstractDataStructure *ds,
+                                           Variable v, std::string name);
 
   bool isIntermediate(const AbstractDataStructure *ds);
 

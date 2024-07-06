@@ -429,7 +429,7 @@ Pipeline Pipeline::finalize(bool hoist) {
   }
 
   // Now figure out if any data-structures were marked as reuse.
-  new_pipe.generate_reuse();
+  new_pipe = new_pipe.generate_reuse();
 
   return new_pipe;
 }
@@ -498,7 +498,8 @@ static int get_child_pipeline_index(const AbstractDataStructure *ds,
 
         if (f_node->pipeline.outer_loops.size() == 1 &&
             !f_node->pipeline.outer_loops[0].var.isParallel()) {
-          std::cout << "Returning the child" << f_node->pipeline << std::endl;
+          // std::cout << "Returning the child" << f_node->pipeline <<
+          // std::endl;
           return i;
         }
       }
@@ -558,7 +559,7 @@ FunctionType Pipeline::getReusePreamble(const AbstractDataStructure *ds,
   return new PipelineNode(p);
 }
 
-void Pipeline::generate_reuse() {
+Pipeline Pipeline::generate_reuse() {
 
   auto pipe_node = PipelineNode(*this);
   for (int i = 0; i < to_reuse.size(); i++) {
@@ -595,10 +596,20 @@ void Pipeline::generate_reuse() {
 
     // Now that our host pipeline is ready with the relevant start up, compute
     // what overlaps occur while computing the data-structure in the child case.
-    new_host_pipe.compute_valid_intersections(
+    auto new_child = new_host_pipe.compute_valid_intersections(
         host_pipeline, new_host_pipe.pipeline[index], reuse_ds, reuse_var,
         reuse_ds->getVarName() + "_q");
+
+    // Replace the old child now
+    std::cout << new_child << std::endl;
+    new_host_pipe.pipeline[index] = new_child;
+
+    return new_host_pipe;
+
+    // Place in the spot of the original host
   }
+
+  return *this;
 }
 
 const AllocateNode *
@@ -630,12 +641,13 @@ const QueryNode *Pipeline::getQueryNode(const AbstractDataStructure *ds) const {
   FERN_ASSERT_NO_MSG(false);
 }
 
-const QueryNode *Pipeline::getQueryNode(std::string name) const {
-  for (auto func : pipeline) {
+int Pipeline::getQueryNodeIdx(std::string name) const {
+  for (int i = 0; i < pipeline.size(); i++) {
+    auto func = pipeline[i];
     if (func.getFuncType() == QUERY) {
       auto test = func.getNode<QueryNode>();
       if (test->child == name) {
-        return test;
+        return i;
       }
     }
   }
@@ -651,6 +663,21 @@ Pipeline::getComputeNode(const AbstractDataStructure *ds) const {
       auto test = func.getNode<ComputeNode>();
       if (test->func.getOutput() == ds) {
         return test;
+      }
+    }
+  }
+
+  // Should never get here
+  FERN_ASSERT_NO_MSG(false);
+}
+
+int Pipeline::getComputeNodeIdx(const AbstractDataStructure *ds) const {
+  for (int i = 0; i < pipeline.size(); i++) {
+    auto func = pipeline[i];
+    if (func.getFuncType() == COMPUTE) {
+      auto test = func.getNode<ComputeNode>();
+      if (test->func.getOutput() == ds) {
+        return i;
       }
     }
   }
@@ -737,10 +764,10 @@ static DependencyExpr generate_move_expr(DependencyExpr e,
   return rw.rewrite(e);
 }
 
-void Pipeline::compute_valid_intersections(FunctionType parent,
-                                           FunctionType child,
-                                           const AbstractDataStructure *ds,
-                                           Variable v, std::string name) {
+FunctionType
+Pipeline::compute_valid_intersections(FunctionType parent, FunctionType child,
+                                      const AbstractDataStructure *ds,
+                                      Variable v, std::string name) {
   FERN_ASSERT(child.getFuncType() == PIPELINE,
               "How is child not a pipeline node? We need one loop at least!");
   auto p = child.getNode<PipelineNode>()->pipeline;
@@ -749,7 +776,8 @@ void Pipeline::compute_valid_intersections(FunctionType parent,
   // Get the outer loop.
   auto o_loop = p.outer_loops[0];
   auto step_var = to<Variable>(o_loop.step);
-  auto computeNode = p.getComputeNode(ds);
+  auto computeNodeIdx = p.getComputeNodeIdx(ds);
+  auto computeNode = p.pipeline[computeNodeIdx].getNode<ComputeNode>();
   auto original_step =
       computeNode->func.getDataRelationship().get_interval_node(v)->step;
   FERN_ASSERT_NO_MSG(bounded_vars.count(step_var) > 0);
@@ -782,7 +810,9 @@ void Pipeline::compute_valid_intersections(FunctionType parent,
 
     else {
       // This must be an input, we need to generate a new query
-      auto input_q_node = p.getQueryNode(old_names.second);
+      int query_node_idx = p.getQueryNodeIdx(old_names.second);
+      auto input_q_node = p.pipeline[query_node_idx].getNode<QueryNode>();
+
       std::vector<DependencyExpr> input_q;
       for (auto q : input_q_node->deps) {
         input_q.push_back(generate_new_expr(
@@ -793,6 +823,8 @@ void Pipeline::compute_valid_intersections(FunctionType parent,
                                             input_q_node->ds->getVarName(),
                                             old_names.second));
       new_names[old_names.first] = old_names.second;
+      // Erase the query node now.
+      p.pipeline[query_node_idx] = new BlankNode();
       new_nodes.push_back(i_q);
     }
   }
@@ -800,7 +832,16 @@ void Pipeline::compute_valid_intersections(FunctionType parent,
   new_nodes.push_back(
       FunctionType(new ComputeNode(computeNode->func, new_names)));
 
+  // Erase the compute node
+  p.pipeline[computeNodeIdx] = new BlankNode();
+
+  // Now insert all ofo= our nodes
+  for (int i = 0; i < new_nodes.size(); i++) {
+    p.pipeline.insert(p.pipeline.begin() + i + computeNodeIdx, new_nodes[i]);
+  }
+
   // Now generate the moving queries
+  // This gets inserted at the VERY end.
   std::vector<DependencyExpr> move_query_src;
   for (auto q : alloc_node_ds->deps) {
     move_query_src.push_back(
@@ -809,7 +850,7 @@ void Pipeline::compute_valid_intersections(FunctionType parent,
   }
   auto output_move_src =
       FunctionType(new QueryNode(ds, move_query_src, name, name + "_move_src"));
-  new_nodes.push_back(output_move_src);
+  p.pipeline.push_back(output_move_src);
 
   std::vector<DependencyExpr> move_query_dst;
   for (auto q : alloc_node_ds->deps) {
@@ -819,9 +860,11 @@ void Pipeline::compute_valid_intersections(FunctionType parent,
   }
   auto output_move_insert = FunctionType(
       new InsertNode(ds, move_query_dst, name, name + "_move_src"));
-  new_nodes.push_back(output_move_insert);
+  p.pipeline.push_back(output_move_insert);
 
-  util::printIterable(new_nodes);
+  std::cout << p << std::endl;
+
+  return FunctionType(new PipelineNode(p));
 }
 
 static bool isTranslationInvariant(DependencyExpr e, DependencySubset rel) {

@@ -60,7 +60,8 @@ TEST(Eval, HalideBlur) {
   // Indicate the end of scheduling code and the beginning of opt
   // passes
   pipeline = pipeline.finalize();
-  // std::cout << pipeline << std::endl;
+  std::cout << "*********" << std::endl;
+  std::cout << pipeline << std::endl;
 }
 
 TEST(Eval, ConvMax) {

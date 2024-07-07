@@ -1,6 +1,6 @@
 int64_t i = 0;
 int64_t x67 = o + i;
-int64_t x_tile68 = int64_t i_s;
+int64_t x_tile68 = 1;
 int64_t x63 = x67;
 int64_t y62 = y66;
 int64_t x_tile64 = x_tile68;
@@ -20,4 +20,4 @@ int64_t y_tile57 = y_tile61;
 int64_t x52 = x54;
 int64_t y51 = y56;
 int64_t x_tile53 = x_tile55;
-int64_t y_tile50 = 6 + y_tile57;
+int64_t y_tile50 = 6+y_tile57;

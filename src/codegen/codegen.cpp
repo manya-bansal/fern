@@ -11,7 +11,10 @@ Expr CodeGenerator::generate_expr(
   match(e,
         std::function<void(const DependencyVariableNode *, Matcher *)>(
             [&](const DependencyVariableNode *op, Matcher *ctx) {
-              if (declared_var.count(op)) {
+              if (pipeline.bounded_vars.count(Variable(op)) > 0) {
+                new_e = Literal::make(pipeline.bounded_vars.at(Variable(op)),
+                                      Int64);
+              } else if (declared_var.count(op)) {
                 new_e = Var::make(op->name);
               } else {
                 new_e = VarDecl::make(codegen::Type::make(op->type.getString()),
@@ -72,6 +75,8 @@ Stmt CodeGenerator::generate_code() {
 
   // Declare all the derived vars
   for (auto v : pipeline.derivations) {
+    if (declared_var.count(getNode(get<0>(v))) > 0)
+      continue;
     auto lhs = generate_expr(get<0>(v), declared_var);
     declared_var.insert(getNode(get<0>(v)));
     auto rhs = generate_expr(get<1>(v), declared_var);

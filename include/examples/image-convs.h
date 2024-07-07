@@ -57,8 +57,8 @@ public:
   std::string getName() const override { return "convolution_mkl"; }
 
   fern::DependencySubset getDataRelationship() const override {
-    fern::Variable x("x", false, false, true);
-    fern::Variable y("y", false, false, true);
+    fern::Variable x("x", false, false, false);
+    fern::Variable y("y", false, false, false);
     fern::DataStructure block_out("out", &output);
     fern::DataStructure block_input("in", &input);
 
@@ -101,8 +101,8 @@ public:
   std::string getName() const override { return "biasMaterial<float>"; }
 
   fern::DependencySubset getDataRelationship() const override {
-    fern::Variable x("x", false, false, true);
-    fern::Variable y("y", false, false, true);
+    fern::Variable x("x", false, false, false);
+    fern::Variable y("y", false, false, false);
     fern::DataStructure block_out("out", &output);
     fern::DataStructure block_input("in", &input);
 
@@ -139,8 +139,8 @@ public:
   std::string getName() const override { return "relu_material"; }
 
   fern::DependencySubset getDataRelationship() const override {
-    fern::Variable x("x", false, false, true);
-    fern::Variable y("y", false, false, true);
+    fern::Variable x("x", false, false, false);
+    fern::Variable y("y", false, false, false);
     fern::DataStructure block_out("out", &output);
     fern::DataStructure block_input("in", &input);
 
@@ -177,8 +177,8 @@ public:
   std::string getName() const override { return "maxpool"; }
 
   fern::DependencySubset getDataRelationship() const override {
-    fern::Variable x("x", false, false, true);
-    fern::Variable y("y", false, false, true);
+    fern::Variable x("x", false, false, false);
+    fern::Variable y("y", false, false, false);
     fern::DataStructure block_out("out", &output);
     fern::DataStructure block_input("in", &input);
 
@@ -220,8 +220,8 @@ public:
   std::string getName() const override { return "conv_new_mkl"; }
 
   fern::DependencySubset getDataRelationship() const override {
-    fern::Variable x("x", false, false, true);
-    fern::Variable y("y", false, false, true);
+    fern::Variable x("x", false, false, false);
+    fern::Variable y("y", false, false, false);
     fern::DataStructure block_out("out", &output);
     fern::DataStructure block_input("in", &input);
 
@@ -265,8 +265,8 @@ public:
   std::string getName() const override { return "conv_no_fern_mkl"; }
 
   fern::DependencySubset getDataRelationship() const override {
-    fern::Variable x("x", false, false, true);
-    fern::Variable y("y", false, false, true);
+    fern::Variable x("x", false, false, false);
+    fern::Variable y("y", false, false, false);
     fern::DataStructure block_out("out", &output);
     fern::DataStructure block_input("in", &input);
 
@@ -307,8 +307,8 @@ public:
   std::string getName() const override { return "tanh"; }
 
   fern::DependencySubset getDataRelationship() const override {
-    fern::Variable x("x", false, false, true);
-    fern::Variable y("y", false, false, true);
+    fern::Variable x("x", false, false, false);
+    fern::Variable y("y", false, false, false);
     fern::DataStructure block_out("out", &output);
     fern::DataStructure block_input("in", &input);
 

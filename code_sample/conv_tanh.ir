@@ -1,0 +1,51 @@
+x94 = 0
+y97 = 0
+y_tile84=y_tile86
+x_tile83=x_tile85
+y82=y87
+x81=x88
+y_tile86=maxpool_dim89*y_tile93
+x_tile85=maxpool_dim89*x_tile90
+y87=maxpool_dim89*y92
+x88=maxpool_dim89*x91
+y_tile93=y_tile95
+x_tile90=x_tile96
+y92=y97
+x91=x94
+	output_conv_q = allocate(x81 , y82 , x_tile83 , y_tile84 , )
+	output_relu_q = allocate(x88 , y87 , x_tile85 , y_tile86 , )
+	output_q = allocate(x91 , y92 , x_tile90 , y_tile93 , )
+	{
+x94 in (output_tan.W_start, output_tan.W_start + output_tan.LW, x_tile96)
+y97 in (output_tan.H_start, output_tan.H_start + output_tan.LH, y_tile95)
+y_tile84=y_tile86
+x_tile83=x_tile85
+y82=y87
+x81=x88
+y_tile86=maxpool_dim89*y_tile93
+x_tile85=maxpool_dim89*x_tile90
+y87=maxpool_dim89*y92
+x88=maxpool_dim89*x91
+y_tile93=y_tile95
+x_tile90=x_tile96
+y92=y97
+x91=x94
+	 BLANK 
+	input_q_18 = input.query(x81 * stride_arg80 (Argument)  , y82 * stride_arg80 (Argument)  , x_tile83 + filter.H - 1 , y_tile84 + filter.W - 1 , )
+	 BLANK 
+	 BLANK 
+	output_tan_q = output_tan.query(x94 , y97 , x_tile96 , y_tile95 , )
+	conv_no_fern_mkl(output_conv : output_conv_q, input : input_q_18, )
+	relu_material(output_relu : output_relu_q, )
+	maxpool(output : output_q, )
+	tanh(output_tan : output_tan_q, )
+	 BLANK 
+	input_q_18.free()
+	 BLANK 
+	 BLANK 
+
+}
+
+	output_conv_q.free()
+	output_relu_q.free()
+	output_q.free()

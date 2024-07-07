@@ -215,3 +215,37 @@ TEST(Eval, Granularity) {
   util::printToFile(pipeline, std::string(SOURCE_DIR) + "/code_sample" +
                                   "/granularity.ir");
 }
+
+TEST(Eval, FusedConvMaxTanh) {
+
+  examples::Weights input("input");
+  examples::Weights filter("filter");
+  examples::FloatPtr bias("bias");
+  examples::Weights output_conv("output_conv");
+  examples::Weights output_relu("output_relu");
+  examples::Weights output("output");
+  examples::Weights output_tan("output_tan");
+
+  examples::Convolution_NoFuse convolution_mkl;
+  examples::Relu_Material relu_material;
+  examples::Maxpool maxpool;
+  examples::Tanh tanh;
+
+  Variable stride_arg("stride_arg", true);
+  Variable maxpool_dim("maxpool_dim", true);
+
+  Pipeline pipeline({
+      convolution_mkl(&input, &filter, &bias, getNode(stride_arg),
+                      &output_conv),
+      relu_material(&output_conv, &output_relu),
+      maxpool(&output_relu, getNode(maxpool_dim), &output),
+      tanh(&output, &output_tan),
+  });
+
+  pipeline.constructPipeline();
+  pipeline = pipeline.finalize();
+  // std::cout << pipeline << std::endl;
+
+  util::printToFile(pipeline,
+                    std::string(SOURCE_DIR) + "/code_sample" + "/conv_tanh.ir");
+}

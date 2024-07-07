@@ -338,7 +338,7 @@ std::ostream &operator<<(std::ostream &os, const Pipeline &pipe) {
   }
 
   for (auto d : pipe.derivations) {
-    os << d.first << " = " << d.second << std::endl;
+    os << get<0>(d) << " = " << get<1>(d) << std::endl;
   }
 
   auto stack_copy = pipe.var_relationships_sols;
@@ -387,8 +387,9 @@ Pipeline Pipeline::split(int loop, Variable outer, Variable inner,
   new_pipe.outer_loops[loop] = outer_new;
   new_pipe.outer_loops.insert(new_pipe.outer_loops.begin() + loop + 1,
                               inner_new);
-  new_pipe.derivations[old_loop.var] = outer + inner;
-  new_pipe.derivations[old_step] = inner_step;
+  new_pipe.derivations.push_back(std::make_tuple(old_loop.var, outer + inner));
+  new_pipe.derivations.push_back(std::make_tuple(old_step, inner_step));
+  // new_pipe.derivations[old_step] = inner_step;
   new_pipe.derived_from[outer] = old_loop.var;
   new_pipe.derived_from[inner] = old_loop.var;
   // std::swap(new_pipe.outer_loops[loop_1], new_pipe.outer_loops[loop_2]);
@@ -1077,17 +1078,19 @@ void Pipeline::run_hoisting_pass() {
   std::vector<IntervalPipe> outer_loops_out;
   std::vector<IntervalPipe> outer_loops_in;
 
-  std::map<Variable, DependencyExpr> outer_derivations;
+  std::vector<std::tuple<Variable, DependencyExpr>> outer_derivations;
 
   for (int j = 0; j < outer_loops.size(); j++) {
     if (j >= i) {
       outer_loops_in.push_back(outer_loops[j]);
-      outer_derivations[outer_loops[j].var] = 0;
+      outer_derivations.push_back(std::make_tuple(outer_loops[j].var, 0));
       // If step is bound, add that too
       if (isa<Variable>(outer_loops[j].step)) {
         Variable step_bound = to<Variable>(outer_loops[j].step);
         if (step_bound.isBound()) {
-          outer_derivations[step_bound] = bounded_vars[step_bound];
+          // outer_derivations[step_bound] = bounded_vars[step_bound];
+          outer_derivations.push_back(
+              std::make_tuple(step_bound, bounded_vars[step_bound]));
         }
       }
 
@@ -1099,7 +1102,8 @@ void Pipeline::run_hoisting_pass() {
   Pipeline inner_pipeline = *this;
   inner_pipeline.outer_loops = outer_loops_in;
 
-  outer_derivations.insert(derivations.begin(), derivations.end());
+  outer_derivations.insert(outer_derivations.end(), derivations.begin(),
+                           derivations.end());
 
   Pipeline outer_pipeline;
   auto funcs = outer_pipeline.pipeline;

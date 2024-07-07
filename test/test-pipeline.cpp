@@ -74,7 +74,7 @@ TEST(Eval, HalideBlur) {
 
   codegen::CodeGenerator code(pipeline);
   util::printToFile(code, std::string(SOURCE_DIR) + "/code_sample/code" +
-                              "/halide_blur_code.cpp");
+                              "/halide_blur.cpp");
 }
 
 TEST(Eval, ConvMax) {
@@ -105,6 +105,9 @@ TEST(Eval, ConvMax) {
 
   util::printToFile(pipeline,
                     std::string(SOURCE_DIR) + "/code_sample" + "/conv_max.ir");
+  codegen::CodeGenerator code(pipeline);
+  util::printToFile(code, std::string(SOURCE_DIR) + "/code_sample/code" +
+                              "/conv_max.cpp");
 }
 
 TEST(Eval, StackedFusedConvMax) {
@@ -137,6 +140,9 @@ TEST(Eval, StackedFusedConvMax) {
 
   util::printToFile(pipeline, std::string(SOURCE_DIR) + "/code_sample" +
                                   "/stacked_conv_max.ir");
+  codegen::CodeGenerator code(pipeline);
+  util::printToFile(code, std::string(SOURCE_DIR) + "/code_sample/code" +
+                              "/stacked_conv_max.cpp");
 }
 
 TEST(Eval, HalideUnsharp) {
@@ -194,6 +200,10 @@ TEST(Eval, HalideUnsharp) {
   // std::cout << pipeline << std::endl;
   util::printToFile(pipeline, std::string(SOURCE_DIR) + "/code_sample" +
                                   "/halide_unsharp.ir");
+
+  codegen::CodeGenerator code(pipeline);
+  util::printToFile(code, std::string(SOURCE_DIR) + "/code_sample/code" +
+                              "/halide_unsharp.cpp");
 }
 
 TEST(Eval, Granularity) {
@@ -220,6 +230,9 @@ TEST(Eval, Granularity) {
 
   util::printToFile(pipeline, std::string(SOURCE_DIR) + "/code_sample" +
                                   "/granularity.ir");
+  codegen::CodeGenerator code(pipeline);
+  util::printToFile(code, std::string(SOURCE_DIR) + "/code_sample/code" +
+                              "/granularity.cpp");
 }
 
 TEST(Eval, FusedConvMaxTanh) {
@@ -254,6 +267,9 @@ TEST(Eval, FusedConvMaxTanh) {
 
   util::printToFile(pipeline,
                     std::string(SOURCE_DIR) + "/code_sample" + "/conv_tanh.ir");
+  codegen::CodeGenerator code(pipeline);
+  util::printToFile(code, std::string(SOURCE_DIR) + "/code_sample/code" +
+                              "/conv_tanh.cpp");
 }
 
 TEST(Eval, DBProcessing) {
@@ -270,7 +286,10 @@ TEST(Eval, DBProcessing) {
   // std::cout << pipeline << std::endl;
 
   util::printToFile(pipeline, std::string(SOURCE_DIR) + "/code_sample" +
-                                  "/db-processing.ir");
+                                  "/db_processing.ir");
+  codegen::CodeGenerator code(pipeline);
+  util::printToFile(code, std::string(SOURCE_DIR) + "/code_sample/code" +
+                              "/db_processing.cpp");
 }
 
 TEST(Eval, Haversine) {
@@ -389,6 +408,9 @@ TEST(Eval, Haversine) {
 
   util::printToFile(pipeline,
                     std::string(SOURCE_DIR) + "/code_sample" + "/haversine.ir");
+  codegen::CodeGenerator code(pipeline);
+  util::printToFile(code, std::string(SOURCE_DIR) + "/code_sample/code" +
+                              "/haversine.cpp");
 }
 
 TEST(Eval, WorstCase) {
@@ -440,4 +462,7 @@ TEST(Eval, WorstCase) {
 
   util::printToFile(pipeline, std::string(SOURCE_DIR) + "/code_sample" +
                                   "/worst_case.ir");
+  codegen::CodeGenerator code(pipeline);
+  util::printToFile(code, std::string(SOURCE_DIR) + "/code_sample/code" +
+                              "/worst_case.cpp");
 }

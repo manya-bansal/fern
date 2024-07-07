@@ -230,7 +230,7 @@ struct Pipeline {
   // The outer loops to wrap the output in
   std::vector<IntervalPipe> outer_loops;
   std::map<Variable, int> bounded_vars;
-  std::map<Variable, DependencyExpr> derivations;
+  std::vector<std::tuple<Variable, DependencyExpr>> derivations;
   std::map<Variable, Variable> derived_from;
   std::map<const AbstractDataStructure *, const AbstractDataStructure *>
       reuse_intermediate_internal;

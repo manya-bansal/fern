@@ -12,10 +12,15 @@ namespace fern {
 namespace codegen {
 class CodeGenerator {
 public:
-  CodeGenerator(Pipeline pipeline) : pipeline(pipeline) {}
+  CodeGenerator(Pipeline pipeline) : pipeline(pipeline) {
+    code = generate_code();
+  }
 
   Stmt getCode() const { return code; }
-  void generate_code();
+  Stmt generate_code();
+  Expr generate_expr(
+      DependencyExpr e,
+      const std::set<const DependencyVariableNode *> &declared_var) const;
 
 private:
   util::ScopedSet<const DependencyVariableNode *> declared;

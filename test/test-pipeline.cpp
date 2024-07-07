@@ -10,6 +10,7 @@
 
 #include "examples/arm-apple-interface.h"
 #include "examples/common-ds.h"
+#include "examples/db-interface.h"
 #include "examples/geospatial.h"
 #include "examples/halide-examples.h"
 #include "examples/image-convs.h"
@@ -248,4 +249,21 @@ TEST(Eval, FusedConvMaxTanh) {
 
   util::printToFile(pipeline,
                     std::string(SOURCE_DIR) + "/code_sample" + "/conv_tanh.ir");
+}
+
+TEST(Eval, DBProcessing) {
+
+  examples::DbArray input("input");
+  examples::DbArrayProcessing output("output");
+
+  examples::SigmoidProcessing sigmoidProcessing;
+
+  Pipeline pipeline({sigmoidProcessing(&input, &output)});
+
+  pipeline.constructPipeline();
+  pipeline = pipeline.finalize();
+  // std::cout << pipeline << std::endl;
+
+  util::printToFile(pipeline, std::string(SOURCE_DIR) + "/code_sample" +
+                                  "/db-processing.ir");
 }

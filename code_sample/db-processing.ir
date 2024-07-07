@@ -1,0 +1,12 @@
+y99 = 0
+x98 = 0
+	{
+x98 in (0, output.logical_rows, x_tile100)
+y99 in (0, output.logical_cols, y_tile101)
+	output_q = output.query(x98 , y99 , x_tile100 , y_tile101 , )
+	input_q_19 = input.query(x98 , y99 , x_tile100 , y_tile101 , )
+	sigmoid_processing(output : output_q, input : input_q_19, )
+	input_q_19.free()
+
+}
+

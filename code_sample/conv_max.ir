@@ -1,26 +1,26 @@
-y23 = 0
 x22 = 0
+y23 = 0
 y_tile16=y_tile18
 x_tile15=x_tile17
-y14=y20
-x13=x19
-y_tile18=y_tile25*maxpool_dim21
-x_tile17=x_tile24*maxpool_dim21
-y20=y23*maxpool_dim21
-x19=x22*maxpool_dim21
+y14=y19
+x13=x20
+y_tile18=maxpool_dim21*y_tile25
+x_tile17=maxpool_dim21*x_tile24
+y19=y23*maxpool_dim21
+x20=maxpool_dim21*x22
 	output_conv_q = allocate(x13 , y14 , x_tile15 , y_tile16 , )
-	output_relu_q = allocate(x19 , y20 , x_tile17 , y_tile18 , )
+	output_relu_q = allocate(x20 , y19 , x_tile17 , y_tile18 , )
 	{
 x22 in (output.W_start, output.W_start + output.LW, x_tile24)
 y23 in (output.H_start, output.H_start + output.LH, y_tile25)
 y_tile16=y_tile18
 x_tile15=x_tile17
-y14=y20
-x13=x19
-y_tile18=y_tile25*maxpool_dim21
-x_tile17=x_tile24*maxpool_dim21
-y20=y23*maxpool_dim21
-x19=x22*maxpool_dim21
+y14=y19
+x13=x20
+y_tile18=maxpool_dim21*y_tile25
+x_tile17=maxpool_dim21*x_tile24
+y19=y23*maxpool_dim21
+x20=maxpool_dim21*x22
 	 BLANK 
 	input_q_5 = input.query(x13 * stride_arg12 (Argument)  , y14 * stride_arg12 (Argument)  , x_tile15 + filter.H - 1 , y_tile16 + filter.W - 1 , )
 	 BLANK 

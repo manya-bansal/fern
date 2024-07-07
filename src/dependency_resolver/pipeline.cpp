@@ -249,6 +249,7 @@ void Pipeline::generateDependency(
 
     for (const auto &sol : dependency_solver.solutions) {
       var_relationships[sol.var] = sol.solution;
+      var_relationships_sols.push(sol);
       defined.insert(sol.var);
     }
 
@@ -339,9 +340,16 @@ std::ostream &operator<<(std::ostream &os, const Pipeline &pipe) {
     os << d.first << " = " << d.second << std::endl;
   }
 
-  for (auto rel : pipe.var_relationships) {
-    os << rel.first->name << " = " << rel.second << std::endl;
+  auto stack_copy = pipe.var_relationships_sols;
+
+  while (!(stack_copy.empty())) {
+    auto elem = stack_copy.top();
+    os << elem << std::endl;
+    stack_copy.pop();
   }
+  // for (auto rel : pipe.var_relationships_sols) {
+  //   os << rel << std::endl;
+  // }
 
   for (auto funcs : pipe.pipeline) {
     os << '\t' << funcs << std::endl;
@@ -979,9 +987,18 @@ void Pipeline::run_hoisting_pass() {
   std::vector<IntervalPipe> outer_loops_out;
   std::vector<IntervalPipe> outer_loops_in;
 
+  std::map<Variable, DependencyExpr> outer_derivations;
+
   for (int j = 0; j < outer_loops.size(); j++) {
     if (j >= i) {
       outer_loops_in.push_back(outer_loops[j]);
+      outer_derivations[outer_loops[j].var] = 0;
+
+      if (isa<Variable>(outer_loops[j].step)) {
+        Variable step_bound = to<Variable>(outer_loops[j].step);
+        outer_derivations[step_bound] = bounded_vars[step_bound];
+      }
+
     } else {
       outer_loops_out.push_back(outer_loops[j]);
     }
@@ -989,6 +1006,8 @@ void Pipeline::run_hoisting_pass() {
 
   Pipeline inner_pipeline = *this;
   inner_pipeline.outer_loops = outer_loops_in;
+
+  outer_derivations.insert(derivations.begin(), derivations.end());
 
   Pipeline outer_pipeline;
   auto funcs = outer_pipeline.pipeline;
@@ -999,6 +1018,7 @@ void Pipeline::run_hoisting_pass() {
   outer_pipeline.outer_loops = outer_loops_out;
   outer_pipeline.to_reuse = to_reuse;
   outer_pipeline.var_relationships = var_relationships;
+  outer_pipeline.var_relationships_sols = var_relationships_sols;
   outer_pipeline.bounded_vars = bounded_vars;
   outer_pipeline.defined = defined;
   outer_pipeline.undefined = undefined;
@@ -1007,6 +1027,7 @@ void Pipeline::run_hoisting_pass() {
   outer_pipeline.functions = functions;
   outer_pipeline.derived_from = derived_from;
   outer_pipeline.to_reuse_var = to_reuse_var;
+  outer_pipeline.derivations = outer_derivations;
 
   *this = outer_pipeline;
 }

@@ -66,6 +66,7 @@
     "variant": "cpp",
     "vector": "cpp",
     "version": "cpp",
-    "functional": "cpp"
+    "functional": "cpp",
+    "stack": "cpp"
   }
 }

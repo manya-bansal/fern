@@ -1,9 +1,13 @@
 y6 in (0, out2.logical_cols, y_tile5)
 o in (0, out2.logical_rows, o_s)
-y1 = y6
-x0 = x7
-x_tile2 = 2+x_tile4
-y_tile3 = y_tile5
+i = 0
+i_s = 1
+x_tile4 = i_s
+x7 = o + i
+y_tile3=y_tile5
+x_tile2=2+x_tile4
+y1=y6
+x0=x7
 	out1_q = allocate(x0 , y1 , x_tile2 , y_tile3 , )
 	{
 x8 in (0, out1_q.logical_rows, x_tile10)
@@ -18,10 +22,10 @@ y9 in (0, out1_q.logical_cols, y_tile11)
 i in (o, o_s, i_s)
 x_tile4 = i_s
 x7 = o + i
-y1 = y6
-x0 = x7
-x_tile2 = 2+x_tile4
-y_tile3 = y_tile5
+y_tile3=y_tile5
+x_tile2=2+x_tile4
+y1=y6
+x0=x7
 	 BLANK 
 	 BLANK 
 	out2_q = out2.query(x7 , y6 , x_tile4 , y_tile5 , )

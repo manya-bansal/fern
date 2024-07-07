@@ -136,20 +136,26 @@ TEST(Eval, StackedFusedConvMax) {
 TEST(Eval, HalideUnsharp) {
   examples::image input("input");
   examples::image gray_out("gray_out");
-  examples::image out1("out1");
-  examples::image out2("out2");
+  examples::image blur_y_temp("blur_y_temp");
+  examples::image blur_x_temp("blur_x_temp");
+  examples::image sharpen_temp("sharpen_temp");
+  examples::image ratio_temp("ratio_temp");
+  examples::image final_out("final_out");
 
+  examples::gray gray;
   examples::blur_x_unsharp blurx;
   examples::blur_y_unsharp blury;
-  examples::gray gray;
+  examples::sharpen sharpen;
+  examples::ratio ratio;
+  examples::output_assign output_assign;
 
   auto gray_concrete = gray(&input, &gray_out);
 
-  Pipeline pipeline({
-      gray_concrete,
-      blury(&gray_out, &out1),
-      blurx(&out1, &out2),
-  });
+  Pipeline pipeline({gray_concrete, blury(&gray_out, &blur_y_temp),
+                     blurx(&blur_y_temp, &blur_x_temp),
+                     sharpen(&gray_out, &blur_x_temp, &sharpen_temp),
+                     ratio(&gray_out, &sharpen_temp, &ratio_temp),
+                     output_assign(&input, &ratio_temp, &final_out)});
 
   // Step one is to always construct a pipeline
   pipeline.constructPipeline();

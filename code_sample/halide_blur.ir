@@ -36,4 +36,4 @@ y_tile3 = y_tile5
 
 }
 
-	out1_qfree()
+	out1_q.free()

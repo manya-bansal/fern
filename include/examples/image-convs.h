@@ -15,26 +15,30 @@ public:
 
   Weights() : Weights(fern::util::uniqueName("weight")) {}
 
-  std::string getTypeName() const { return "Weights<float>"; }
+  std::string getTypeName() const override { return "Weights<float>"; }
 
   // std::string getDataQueryInterface() const { return {"query_materialize"}; }
 
-  std::string getDataQueryInterface() const { return {"query_materialize"}; }
+  std::string getDataQueryInterface() const override {
+    return {"query_materialize"};
+  }
 
-  std::vector<std::string> getMetaData() const {
+  std::vector<std::string> getMetaData() const override {
     return {"H_start", "W_start", "H_len", "W_len"};
   }
 
-  std::string getDataInsertInterface() const { return {"insert_materialize"}; }
+  std::string getDataInsertInterface() const override {
+    return {"insert_materialize"};
+  }
 
-  std::string getAllocData() const { return {"weight_alloc"}; }
+  std::string getAllocData() const override { return {"weight_alloc"}; }
 
-  std::string getVarName() const { return name; }
+  std::string getVarName() const override { return name; }
 
   std::string getAllocFreeInterface() const override { return "free_weight"; }
   std::string getQueryFreeInterface() const override { return "free_weight"; }
 
-  bool isTranslationInvariant(int index) const {
+  bool isTranslationInvariant(int index) const override {
     if (index < 2) {
       return true;
     }

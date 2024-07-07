@@ -15,23 +15,25 @@ public:
 
   image() : image(fern::util::uniqueName("weight")) {}
 
-  std::string getTypeName() const { return "image<float>"; }
+  std::string getTypeName() const override { return "image<float>"; }
 
-  std::string getDataQueryInterface() const { return {"get_tile"}; }
+  std::string getDataQueryInterface() const override { return {"get_tile"}; }
 
-  std::vector<std::string> getMetaData() const {
+  std::vector<std::string> getMetaData() const override {
     return {"x", "y", "x_tile_size", "y_tile_size"};
   }
 
-  std::string getDataInsertInterface() const { return {"insert_tile"}; }
+  std::string getDataInsertInterface() const override {
+    return {"insert_tile"};
+  }
 
-  std::string getAllocData() const { return {"alloc_image"}; }
+  std::string getAllocData() const override { return {"alloc_image"}; }
 
-  std::string getVarName() const { return name; }
+  std::string getVarName() const override { return name; }
 
   std::string getAllocFreeInterface() const override { return "destroy"; }
 
-  bool isTranslationInvariant(int index) const {
+  bool isTranslationInvariant(int index) const override {
     if (index < 2) {
       return true;
     }

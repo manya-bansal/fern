@@ -20,24 +20,26 @@ public:
   Array() : name(fern::util::uniqueName("var")) {}
   Array(const std::string &name) : name(name) {}
 
-  std::string getTypeName() const { return getNameInternal<T>(); }
+  std::string getTypeName() const override { return getNameInternal<T>(); }
 
-  std::vector<std::string> getMetaData() const { return {"idx", "len"}; }
+  std::vector<std::string> getMetaData() const override {
+    return {"idx", "len"};
+  }
 
-  std::string getDataQueryInterface() const {
+  std::string getDataQueryInterface() const override {
     return {"array_query_no_materialize"};
   }
 
-  std::string getDataInsertInterface() const { return {""}; }
+  std::string getDataInsertInterface() const override { return {""}; }
 
-  std::string getAllocData() const { return {"array_alloc<float>"}; };
+  std::string getAllocData() const override { return {"array_alloc<float>"}; };
 
-  std::string getVarName() const { return name; }
+  std::string getVarName() const override { return name; }
 
   std::string getAllocFreeInterface() const override { return "destroy"; }
   // std::string getQueryFreeInterface() const override { return "destroy"; }
 
-  bool isTranslationInvariant(int index) const {
+  bool isTranslationInvariant(int index) const override {
     if (index < 1) {
       return true;
     }

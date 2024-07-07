@@ -41,7 +41,10 @@ public:
 
   virtual bool useAllocNotQuery() const { return false; }
   virtual std::string getAllocData() const = 0;
-  virtual bool isTranslationInvariant(int index) const { return false; };
+  virtual bool isTranslationInvariant(int index) const {
+    (void)index;
+    return false;
+  };
 
   // Q: Should I pull this out in a different class?
   virtual std::string getVarName() const { return util::uniqueName("var"); }
@@ -82,8 +85,8 @@ public:
   std::string getVarName() const { return name; }
 
 private:
-  std::string name;
   const AbstractDataStructure *ds;
+  std::string name;
 };
 
 std::ostream &operator<<(std::ostream &, const AbstractDataStructure &);

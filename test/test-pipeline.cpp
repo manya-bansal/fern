@@ -8,7 +8,8 @@
 #include "dependency_resolver/dependency_solver.h"
 #include "dependency_resolver/pipeline.h"
 
-#include "examples/arm-apple-interface.h"
+#include "codegen/codegen.h"
+
 #include "examples/common-ds.h"
 #include "examples/db-interface.h"
 #include "examples/geospatial.h"
@@ -70,6 +71,10 @@ TEST(Eval, HalideBlur) {
 
   util::printToFile(pipeline, std::string(SOURCE_DIR) + "/code_sample" +
                                   "/halide_blur.ir");
+
+  codegen::CodeGenerator code(pipeline);
+  util::printToFile(code, std::string(SOURCE_DIR) + "/code_sample/code" +
+                              "/halide_blur_code.cpp");
 }
 
 TEST(Eval, ConvMax) {

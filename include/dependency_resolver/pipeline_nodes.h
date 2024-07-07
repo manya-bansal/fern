@@ -84,9 +84,9 @@ struct AllocateNode : public FunctionTypeNode {
   void print(std::ostream &stream) const override;
   void set_reuse();
   const AbstractDataStructure *ds;
-  ConcreteFunctionCall call;
   std::vector<DependencyExpr> deps;
   std::string name;
+  ConcreteFunctionCall call;
   bool reuse = false;
 };
 
@@ -240,7 +240,7 @@ std::ostream &operator<<(std::ostream &, const Pipeline &);
 
 struct PipelineNode : public FunctionTypeNode {
   PipelineNode(Pipeline pipeline)
-      : pipeline(pipeline), FunctionTypeNode(PIPELINE) {}
+      : FunctionTypeNode(PIPELINE), pipeline(pipeline) {}
   void print(std::ostream &stream) const override;
   FunctionType get_host_pipeline(const AbstractDataStructure *ds) const;
   Pipeline pipeline;

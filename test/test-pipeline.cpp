@@ -267,3 +267,140 @@ TEST(Eval, DBProcessing) {
   util::printToFile(pipeline, std::string(SOURCE_DIR) + "/code_sample" +
                                   "/db-processing.ir");
 }
+
+TEST(Eval, Haversine) {
+  float lat1 = 0.70984286;
+  float lon1 = -1.23892197;
+  float MILES_CONST = 3959.0;
+
+  examples::Array<float> lat2("lat2");
+  examples::Array<float> lon2("lon2");
+  examples::Array<float> dlat("dlat");
+  examples::Array<float> dlat2("dlat2");
+  examples::Array<float> dlat3("dlat3");
+  examples::Array<float> dlat4("dlat4");
+  examples::Array<float> dlat5("dlat5");
+  examples::Array<float> dlat6("dlat6");
+  examples::Array<float> dlat7("dlat7");
+
+  examples::Array<float> dlon("dlon");
+  examples::Array<float> dlon2("dlon2");
+  examples::Array<float> dlon3("dlon3");
+  examples::Array<float> dlon4("dlon4");
+
+  examples::Array<float> a("a");
+  examples::Array<float> a2("a2");
+  examples::Array<float> a3("a3");
+  examples::Array<float> a4("a4");
+  examples::Array<float> a5("a5");
+  examples::Array<float> a6("a6");
+  examples::Array<float> a7("a7");
+
+  Variable arg_len("arg_len", true);
+
+  float lat1_cos = cos(lat1);
+  // examples::Array<float> b("b");
+  // examples::Array<float> c("c");
+  // examples::Array<float> out("out");
+  // examples::Array<float> final("final");
+
+  examples::subi_ispc subi_ispc;
+  examples::divi_ispc divi_ispc;
+  examples::sin_ispc sin_ispc;
+  examples::asin_ispc asin_ispc;
+  examples::cos_ispc cos_ispc;
+  examples::sqrt_ispc sqrt_ispc;
+  examples::mul_ispc mul_ispc;
+  examples::add_ispc add_ispc;
+  examples::muli_ispc muli_ispc;
+  // examples::muli_ispc muli_ispc_bound;
+
+  examples::muli_ispc_8 muli_ispc_8;
+
+  Pipeline pipeline({
+      subi_ispc(DataStructureArg(&lat2, "data"), lat1, getNode(arg_len),
+                DataStructureArg(&dlat, "data")),
+      subi_ispc(DataStructureArg(&lon2, "data"), lon1, getNode(arg_len),
+                DataStructureArg(&dlon, "data")),
+      divi_ispc(DataStructureArg(&dlat, "data"), 2.0f, getNode(arg_len),
+                DataStructureArg(&dlat2, "data")),
+      sin_ispc(DataStructureArg(&dlat2, "data"), getNode(arg_len),
+               DataStructureArg(&dlat3, "data")),
+      sin_ispc(DataStructureArg(&dlat3, "data"), getNode(arg_len),
+               DataStructureArg(&dlat4, "data")),
+      mul_ispc(DataStructureArg(&dlat4, "data"),
+               DataStructureArg(&dlat4, "data"), getNode(arg_len),
+               DataStructureArg(&dlat5, "data")),
+      cos_ispc(DataStructureArg(&dlat5, "data"), getNode(arg_len),
+               DataStructureArg(&dlat6, "data")),
+      muli_ispc(DataStructureArg(&dlat6, "data"), lat1_cos, getNode(arg_len),
+                DataStructureArg(&dlat7, "data")),
+      divi_ispc(DataStructureArg(&dlon, "data"), 2.0f, getNode(arg_len),
+                DataStructureArg(&dlon2, "data")),
+      sin_ispc(DataStructureArg(&dlon2, "data"), getNode(arg_len),
+               DataStructureArg(&dlon3, "data")),
+      mul_ispc(DataStructureArg(&dlon3, "data"),
+               DataStructureArg(&dlon3, "data"), getNode(arg_len),
+               DataStructureArg(&dlon4, "data")),
+      mul_ispc(DataStructureArg(&a, "data"), DataStructureArg(&dlon4, "data"),
+               getNode(arg_len), DataStructureArg(&a2, "data")),
+      add_ispc(DataStructureArg(&a2, "data"), DataStructureArg(&dlat7, "data"),
+               getNode(arg_len), DataStructureArg(&a3, "data")),
+      sqrt_ispc(DataStructureArg(&a3, "data"), getNode(arg_len),
+                DataStructureArg(&a4, "data")),
+      asin_ispc(DataStructureArg(&a4, "data"), getNode(arg_len),
+                DataStructureArg(&a5, "data")),
+      muli_ispc(DataStructureArg(&a5, "data"), 2.0f, getNode(arg_len),
+                DataStructureArg(&a6, "data")),
+      // muli_ispc(DataStructureArg(&a6, "data"), MILES_CONST, (int64_t)8,
+      //           DataStructureArg(&a7, "data")),
+      muli_ispc(DataStructureArg(&a6, "data"), MILES_CONST, getNode(arg_len),
+                DataStructureArg(&a7, "data")),
+  });
+
+  pipeline.constructPipeline();
+  pipeline = pipeline.finalize();
+
+  util::printToFile(pipeline,
+                    std::string(SOURCE_DIR) + "/code_sample" + "/haversine.ir");
+}
+
+TEST(Eval, WorstCase) {
+  examples::Array<float> add_1("add_1");
+  examples::Array<float> add_2("add_2");
+  examples::Array<float> add_3("add_3");
+  examples::Array<float> add_4("add_4");
+  examples::Array<float> add_5("add_5");
+  examples::Array<float> add_6("add_6");
+  examples::Array<float> add_7("add_7");
+
+  examples::Array<float> a("a");
+  examples::Array<float> b("b");
+  examples::Array<float> c("c");
+
+  Variable len("len", true);
+
+  examples::addi_ispc addi_ispc;
+  examples::add_ispc add_ispc;
+
+  Pipeline pipeline({
+      addi_ispc(DataStructureArg(&c, "data"), 0.0f, getNode(len),
+                DataStructureArg(&add_1, "data")),
+      add_ispc(DataStructureArg(&a, "data"), DataStructureArg(&add_1, "data"),
+               getNode(len), DataStructureArg(&add_2, "data")),
+      add_ispc(DataStructureArg(&b, "data"), DataStructureArg(&add_2, "data"),
+               getNode(len), DataStructureArg(&add_3, "data")),
+      add_ispc(DataStructureArg(&b, "data"), DataStructureArg(&add_3, "data"),
+               getNode(len), DataStructureArg(&add_4, "data")),
+      add_ispc(DataStructureArg(&a, "data"), DataStructureArg(&add_4, "data"),
+               getNode(len), DataStructureArg(&add_5, "data")),
+      add_ispc(DataStructureArg(&c, "data"), DataStructureArg(&add_6, "data"),
+               getNode(len), DataStructureArg(&add_7, "data")),
+  });
+
+  pipeline.constructPipeline();
+  pipeline = pipeline.finalize();
+
+  util::printToFile(pipeline, std::string(SOURCE_DIR) + "/code_sample" +
+                                  "/worst_case.ir");
+}

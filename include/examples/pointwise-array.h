@@ -94,7 +94,7 @@ public:
   fern::DependencySubset getDataRelationship() const override {
     // PARALLELIZE PRODUCTION BY X
     // this only shows up in the case that this is the last function
-    fern::Variable x("x", false, false, true);
+    fern::Variable x("x", false, false, false);
     fern::Variable len("len", true);
     fern::Interval loop(x, out["idx"], out["idx"] + out["size"], len);
     fern::DataStructure block_out("out", &out);
@@ -129,7 +129,7 @@ public:
   fern::DependencySubset getDataRelationship() const override {
     // PARALLELIZE PRODUCTION BY X
     // this only shows up in the case that this is the last function
-    fern::Variable x("x", false, false, true);
+    fern::Variable x("x", false, false, false);
     fern::Variable len("len", true);
     fern::Interval loop(x, out["idx"], out["idx"] + out["size"], len);
     fern::DataStructure block_out("out", &out);
@@ -164,7 +164,7 @@ public:
   fern::DependencySubset getDataRelationship() const override {
     // PARALLELIZE PRODUCTION BY X
     // this only shows up in the case that this is the last function
-    fern::Variable x("x", false, false, true);
+    fern::Variable x("x", false, false, false);
     fern::Interval loop(x, out["idx"], out["idx"] + out["size"], len);
     fern::DataStructure block_out("out", &out);
     fern::DataStructure block_a("a", &a);
@@ -200,7 +200,7 @@ public:
   fern::DependencySubset getDataRelationship() const override {
     // PARALLELIZE PRODUCTION BY X
     // this only shows up in the case that this is the last function
-    fern::Variable x("x", false, false, true);
+    fern::Variable x("x", false, false, false);
     fern::Interval loop(x, out["idx"], out["idx"] + out["size"], len);
     fern::DataStructure block_out("out", &out);
     fern::DataStructure block_a("a", &a);
@@ -230,7 +230,7 @@ public:
   muli_ispc()
       : a(examples::Array<float>("a")), b(examples::Array<float>("b")),
         len(fern::Variable("len", false)), out(examples::Array<float>("out")) {
-    fern::Variable x("x", false, false, true);
+    fern::Variable x("x", false, false, false);
     fern::Interval loop(x, out["idx"], out["idx"] + out["size"], len);
     fern::DataStructure block_out("out", &out);
     fern::DataStructure block_a("a", &a);
@@ -275,7 +275,7 @@ public:
   fern::DependencySubset getDataRelationship() const override {
     // PARALLELIZE PRODUCTION BY X
     // this only shows up in the case that this is the last function
-    fern::Variable x("x", false, false, true);
+    fern::Variable x("x", false, false, false);
     fern::Interval loop(x, out["idx"], out["idx"] + out["size"], len);
     fern::DataStructure block_out("out", &out);
     fern::DataStructure block_a("a", &a);
@@ -310,7 +310,7 @@ public:
   fern::DependencySubset getDataRelationship() const override {
     // PARALLELIZE PRODUCTION BY X
     // this only shows up in the case that this is the last function
-    fern::Variable x("x", false, false, true);
+    fern::Variable x("x", false, false, false);
     fern::Interval loop(x, out["idx"], out["idx"] + out["size"], len);
     fern::DataStructure block_out("out", &out);
     fern::DataStructure block_a("a", &a);
@@ -345,7 +345,7 @@ public:
   fern::DependencySubset getDataRelationship() const override {
     // PARALLELIZE PRODUCTION BY X
     // this only shows up in the case that this is the last function
-    fern::Variable x("x", false, false, true);
+    fern::Variable x("x", false, false, false);
     fern::Interval loop(x, out["idx"], out["idx"] + out["size"], len);
     fern::DataStructure block_out("out", &out);
     fern::DataStructure block_a("a", &a);
@@ -380,7 +380,7 @@ public:
   fern::DependencySubset getDataRelationship() const override {
     // PARALLELIZE PRODUCTION BY X
     // this only shows up in the case that this is the last function
-    fern::Variable x("x", false, false, true);
+    fern::Variable x("x", false, false, false);
     fern::Interval loop(x, out["idx"], out["idx"] + out["size"], len);
     fern::DataStructure block_out("out", &out);
     fern::DataStructure block_a("a", &a);
@@ -415,7 +415,7 @@ public:
   fern::DependencySubset getDataRelationship() const override {
     // PARALLELIZE PRODUCTION BY X
     // this only shows up in the case that this is the last function
-    fern::Variable x("x", false, false, true);
+    fern::Variable x("x", false, false, false);
     fern::Interval loop(x, out["idx"], out["idx"] + out["size"], len);
     fern::DataStructure block_out("out", &out);
     fern::DataStructure block_a("a", &a);
@@ -451,7 +451,7 @@ public:
   fern::DependencySubset getDataRelationship() const override {
     // PARALLELIZE PRODUCTION BY X
     // this only shows up in the case that this is the last function
-    fern::Variable x("x", false, false, true);
+    fern::Variable x("x", false, false, false);
     fern::Interval loop(x, out["idx"], out["idx"] + out["size"], len);
     fern::DataStructure block_out("out", &out);
     fern::DataStructure block_a("a", &a);
@@ -481,7 +481,7 @@ public:
   muli_ispc_8()
       : a(examples::Array<float>("a")), b(examples::Array<float>("b")),
         out(examples::Array<float>("out")) {
-    fern::Variable x("x", false, false, true);
+    fern::Variable x("x", false, false, false);
     fern::Interval loop(x, out["idx"], out["idx"] + out["size"], 8);
     fern::DataStructure block_out("out", &out);
     fern::DataStructure block_a("a", &a);
@@ -510,6 +510,45 @@ public:
 
   examples::Array<float> a;
   examples::Array<float> b;
+  examples::Array<float> out;
+  fern::DependencySubset dependendy;
+};
+
+class addi_ispc : public fern::AbstractFunctionCall {
+public:
+  addi_ispc()
+      : a(examples::Array<float>("a")), b(examples::Array<float>("b")),
+        len(fern::Variable("len", false)), out(examples::Array<float>("out")) {
+    fern::Variable x("x", false, false, false);
+    fern::Interval loop(x, out["idx"], out["idx"] + out["size"], len);
+    fern::DataStructure block_out("out", &out);
+    fern::DataStructure block_a("a", &a);
+    fern::DataStructure block_b("b", &b);
+    dependendy = loop(fern::ComputationAnnotation(
+        fern::Producer(block_out(x, len)), fern::Consumer({
+                                               block_a(x, len),
+                                               // block_b(x, len),
+                                           })));
+  };
+
+  std::string getName() const override { return "ispc::addi_ispc"; }
+
+  fern::DependencySubset getDataRelationship() const override {
+    // PARALLELIZE PRODUCTION BY X
+    // this only shows up in the case that this is the last function
+    return dependendy;
+  }
+
+  std::vector<fern::Argument> getArguments() override {
+    return {new fern::DataStructureArg(fern::DataStructurePtr(&a)),
+            new fern::LiteralArg(fern::Datatype::Float32, 0.0f),
+            new fern::VariableArg(fern::getNode(len)),
+            new fern::DataStructureArg(fern::DataStructurePtr(&out))};
+  }
+
+  examples::Array<float> a;
+  examples::Array<float> b;
+  fern::Variable len;
   examples::Array<float> out;
   fern::DependencySubset dependendy;
 };

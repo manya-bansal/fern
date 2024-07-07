@@ -1,0 +1,155 @@
+x135 = 0
+len102=len106
+x103=x107
+len106=len109
+x107=x108
+len109=len111
+x108=x110
+len111=len113
+x110=x112
+len113=len115
+x112=x114
+len115=len116
+x114=x117
+len104=len119
+x105=x118
+len119=len121
+x118=x120
+len121=len123
+x120=x122
+len123=len125
+x122=x124
+len116=len127
+x117=x126
+len125=len127
+x124=x126
+len127=len129
+x126=x128
+len129=len131
+x128=x130
+len131=len132
+x130=x133
+len132=len134
+x133=x135
+	dlat_q = allocate(x103 , len102 , )
+	dlon_q = allocate(x105 , len104 , )
+	dlat2_q = allocate(x107 , len106 , )
+	dlat3_q = allocate(x108 , len109 , )
+	dlat4_q = allocate(x110 , len111 , )
+	dlat5_q = allocate(x112 , len113 , )
+	dlat6_q = allocate(x114 , len115 , )
+	dlat7_q = allocate(x117 , len116 , )
+	dlon2_q = allocate(x118 , len119 , )
+	dlon3_q = allocate(x120 , len121 , )
+	dlon4_q = allocate(x122 , len123 , )
+	a2_q = allocate(x124 , len125 , )
+	a3_q = allocate(x126 , len127 , )
+	a4_q = allocate(x128 , len129 , )
+	a5_q = allocate(x130 , len131 , )
+	a6_q = allocate(x133 , len132 , )
+	{
+x135 in (a7.idx, a7.idx + a7.size, len134)
+len102=len106
+x103=x107
+len106=len109
+x107=x108
+len109=len111
+x108=x110
+len111=len113
+x110=x112
+len113=len115
+x112=x114
+len115=len116
+x114=x117
+len104=len119
+x105=x118
+len119=len121
+x118=x120
+len121=len123
+x120=x122
+len123=len125
+x122=x124
+len116=len127
+x117=x126
+len125=len127
+x124=x126
+len127=len129
+x126=x128
+len129=len131
+x128=x130
+len131=len132
+x130=x133
+len132=len134
+x133=x135
+	 BLANK 
+	lat2_q_22 = lat2.query(x103 , len102 , )
+	 BLANK 
+	lon2_q_21 = lon2.query(x105 , len104 , )
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	a_q_20 = a.query(x124 , len125 , )
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	a7_q = a7.query(x135 , len134 , )
+	ispc::subi_ispc(dlat : dlat_q, lat2 : lat2_q_22, )
+	ispc::subi_ispc(dlon : dlon_q, lon2 : lon2_q_21, )
+	ispc::divi_ispc(dlat2 : dlat2_q, )
+	ispc::sin_ispc(dlat3 : dlat3_q, )
+	ispc::sin_ispc(dlat4 : dlat4_q, )
+	ispc::mul_ispc(dlat5 : dlat5_q, )
+	ispc::cos_ispc(dlat6 : dlat6_q, )
+	ispc::muli_ispc(dlat7 : dlat7_q, )
+	ispc::divi_ispc(dlon2 : dlon2_q, )
+	ispc::sin_ispc(dlon3 : dlon3_q, )
+	ispc::mul_ispc(dlon4 : dlon4_q, )
+	ispc::mul_ispc(a2 : a2_q, a : a_q_20, )
+	ispc::add_ispc(a3 : a3_q, )
+	ispc::sqrt_ispc(a4 : a4_q, )
+	ispc::asin_ispc(a5 : a5_q, )
+	ispc::muli_ispc(a6 : a6_q, )
+	ispc::muli_ispc(a7 : a7_q, )
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+
+}
+
+	dlat_q.free()
+	dlon_q.free()
+	dlat2_q.free()
+	dlat3_q.free()
+	dlat4_q.free()
+	dlat5_q.free()
+	dlat6_q.free()
+	dlat7_q.free()
+	dlon2_q.free()
+	dlon3_q.free()
+	dlon4_q.free()
+	a2_q.free()
+	a3_q.free()
+	a4_q.free()
+	a5_q.free()
+	a6_q.free()

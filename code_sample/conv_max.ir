@@ -1,30 +1,30 @@
-x23 = 0
-y24 = 0
-y_tile16=y_tile20
+y23 = 0
+x22 = 0
+x18=maxpool_dim25*x22
+y17=y23*maxpool_dim25
+x_tile19=maxpool_dim25*x_tile21
+y_tile20=y_tile24*maxpool_dim25
+x13=x18
+y14=y17
 x_tile15=x_tile19
-y14=y18
-x13=x17
-y_tile20=y_tile25*maxpool_dim21
-x_tile19=x_tile22*maxpool_dim21
-y18=y24*maxpool_dim21
-x17=x23*maxpool_dim21
+y_tile16=y_tile20
 	output_conv_q = allocate(x13 , y14 , x_tile15 , y_tile16 , )
-	output_relu_q = allocate(x17 , y18 , x_tile19 , y_tile20 , )
+	output_relu_q = allocate(x18 , y17 , x_tile19 , y_tile20 , )
 	{
-x23 in (output.W_start, output.W_start + output.LW, x_tile22)
-y24 in (output.H_start, output.H_start + output.LH, y_tile25)
-y_tile16=y_tile20
+x22 in (output.W_start, output.W_start + output.LW, x_tile21)
+y23 in (output.H_start, output.H_start + output.LH, y_tile24)
+x18=maxpool_dim25*x22
+y17=y23*maxpool_dim25
+x_tile19=maxpool_dim25*x_tile21
+y_tile20=y_tile24*maxpool_dim25
+x13=x18
+y14=y17
 x_tile15=x_tile19
-y14=y18
-x13=x17
-y_tile20=y_tile25*maxpool_dim21
-x_tile19=x_tile22*maxpool_dim21
-y18=y24*maxpool_dim21
-x17=x23*maxpool_dim21
+y_tile16=y_tile20
 	 BLANK 
 	input_q_5 = input.query(x13 * stride_arg12 (Argument)  , y14 * stride_arg12 (Argument)  , x_tile15 + filter.H - 1 , y_tile16 + filter.W - 1 , )
 	 BLANK 
-	output_q = output.query(x23 , y24 , x_tile22 , y_tile25 , )
+	output_q = output.query(x22 , y23 , x_tile21 , y_tile24 , )
 	conv_no_fern_mkl(output_conv : output_conv_q, input : input_q_5, )
 	relu_material(output_relu : output_relu_q, output_conv : output_conv_q_, )
 	maxpool(output : output_q, output_relu : output_relu_q_, )

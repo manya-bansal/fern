@@ -221,7 +221,7 @@ struct Pipeline {
       computation_graph;
 
   std::map<const DependencyVariableNode *, GiNaC::ex> var_relationships;
-  std::stack<solution> var_relationships_sols;
+  std::vector<solution> var_relationships_sols;
   std::set<const DependencyVariableNode *> undefined;
   std::set<const DependencyVariableNode *> defined;
   std::vector<const AbstractDataStructure *> to_reuse;

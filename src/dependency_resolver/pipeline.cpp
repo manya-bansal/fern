@@ -250,7 +250,7 @@ void Pipeline::generateDependency(
 
     for (const auto &sol : dependency_solver.solutions) {
       var_relationships[sol.var] = sol.solution;
-      var_relationships_sols.push(sol);
+      var_relationships_sols.push_back(sol);
       defined.insert(sol.var);
     }
 
@@ -343,14 +343,14 @@ std::ostream &operator<<(std::ostream &os, const Pipeline &pipe) {
 
   auto stack_copy = pipe.var_relationships_sols;
 
-  while (!(stack_copy.empty())) {
-    auto elem = stack_copy.top();
-    os << elem << std::endl;
-    stack_copy.pop();
-  }
-  // for (auto rel : pipe.var_relationships_sols) {
-  //   os << rel << std::endl;
+  // while (!(stack_copy.empty())) {
+  //   auto elem = stack_copy.top();
+  //   os << elem << std::endl;
+  //   stack_copy.pop();
   // }
+  for (auto rel : pipe.var_relationships_sols) {
+    os << rel << std::endl;
+  }
 
   for (auto funcs : pipe.pipeline) {
     os << '\t' << funcs << std::endl;

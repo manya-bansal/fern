@@ -1,20 +1,20 @@
 x79 = 0
-len75=len76
-x74=x77
-len75=len78
-x74=x79
-len76=len78
 x77=x79
+len76=len78
+x74=x79
+len75=len78
+x74=x77
+len75=len76
 	r1_q = allocate(x74 , len75 , )
 	r2_q = allocate(x77 , len76 , )
 	{
 x79 in (r3.idx, r3.idx + r3.size, len78)
-len75=len76
-x74=x77
-len75=len78
-x74=x79
-len76=len78
 x77=x79
+len76=len78
+x74=x79
+len75=len78
+x74=x77
+len75=len76
 	 BLANK 
 	a_q_16 = a.query(x74 , len75 , )
 	b_q_15 = b.query(x74 , len75 , )

@@ -355,10 +355,31 @@ TEST(Eval, Haversine) {
       // muli_ispc(DataStructureArg(&a6, "data"), MILES_CONST, (int64_t)8,
       //           DataStructureArg(&a7, "data")),
       muli_ispc(DataStructureArg(&a6, "data"), MILES_CONST, getNode(arg_len),
-                DataStructureArg(&a7, "data")),
+                DataStructureArg(&a, "data")),
   });
 
+  // Currently do this by hand, adding code to programmatically construct next
+  std::map<const AbstractDataStructure *, const AbstractDataStructure *>
+      resuable;
+
+  resuable[&dlat2] = &dlat;
+  resuable[&dlat3] = &dlat;
+  resuable[&dlat4] = &dlat;
+  resuable[&dlat5] = &dlat;
+  resuable[&dlat6] = &dlat;
+  resuable[&dlat7] = &dlat;
+
+  resuable[&dlon2] = &dlon;
+  resuable[&dlon3] = &dlon;
+  resuable[&dlon4] = &dlon;
+
+  resuable[&a3] = &a2;
+  resuable[&a4] = &a2;
+  resuable[&a5] = &a2;
+  resuable[&a6] = &a2;
+
   pipeline.constructPipeline();
+  pipeline.register_resuable_allocs(resuable);
   pipeline = pipeline.finalize();
 
   util::printToFile(pipeline,

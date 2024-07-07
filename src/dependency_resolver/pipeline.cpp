@@ -428,6 +428,67 @@ Pipeline Pipeline::reuse(const AbstractDataStructure *ds, Variable v) {
                      "or is not an intermediate");
 }
 
+void Pipeline::register_resuable_allocs(
+    std::map<const AbstractDataStructure *, const AbstractDataStructure *>
+        reuse_intermediates) {
+  reuse_intermediate_internal = reuse_intermediates;
+};
+
+Pipeline Pipeline::replaceDataStructure(const AbstractDataStructure *ds,
+                                        std::string new_name) const {
+  auto new_pipe = *this;
+  for (int i = 0; i < new_pipe.pipeline.size(); i++) {
+    auto func = pipeline[i];
+    if (func.getFuncType() == ALLOCATE) {
+      auto test = func.getNode<AllocateNode>();
+      if (test->ds == ds) {
+        new_pipe.pipeline[i] = new BlankNode();
+      }
+    }
+
+    if (func.getFuncType() == COMPUTE) {
+      auto test = func.getNode<ComputeNode>();
+      std::map<const AbstractDataStructure *, std::string> new_names =
+          test->names;
+
+      for (auto name : test->names) {
+        if (name.first == ds) {
+          new_names[name.first] = new_name;
+        }
+      }
+      new_pipe.pipeline[i] = new ComputeNode(test->func, new_names);
+    }
+
+    if (func.getFuncType() == FREE) {
+      auto test = func.getNode<FreeNode>();
+      if (test->ds == ds) {
+        new_pipe.pipeline[i] = new BlankNode();
+      }
+    }
+
+    if (func.getFuncType() == PIPELINE) {
+      auto test = func.getNode<PipelineNode>();
+      new_pipe.pipeline[i] =
+          new PipelineNode(test->pipeline.replaceDataStructure(ds, new_name));
+    }
+  }
+
+  return new_pipe;
+}
+
+Pipeline Pipeline::run_reuse_pass(
+    std::map<const AbstractDataStructure *, const AbstractDataStructure *>
+        reuse_intermediates) const {
+  auto new_pipe = *this;
+
+  for (auto pair : reuse_intermediates) {
+    std::cout << *(pair.second) << std::endl;
+    auto alloc_name = getAllocateNode(pair.second)->name;
+    new_pipe = new_pipe.replaceDataStructure(pair.first, alloc_name);
+  }
+  return new_pipe;
+}
+
 Pipeline Pipeline::finalize(bool hoist) {
 
   auto new_pipe = *this;
@@ -438,6 +499,8 @@ Pipeline Pipeline::finalize(bool hoist) {
 
   // Now figure out if any data-structures were marked as reuse.
   new_pipe = new_pipe.generate_reuse();
+
+  new_pipe = new_pipe.run_reuse_pass(reuse_intermediate_internal);
 
   return new_pipe;
 }
@@ -607,12 +670,12 @@ Pipeline Pipeline::generate_reuse() {
       FERN_ASSERT(false, "tried to mark an illegal data-structure as reusable");
     }
     std::cout << host_pipeline << std::endl;
-    // Also get the index of the child, we will rewrite this to actually perform
-    // the copy
+    // Also get the index of the child, we will rewrite this to actually
+    // perform the copy
     auto index = get_child_pipeline_index(reuse_ds, host_pipeline);
 
-    // Generate the preamble for the "starting computation in the host pipeline"
-    // Get premable for computing child
+    // Generate the preamble for the "starting computation in the host
+    // pipeline" Get premable for computing child
     auto preamble = getReusePreamble(reuse_ds, reuse_ds->getVarName() + "_q");
 
     auto host_pipeline_node = host_pipeline.getNode<PipelineNode>();
@@ -624,7 +687,8 @@ Pipeline Pipeline::generate_reuse() {
     index++;
 
     // Now that our host pipeline is ready with the relevant start up, compute
-    // what overlaps occur while computing the data-structure in the child case.
+    // what overlaps occur while computing the data-structure in the child
+    // case.
     auto new_child = new_host_pipe.compute_valid_intersections(
         host_pipeline, new_host_pipe.pipeline[index], reuse_ds, reuse_var,
         reuse_ds->getVarName() + "_q");
@@ -651,6 +715,11 @@ Pipeline::getAllocateNode(const AbstractDataStructure *ds) const {
         return test;
       }
     }
+
+    if (func.getFuncType() == PIPELINE) {
+      auto test = func.getNode<PipelineNode>();
+      return test->pipeline.getAllocateNode(ds);
+    }
   }
 
   // Should never get here
@@ -664,6 +733,11 @@ const QueryNode *Pipeline::getQueryNode(const AbstractDataStructure *ds) const {
       if (test->ds == ds) {
         return test;
       }
+    }
+
+    if (func.getFuncType() == PIPELINE) {
+      auto test = func.getNode<PipelineNode>();
+      return test->pipeline.getQueryNode(ds);
     }
   }
 
@@ -680,6 +754,11 @@ int Pipeline::getQueryNodeIdx(std::string name) const {
         return i;
       }
     }
+
+    if (func.getFuncType() == PIPELINE) {
+      auto test = func.getNode<PipelineNode>();
+      return test->pipeline.getQueryNodeIdx(name);
+    }
   }
 
   // Should never get here
@@ -695,6 +774,11 @@ Pipeline::getComputeNode(const AbstractDataStructure *ds) const {
         return test;
       }
     }
+
+    if (func.getFuncType() == PIPELINE) {
+      auto test = func.getNode<PipelineNode>();
+      return test->pipeline.getComputeNode(ds);
+    }
   }
 
   // Should never get here
@@ -709,6 +793,11 @@ int Pipeline::getComputeNodeIdx(const AbstractDataStructure *ds) const {
       if (test->func.getOutput() == ds) {
         return i;
       }
+    }
+
+    if (func.getFuncType() == PIPELINE) {
+      auto test = func.getNode<PipelineNode>();
+      return test->pipeline.getComputeNodeIdx(ds);
     }
   }
 
@@ -1030,6 +1119,7 @@ void Pipeline::run_hoisting_pass() {
   outer_pipeline.derived_from = derived_from;
   outer_pipeline.to_reuse_var = to_reuse_var;
   outer_pipeline.derivations = outer_derivations;
+  outer_pipeline.reuse_intermediate_internal = reuse_intermediate_internal;
 
   *this = outer_pipeline;
 }

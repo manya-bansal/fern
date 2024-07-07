@@ -201,6 +201,15 @@ struct Pipeline {
   Pipeline bind(Variable var, int val);
   Pipeline reuse(const AbstractDataStructure *ds, Variable v);
 
+  void register_resuable_allocs(
+      std::map<const AbstractDataStructure *, const AbstractDataStructure *>
+          reuse_intermediates);
+  Pipeline run_reuse_pass(
+      std::map<const AbstractDataStructure *, const AbstractDataStructure *>
+          reuse_intermediates) const;
+  Pipeline replaceDataStructure(const AbstractDataStructure *ds,
+                                std::string new_name) const;
+
   std::vector<ConcreteFunctionCall> functions;
 
   std::vector<FunctionType> pipeline;
@@ -223,6 +232,8 @@ struct Pipeline {
   std::map<Variable, int> bounded_vars;
   std::map<Variable, DependencyExpr> derivations;
   std::map<Variable, Variable> derived_from;
+  std::map<const AbstractDataStructure *, const AbstractDataStructure *>
+      reuse_intermediate_internal;
 };
 
 std::ostream &operator<<(std::ostream &, const Pipeline &);

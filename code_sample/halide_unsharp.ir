@@ -1,92 +1,92 @@
-y66 in (0, final_out.logical_cols, y_tile69)
+y67 in (0, final_out.logical_cols, y_tile69)
 o in (0, final_out.logical_rows, o_s)
-x67 = o + i
+x66 = o + i
 x_tile68 = i_s
 i = 0
-y_tile47=y_tile53
-x_tile46=6+x_tile50
-y49=y51
-x48=x52
-y_tile53=6+y_tile55
-x_tile50=x_tile54
-y51=y57
-x52=x56
-y_tile47=y_tile61
-x_tile46=x_tile58
-y49=y59
-x48=x60
-y_tile55=y_tile61
-x_tile54=x_tile58
-y57=y59
-x56=x60
-y_tile47=y_tile65
-x_tile46=x_tile64
-y49=y62
-x48=x63
-y_tile61=y_tile65
-x_tile58=x_tile64
-y59=y62
-x60=x63
+y_tile49=y_tile50
+x_tile48=6+x_tile53
+y47=y51
+x46=x52
+y_tile50=6+y_tile57
+x_tile53=x_tile55
+y51=y56
+x52=x54
+y_tile49=y_tile58
+x_tile48=x_tile61
+y47=y60
+x46=x59
+y_tile57=y_tile58
+x_tile55=x_tile61
+y56=y60
+x54=x59
+y_tile49=y_tile65
+x_tile48=x_tile62
+y47=y64
+x46=x63
+y_tile58=y_tile65
+x_tile61=x_tile62
+y60=y64
+x59=x63
 y_tile65=y_tile69
-x_tile64=x_tile68
-y62=y66
-x63=x67
-	gray_out_q = allocate(x48 , y49 , x_tile46 , y_tile47 , )
-	blur_y_temp_q = allocate(x52 , y51 , x_tile50 , y_tile53 , )
-	blur_x_temp_q = allocate(x56 , y57 , x_tile54 , y_tile55 , )
-	sharpen_temp_q = allocate(x60 , y59 , x_tile58 , y_tile61 , )
-	ratio_temp_q = allocate(x63 , y62 , x_tile64 , y_tile65 , )
+x_tile62=x_tile68
+y64=y67
+x63=x66
+	gray_out_q = allocate(x46 , y47 , x_tile48 , y_tile49 , )
+	blur_y_temp_q = allocate(x52 , y51 , x_tile53 , y_tile50 , )
+	blur_x_temp_q = allocate(x54 , y56 , x_tile55 , y_tile57 , )
+	sharpen_temp_q = allocate(x59 , y60 , x_tile61 , y_tile58 , )
+	ratio_temp_q = allocate(x63 , y64 , x_tile62 , y_tile65 , )
 	{
-x72 in (0, gray_out_q.logical_rows, x_tile70)
-y73 in (0, gray_out_q.logical_cols, y_tile71)
-	gray_out_q_q = gray_out_q.query(x72 , y73 , x_tile70 , y_tile71 , )
-	input_q_13 = input.query(x72 , y73 * 3 , x_tile70 + 6 , y_tile71 * 3 + 18 , )
+x70 in (0, gray_out_q.logical_rows, x_tile72)
+y71 in (0, gray_out_q.logical_cols, y_tile73)
+	gray_out_q_q = gray_out_q.query(x70 , y71 , x_tile72 , y_tile73 , )
+	input_q_13 = input.query(x70 , y71 * 3 , x_tile72 + 6 , y_tile73 * 3 + 18 , )
 	gray_mine(gray_out_q : gray_out_q_q, input : input_q_13, )
 
 }
 
 	{
 i in (o, o_s, i_s)
-x67 = o + i
+x66 = o + i
 x_tile68 = i_s
-y_tile47=y_tile53
-x_tile46=6+x_tile50
-y49=y51
-x48=x52
-y_tile53=6+y_tile55
-x_tile50=x_tile54
-y51=y57
-x52=x56
-y_tile47=y_tile61
-x_tile46=x_tile58
-y49=y59
-x48=x60
-y_tile55=y_tile61
-x_tile54=x_tile58
-y57=y59
-x56=x60
-y_tile47=y_tile65
-x_tile46=x_tile64
-y49=y62
-x48=x63
-y_tile61=y_tile65
-x_tile58=x_tile64
-y59=y62
-x60=x63
+y_tile49=y_tile50
+x_tile48=6+x_tile53
+y47=y51
+x46=x52
+y_tile50=6+y_tile57
+x_tile53=x_tile55
+y51=y56
+x52=x54
+y_tile49=y_tile58
+x_tile48=x_tile61
+y47=y60
+x46=x59
+y_tile57=y_tile58
+x_tile55=x_tile61
+y56=y60
+x54=x59
+y_tile49=y_tile65
+x_tile48=x_tile62
+y47=y64
+x46=x63
+y_tile58=y_tile65
+x_tile61=x_tile62
+y60=y64
+x59=x63
 y_tile65=y_tile69
-x_tile64=x_tile68
-y62=y66
-x63=x67
+x_tile62=x_tile68
+y64=y67
+x63=x66
 	 BLANK 
 	 BLANK 
 	 BLANK 
 	 BLANK 
 	 BLANK 
 	 BLANK 
-	final_out_q = final_out.query(x67 , y66 , x_tile68 , y_tile69 , )
-	input_q_9 = input.query(x67 , y66 * 3 , x_tile68 , y_tile69 * 3 , )
-	gray_out_q_q = gray_out_q.query(x_tile46 - 1 , y49 , 1 , y_tile47 , )
-	input_q_10 = input.query(x48 + x_tile46 - 1 , y49 * 3 , 1 + 6 , y_tile47 * 3 + 18 , )
+	final_out_q = final_out.query(x66 , y67 , x_tile68 , y_tile69 , )
+	input_q_9 = input.query(x66 , y67 * 3 , x_tile68 , y_tile69 * 3 , )
+	gray_out_q_q = gray_out_q.query(x_tile48 - 1 , y47 , 1 , y_tile49 , )
+	input_q_10 = input.query(x46 + x_tile48 - 1 , y47 * 3 , 1 + 6 , y_tile49 * 3 + 18 , )
 	gray_mine(gray_out : gray_out_q_q, input : input_q_10, )
 	 BLANK 
 	naive_blur_y_unsharp_vec(blur_y_temp : blur_y_temp_q, )
@@ -99,8 +99,8 @@ x63=x67
 	 BLANK 
 	 BLANK 
 	 BLANK 
-	gray_out_q_move_src = gray_out_q.query(1 , y49 , x_tile46 - 1 , y_tile47 , )
-	gray_out_q.insert(0 , y49 , x_tile46 - 1 , y_tile47 , gray_out_q_move_src)
+	gray_out_q_move_src = gray_out_q.query(1 , y47 , x_tile48 - 1 , y_tile49 , )
+	gray_out_q.insert(0 , y47 , x_tile48 - 1 , y_tile49 , gray_out_q_move_src)
 
 }
 

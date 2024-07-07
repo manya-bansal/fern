@@ -1,13 +1,11 @@
 y23 = 0
 x22 = 0
-x_tile24 = 0
-y_tile25 = 0
 y_tile16=y_tile18
 x_tile15=x_tile17
 y14=y20
 x13=x19
 y_tile18=y_tile25*maxpool_dim21
-x_tile17=x_tile24*maxpool_dim21
+x_tile17=maxpool_dim21*x_tile24
 y20=y23*maxpool_dim21
 x19=x22*maxpool_dim21
 	output_conv_q = allocate(x13 , y14 , x_tile15 , y_tile16 , )
@@ -20,7 +18,7 @@ x_tile15=x_tile17
 y14=y20
 x13=x19
 y_tile18=y_tile25*maxpool_dim21
-x_tile17=x_tile24*maxpool_dim21
+x_tile17=maxpool_dim21*x_tile24
 y20=y23*maxpool_dim21
 x19=x22*maxpool_dim21
 	 BLANK 

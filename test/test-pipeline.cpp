@@ -189,3 +189,29 @@ TEST(Eval, HalideUnsharp) {
   util::printToFile(pipeline, std::string(SOURCE_DIR) + "/code_sample" +
                                   "/halide_unsharp.ir");
 }
+
+TEST(Eval, Granularity) {
+  examples::Array<float> a("a");
+  examples::Array<float> b("b");
+  examples::Array<float> c("c");
+
+  examples::Array<float> r1("r1");
+  examples::Array<float> r2("r2");
+  examples::Array<float> r3("r3");
+
+  examples::vadd vadd;
+  examples::vadd vmul;
+  examples::vadd vsub;
+
+  Pipeline pipeline({
+      vadd(&a, &b, &r1),
+      vmul(&r1, &c, &r2),
+      vsub(&r1, &r2, &r3),
+  });
+
+  pipeline.constructPipeline();
+  pipeline = pipeline.finalize();
+
+  util::printToFile(pipeline, std::string(SOURCE_DIR) + "/code_sample" +
+                                  "/granularity.ir");
+}

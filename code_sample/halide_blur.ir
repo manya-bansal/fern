@@ -1,9 +1,8 @@
 y6 in (0, out2.logical_cols, y_tile5)
 o in (0, out2.logical_rows, o_s)
-i = 0
-i_s = 1
 x_tile4 = i_s
 x7 = o + i
+i = 0
 y_tile3=y_tile5
 x_tile2=2+x_tile4
 y1=y6

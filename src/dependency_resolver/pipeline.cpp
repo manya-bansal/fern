@@ -993,10 +993,12 @@ void Pipeline::run_hoisting_pass() {
     if (j >= i) {
       outer_loops_in.push_back(outer_loops[j]);
       outer_derivations[outer_loops[j].var] = 0;
-
+      // If step is bound, add that too
       if (isa<Variable>(outer_loops[j].step)) {
         Variable step_bound = to<Variable>(outer_loops[j].step);
-        outer_derivations[step_bound] = bounded_vars[step_bound];
+        if (step_bound.isBound()) {
+          outer_derivations[step_bound] = bounded_vars[step_bound];
+        }
       }
 
     } else {

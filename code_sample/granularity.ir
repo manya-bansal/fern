@@ -1,0 +1,33 @@
+x78 = 0
+len75=len76
+x74=x77
+len75=len79
+x74=x78
+len76=len79
+x77=x78
+	r1_q = allocate(x74 , len75 , )
+	r2_q = allocate(x77 , len76 , )
+	{
+x78 in (r3.idx, r3.idx + r3.size, len79)
+len75=len76
+x74=x77
+len75=len79
+x74=x78
+len76=len79
+x77=x78
+	 BLANK 
+	a_q_16 = a.query(x74 , len75 , )
+	b_q_15 = b.query(x74 , len75 , )
+	 BLANK 
+	c_q_14 = c.query(x77 , len76 , )
+	r3_q = r3.query(x78 , len79 , )
+	vadd(r1 : r1_q, b : b_q_15, a : a_q_16, )
+	vadd(r2 : r2_q, c : c_q_14, )
+	vadd(r3 : r3_q, )
+	 BLANK 
+	 BLANK 
+
+}
+
+	r1_q.free()
+	r2_q.free()

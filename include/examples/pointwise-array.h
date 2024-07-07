@@ -37,6 +37,13 @@ public:
   std::string getAllocFreeInterface() const override { return "destroy"; }
   // std::string getQueryFreeInterface() const override { return "destroy"; }
 
+  bool isTranslationInvariant(int index) const {
+    if (index < 1) {
+      return true;
+    }
+    return false;
+  }
+
 private:
   std::string name;
 };
@@ -52,8 +59,8 @@ public:
   fern::DependencySubset getDataRelationship() const override {
     // PARALLELIZE PRODUCTION BY X
     // this only shows up in the case that this is the last function
-    fern::Variable x("x", false, false, true);
-    fern::Variable len("len", true);
+    fern::Variable x("x", false, false, false);
+    fern::Variable len("len", false, false, false);
     fern::Interval loop(x, out["idx"], out["idx"] + out["size"], len);
     fern::DataStructure block_out("out", &out);
     fern::DataStructure block_a("a", &a);

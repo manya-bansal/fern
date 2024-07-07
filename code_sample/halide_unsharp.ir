@@ -1,6 +1,5 @@
 y66 in (0, final_out.logical_cols, y_tile69)
 o in (0, final_out.logical_rows, o_s)
-i_s = 1
 x67 = o + i
 x_tile68 = i_s
 i = 0

@@ -32,7 +32,7 @@ x0=x7
 	input_q_0 = input.query(x0 + x_tile2 - 1 , y1 , 1 , y_tile3 + 2 , )
 	naive_blur_x_take_2_vec(out1 : out1_q_q, input : input_q_0, )
 	 BLANK 
-	naive_blur_y_take_2_vec(out2 : out2_q, )
+	naive_blur_y_take_2_vec(out2 : out2_q, out1 : out1_q_, )
 	 BLANK 
 	out1_q_move_src = out1_q.query(1 , y1 , x_tile2 - 1 , y_tile3 , )
 	out1_q.insert(0 , y1 , x_tile2 - 1 , y_tile3 , out1_q_move_src)

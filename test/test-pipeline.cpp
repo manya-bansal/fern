@@ -419,7 +419,18 @@ TEST(Eval, WorstCase) {
                getNode(len), DataStructureArg(&add_7, "data")),
   });
 
+  std::map<const AbstractDataStructure *, const AbstractDataStructure *>
+      resuable;
+
+  resuable[&add_2] = &add_1;
+  resuable[&add_3] = &add_1;
+  resuable[&add_4] = &add_1;
+  resuable[&add_5] = &add_1;
+  resuable[&add_6] = &add_1;
+
   pipeline.constructPipeline();
+
+  pipeline.register_resuable_allocs(resuable);
   pipeline = pipeline.finalize();
 
   util::printToFile(pipeline, std::string(SOURCE_DIR) + "/code_sample" +

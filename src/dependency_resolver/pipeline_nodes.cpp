@@ -40,7 +40,9 @@ void InsertNode::print(std::ostream &stream) const {
   // stream << child << " = " << parent << " .insert()";
 }
 
-void FreeNode::print(std::ostream &stream) const { stream << name << "free()"; }
+void FreeNode::print(std::ostream &stream) const {
+  stream << name << ".free()";
+}
 
 void ComputeNode::print(std::ostream &stream) const {
   stream << func.getName() << "(";

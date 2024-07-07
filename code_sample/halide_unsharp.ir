@@ -1,36 +1,50 @@
 y56 in (0, out2.logical_cols, y_tile57)
 o in (0, out2.logical_rows, o_s)
-y_tile50 = 2+y_tile57
-y51 = y56
-x52 = x54
-x_tile53 = x_tile55
-x46 = x52
 y47 = y51
-x_tile48 = 2+x_tile53
+x46 = x52
+y_tile50 = 6+y_tile57
+x_tile48 = 6+x_tile53
 y_tile49 = y_tile50
+x52 = x54
+y51 = y56
+x_tile53 = x_tile55
 	gray_out_q = allocate(x46 , y47 , x_tile48 , y_tile49 , )
 	out1_q = allocate(x52 , y51 , x_tile53 , y_tile50 , )
 	{
+x58 in (0, gray_out_q.logical_rows, x_tile60)
+y59 in (0, gray_out_q.logical_cols, y_tile61)
+	gray_out_q_q = gray_out_q.query(x58 , y59 , x_tile60 , y_tile61 , )
+	input_q_12 = input.query(x58 * 3 , y59 * 3 , x_tile60 * 3 + 18 , y_tile61 * 3 + 18 , )
+	gray_mine(gray_out_q : gray_out_q_q, input : input_q_12, )
+
+}
+
+	{
 i in (o, o_s, i_s)
-x_tile55 = i_s
 x54 = o + i
-y_tile50 = 2+y_tile57
-y51 = y56
-x52 = x54
-x_tile53 = x_tile55
-x46 = x52
+x_tile55 = i_s
 y47 = y51
-x_tile48 = 2+x_tile53
+x46 = x52
+y_tile50 = 6+y_tile57
+x_tile48 = 6+x_tile53
 y_tile49 = y_tile50
+x52 = x54
+y51 = y56
+x_tile53 = x_tile55
 	 BLANK 
-	input_q_9 = input.query(x46 * 3 , y47 * 3 , x_tile48 * 3 + 18 , y_tile49 * 3 + 18 , )
+	 BLANK 
 	 BLANK 
 	out2_q = out2.query(x54 , y56 , x_tile55 , y_tile57 , )
-	gray_mine(gray_out : gray_out_q, input : input_q_9, )
-	naive_blur_y_take_2_vec(out1 : out1_q, )
-	naive_blur_x_take_2_vec(out2 : out2_q, )
+	gray_out_q_q = gray_out_q.query(x_tile48 - 1 , y47 , 1 , y_tile49 , )
+	input_q_9 = input.query(x46 + x_tile48 - 1 * 3 , y47 * 3 , 1 * 3 + 18 , y_tile49 * 3 + 18 , )
+	gray_mine(gray_out : gray_out_q_q, input : input_q_9, )
+	 BLANK 
+	naive_blur_y_unsharp_vec(out1 : out1_q, )
+	naive_blur_x_unsharp_vec(out2 : out2_q, )
 	 BLANK 
 	 BLANK 
+	gray_out_q_move_src = gray_out_q.query(1 , y47 , x_tile48 - 1 , y_tile49 , )
+	gray_out_q.insert(0 , y47 , x_tile48 - 1 , y_tile49 , gray_out_q_move_src)
 
 }
 

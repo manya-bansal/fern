@@ -139,12 +139,14 @@ TEST(Eval, HalideUnsharp) {
   examples::image out1("out1");
   examples::image out2("out2");
 
-  examples::blur_x blurx;
-  examples::blur_y blury;
+  examples::blur_x_unsharp blurx;
+  examples::blur_y_unsharp blury;
   examples::gray gray;
 
+  auto gray_concrete = gray(&input, &gray_out);
+
   Pipeline pipeline({
-      gray(&input, &gray_out),
+      gray_concrete,
       blury(&gray_out, &out1),
       blurx(&out1, &out2),
   });
@@ -171,7 +173,8 @@ TEST(Eval, HalideUnsharp) {
   FERN_ASSERT_NO_MSG(pipeline.bounded_vars.count(inner_step) > 0);
   // Indicate that we would like to compute the reuse of a particular
   // data-structure
-  // pipeline = pipeline.reuse(&gray_out);
+  auto all_interval_vars = gray_concrete.getIntervalVars();
+  pipeline = pipeline.reuse(&gray_out, all_interval_vars[0]);
   // To indicate the end of scheduling we call the finalize function.
   // Indicate the end of scheduling code and the beginning of opt
   // passes

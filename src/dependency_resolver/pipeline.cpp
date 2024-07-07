@@ -42,7 +42,7 @@ void Pipeline::buildFuncCalls() {
   for (int i = last_func_index; i >= 0; i--) {
     std::map<const AbstractDataStructure *, std::string> names;
     auto call = functions[i];
-    std::cout << call << std::endl;
+    // std::cout << call << std::endl;
     std::vector<
         std::tuple<std::vector<DependencyExpr>, std::vector<DependencyExpr>>>
         dependencies;
@@ -51,6 +51,7 @@ void Pipeline::buildFuncCalls() {
     for (auto a : call.getInputs()) {
       if (isIntermediate(a)) {
         // Skip because we are going to allocate it later
+        names[a] = a->getVarName() + "_q_";
         continue;
       }
 

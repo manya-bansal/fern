@@ -11,26 +11,26 @@ len10=len12
 x11=x13
 len12=len14
 x13=x15
-len2=len16
-x3=x17
-len16=len18
-x17=x19
-len18=len20
-x19=x21
-len20=len22
-x21=x23
-len32=len22
-x33=x23
-len14=len24
-x15=x25
-len22=len24
-x23=x25
-len24=len26
-x25=x27
-len26=len28
-x27=x29
-len28=len30
-x29=x31
+len2=len17
+x3=x16
+len17=len19
+x16=x18
+len19=len21
+x18=x20
+len21=len23
+x20=x22
+len32=len23
+x33=x22
+len14=len25
+x15=x24
+len23=len25
+x22=x24
+len25=len27
+x24=x26
+len27=len29
+x26=x28
+len29=len30
+x28=x31
 len30=len32
 x31=x33
 	dlat_q = allocate(x1 , len0 , )
@@ -44,7 +44,7 @@ x31=x33
 	 BLANK 
 	 BLANK 
 	 BLANK 
-	a2_q = allocate(x23 , len22 , )
+	a2_q = allocate(x22 , len23 , )
 	 BLANK 
 	 BLANK 
 	 BLANK 
@@ -63,26 +63,26 @@ len10=len12
 x11=x13
 len12=len14
 x13=x15
-len2=len16
-x3=x17
-len16=len18
-x17=x19
-len18=len20
-x19=x21
-len20=len22
-x21=x23
-len32=len22
-x33=x23
-len14=len24
-x15=x25
-len22=len24
-x23=x25
-len24=len26
-x25=x27
-len26=len28
-x27=x29
-len28=len30
-x29=x31
+len2=len17
+x3=x16
+len17=len19
+x16=x18
+len19=len21
+x18=x20
+len21=len23
+x20=x22
+len32=len23
+x33=x22
+len14=len25
+x15=x24
+len23=len25
+x22=x24
+len25=len27
+x24=x26
+len27=len29
+x26=x28
+len29=len30
+x28=x31
 len30=len32
 x31=x33
 	 BLANK 
@@ -99,7 +99,7 @@ x31=x33
 	 BLANK 
 	 BLANK 
 	 BLANK 
-	a_q_0 = a.query(x23 , len22 , )
+	a_q_0 = a.query(x22 , len23 , )
 	 BLANK 
 	 BLANK 
 	 BLANK 
@@ -107,21 +107,21 @@ x31=x33
 	a_q = a.query(x33 , len32 , )
 	ispc::subi_ispc(dlat : dlat_q, lat2 : lat2_q_2, )
 	ispc::subi_ispc(dlon : dlon_q, lon2 : lon2_q_1, )
-	ispc::divi_ispc(dlat2 : dlat_q, )
-	ispc::sin_ispc(dlat3 : dlat_q, )
-	ispc::sin_ispc(dlat4 : dlat_q, )
-	ispc::mul_ispc(dlat5 : dlat_q, )
-	ispc::cos_ispc(dlat6 : dlat_q, )
-	ispc::muli_ispc(dlat7 : dlat_q, )
-	ispc::divi_ispc(dlon2 : dlon_q, )
-	ispc::sin_ispc(dlon3 : dlon_q, )
-	ispc::mul_ispc(dlon4 : dlon_q, )
-	ispc::mul_ispc(a2 : a2_q, a : a_q_0, )
-	ispc::add_ispc(a3 : a2_q, )
-	ispc::sqrt_ispc(a4 : a2_q, )
-	ispc::asin_ispc(a5 : a2_q, )
-	ispc::muli_ispc(a6 : a2_q, )
-	ispc::muli_ispc(a : a_q, )
+	ispc::divi_ispc(dlat2 : dlat_q, dlat : dlat_q_, )
+	ispc::sin_ispc(dlat3 : dlat_q, dlat2 : dlat_q, )
+	ispc::sin_ispc(dlat4 : dlat_q, dlat3 : dlat_q, )
+	ispc::mul_ispc(dlat5 : dlat_q, dlat4 : dlat_q, )
+	ispc::cos_ispc(dlat6 : dlat_q, dlat5 : dlat_q, )
+	ispc::muli_ispc(dlat7 : dlat_q, dlat6 : dlat_q, )
+	ispc::divi_ispc(dlon2 : dlon_q, dlon : dlon_q_, )
+	ispc::sin_ispc(dlon3 : dlon_q, dlon2 : dlon_q, )
+	ispc::mul_ispc(dlon4 : dlon_q, dlon3 : dlon_q, )
+	ispc::mul_ispc(a2 : a2_q, a : a_q_0, dlon4 : dlon_q, )
+	ispc::add_ispc(a3 : a2_q, a2 : a2_q_, dlat7 : dlat_q, )
+	ispc::sqrt_ispc(a4 : a2_q, a3 : a2_q, )
+	ispc::asin_ispc(a5 : a2_q, a4 : a2_q, )
+	ispc::muli_ispc(a6 : a2_q, a5 : a2_q, )
+	ispc::muli_ispc(a6 : a2_q, a : a_q, )
 	 BLANK 
 	 BLANK 
 	 BLANK 

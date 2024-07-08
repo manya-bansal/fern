@@ -1,19 +1,19 @@
-y66 in (0, final_out.logical_cols, y_tile69)
+y67 in (0, final_out.logical_cols, y_tile69)
 o in (0, final_out.logical_rows, o_s)
 i = 0
-x67 = o + i
+x66 = o + i
 x_tile68 = i_s
-x63=x67
-y62=y66
-x_tile64=x_tile68
+x63=x66
+y64=y67
+x_tile62=x_tile68
 y_tile65=y_tile69
 x60=x63
-y59=y62
-x_tile58=x_tile64
+y59=y64
+x_tile58=x_tile62
 y_tile61=y_tile65
 x46=x63
-y47=y62
-x_tile48=x_tile64
+y47=y64
+x_tile48=x_tile62
 y_tile49=y_tile65
 x54=x60
 y56=y59
@@ -35,7 +35,7 @@ y_tile49=y_tile50
 	blur_y_temp_q = allocate(x52 , y51 , x_tile53 , y_tile50 , )
 	blur_x_temp_q = allocate(x54 , y56 , x_tile55 , y_tile57 , )
 	sharpen_temp_q = allocate(x60 , y59 , x_tile58 , y_tile61 , )
-	ratio_temp_q = allocate(x63 , y62 , x_tile64 , y_tile65 , )
+	ratio_temp_q = allocate(x63 , y64 , x_tile62 , y_tile65 , )
 	{
 x70 in (0, gray_out_q.logical_rows, x_tile72)
 y71 in (0, gray_out_q.logical_cols, y_tile73)
@@ -47,19 +47,19 @@ y71 in (0, gray_out_q.logical_cols, y_tile73)
 
 	{
 i in (o, o_s, i_s)
-x67 = o + i
+x66 = o + i
 x_tile68 = i_s
-x63=x67
-y62=y66
-x_tile64=x_tile68
+x63=x66
+y64=y67
+x_tile62=x_tile68
 y_tile65=y_tile69
 x60=x63
-y59=y62
-x_tile58=x_tile64
+y59=y64
+x_tile58=x_tile62
 y_tile61=y_tile65
 x46=x63
-y47=y62
-x_tile48=x_tile64
+y47=y64
+x_tile48=x_tile62
 y_tile49=y_tile65
 x54=x60
 y56=y59
@@ -83,8 +83,8 @@ y_tile49=y_tile50
 	 BLANK 
 	 BLANK 
 	 BLANK 
-	final_out_q = final_out.query(x67 , y66 , x_tile68 , y_tile69 , )
-	input_q9 = input.query(x67 , y66 * 3 , x_tile68 , y_tile69 * 3 , )
+	final_out_q = final_out.query(x66 , y67 , x_tile68 , y_tile69 , )
+	input_q9 = input.query(x66 , y67 * 3 , x_tile68 , y_tile69 * 3 , )
 	gray_out_q_q = gray_out_q.query(x_tile48 - 1 , y47 , 1 , y_tile49 , )
 	input_q10 = input.query(x46 + x_tile48 - 1 , y47 * 3 , 1 + 6 , y_tile49 * 3 + 18 , )
 	gray_mine(gray_out : gray_out_q_q, input : input_q10, )

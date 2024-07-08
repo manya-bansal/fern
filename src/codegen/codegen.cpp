@@ -4,7 +4,7 @@
 namespace fern {
 namespace codegen {
 
-Expr CodeGenerator::generate_expr(
+Expr CodeGenerator::generateExpr(
     DependencyExpr e,
     const std::set<const DependencyVariableNode *> &declared_var,
     bool check_decl) const {
@@ -70,7 +70,7 @@ Expr CodeGenerator::generate_expr(
   return new_e;
 }
 
-Stmt CodeGenerator::generate_code() {
+Stmt CodeGenerator::generateCode() {
   std::vector<Stmt> stmts;
   std::set<const DependencyVariableNode *> declared_var;
 
@@ -85,9 +85,9 @@ Stmt CodeGenerator::generate_code() {
   for (auto v : pipeline.derivations) {
     if (declared_var.count(getNode(get<0>(v))) > 0)
       continue;
-    auto lhs = generate_expr(get<0>(v), declared_var);
+    auto lhs = generateExpr(get<0>(v), declared_var);
     declared_var.insert(getNode(get<0>(v)));
-    auto rhs = generate_expr(get<1>(v), declared_var, false);
+    auto rhs = generateExpr(get<1>(v), declared_var, false);
     stmts.push_back(VarAssign::make(lhs, rhs));
   }
 
@@ -95,7 +95,7 @@ Stmt CodeGenerator::generate_code() {
   for (auto v : pipeline.var_relationships_sols) {
     if (declared_var.count(v.var) > 0)
       continue;
-    auto var_decl = generate_expr(Variable(v.var), declared_var);
+    auto var_decl = generateExpr(Variable(v.var), declared_var);
     declared_var.insert(v.var);
 
     std::stringstream ss;
@@ -143,17 +143,16 @@ Stmt CodeGenerator::generate_code() {
     auto loop = pipeline.outer_loops[i];
     // Delete outer loop vars from declared so that we can decalre in for loops
     declared_var.erase(getNode(loop.var));
-    Stmt start =
-        VarAssign::make(generate_expr(loop.var, declared_var),
-                        generate_expr(loop.start, declared_var, false));
+    Stmt start = VarAssign::make(generateExpr(loop.var, declared_var),
+                                 generateExpr(loop.start, declared_var, false));
     declared_var.insert(getNode(loop.var));
 
-    Expr end = Lt::make(generate_expr(loop.var, declared_var),
-                        generate_expr(loop.end, declared_var, false));
+    Expr end = Lt::make(generateExpr(loop.var, declared_var),
+                        generateExpr(loop.end, declared_var, false));
 
     Stmt step =
-        VarAssign::make(generate_expr(loop.var, declared_var, false),
-                        generate_expr(loop.step, declared_var, false), AddEQ);
+        VarAssign::make(generateExpr(loop.var, declared_var, false),
+                        generateExpr(loop.step, declared_var, false), AddEQ);
 
     lowered_code =
         For::make(start, end, step, lowered_code, loop.var.isParallel());
@@ -166,7 +165,7 @@ Stmt CodeGenerator::generateQueryNode(const QueryNode *node) {
   std::vector<Expr> meta_data_vals;
   for (auto e : node->deps) {
     // Never want to put a declaration function arguments.
-    meta_data_vals.push_back(generate_expr(e, {}, false));
+    meta_data_vals.push_back(generateExpr(e, {}, false));
   }
 
   auto var_decl =
@@ -231,7 +230,7 @@ Stmt CodeGenerator::generatAllocateNode(const AllocateNode *node) {
   std::vector<Expr> meta_data_vals;
   for (auto e : node->deps) {
     // Never want to put a declaration function arguments.
-    meta_data_vals.push_back(generate_expr(e, {}, false));
+    meta_data_vals.push_back(generateExpr(e, {}, false));
   }
 
   auto var_decl =
@@ -245,7 +244,7 @@ Stmt CodeGenerator::generateInsertNode(const InsertNode *node) {
   std::vector<Expr> meta_data_vals;
   for (auto e : node->deps) {
     // Never want to put a declaration function arguments.
-    meta_data_vals.push_back(generate_expr(e, {}, false));
+    meta_data_vals.push_back(generateExpr(e, {}, false));
   }
 
   meta_data_vals.push_back(EscapeExpr::make(node->child));

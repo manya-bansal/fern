@@ -13,15 +13,16 @@ namespace codegen {
 class CodeGenerator {
 public:
   CodeGenerator(Pipeline pipeline) : pipeline(pipeline) {
-    code = generate_code();
+    code = generateCode();
   }
 
   Stmt getCode() const { return code; }
-  Stmt generate_code();
+  Stmt generateCode();
+  Stmt generateFunctionHeader();
   Expr
-  generate_expr(DependencyExpr e,
-                const std::set<const DependencyVariableNode *> &declared_var,
-                bool check_decl = true) const;
+  generateExpr(DependencyExpr e,
+               const std::set<const DependencyVariableNode *> &declared_var,
+               bool check_decl = true) const;
 
 private:
   util::ScopedSet<const DependencyVariableNode *> declared;

@@ -373,6 +373,8 @@ Pipeline Pipeline::reorder(int loop_1, int loop_2) {
   return new_pipe;
 }
 
+void Pipeline::runAutomaticIntermediateReuse() { automatic_reuse = true; }
+
 Pipeline Pipeline::split(int loop, Variable outer, Variable inner,
                          Variable outer_step, Variable inner_step) {
 
@@ -507,7 +509,12 @@ Pipeline Pipeline::finalize(bool hoist) {
   // Now figure out if any data-structures were marked as reuse.
   new_pipe = new_pipe.generate_reuse();
 
-  new_pipe = new_pipe.run_reuse_pass(reuse_intermediate_internal);
+  if (!automatic_reuse) {
+    new_pipe = new_pipe.run_reuse_pass(reuse_intermediate_internal);
+  } else {
+    auto reuse_substitutes = generate_reuse_substitutes();
+    new_pipe = new_pipe.run_reuse_pass(reuse_substitutes);
+  }
 
   return new_pipe;
 }
@@ -1188,5 +1195,156 @@ std::set<const DependencyVariableNode *> Pipeline::getVariableArgs() const {
 std::set<const DependencyVariableNode *> Pipeline::getIntervalVars() const {
   return interval_vars;
 }
+
+std::map<const AbstractDataStructure *, std::set<const AbstractDataStructure *>>
+Pipeline::getAllIntermediateConflicts() const {
+
+  std::map<const AbstractDataStructure *,
+           std::set<const AbstractDataStructure *>>
+      intermediateConflict;
+  std::map<const AbstractDataStructure *, int> last_use_idx;
+  std::map<const AbstractDataStructure *, int> first_use_index;
+
+  // Figure out when the intermediate was last used as input
+  for (int i = 0; i < functions.size(); i++) {
+    for (auto in : functions[i].getInputs()) {
+      if (isIntermediate(in)) {
+        last_use_idx[in] = i;
+        intermediateConflict[in] = {};
+      }
+
+      // Output should be assigned to once
+      // Point at which the data-structure starts to contain reasonable values
+      auto output = functions[i].getOutput();
+      first_use_index[output] = i;
+    }
+  }
+
+  // Create a set of conflicts
+  for (auto ds : last_use_idx) {
+    int final_func = ds.second;
+    int start_func = first_use_index[ds.first];
+    std::cout << *(ds.first) << " " << ds.second << std::endl;
+    for (int i = start_func + 1; i <= final_func; i++) {
+      auto f = functions[i];
+
+      for (auto in : f.getInputs()) {
+        if (in == ds.first) {
+          continue;
+        }
+        if (isIntermediate(in)) {
+          intermediateConflict[ds.first].insert(in);
+        }
+      }
+
+      if (i != final_func) {
+        auto out = f.getOutput();
+        if (out == ds.first) {
+          continue;
+        }
+        if (isIntermediate(out)) {
+          intermediateConflict[ds.first].insert(out);
+        }
+      }
+    }
+  }
+
+  return intermediateConflict;
+  // auto last_func_index = functions.size() - 1;
+  // // skip over the last function
+  // for (int i = 0; i < last_func_index; i++) {
+  //   intermediates.push_back(functions[i].getOutput());
+  // }
+
+  // return intermediates;
+}
+
+std::vector<const AbstractDataStructure *>
+Pipeline::getAllIntermediates() const {
+  std::vector<const AbstractDataStructure *> intermediates;
+  auto last_func_index = functions.size() - 1;
+  // skip over the last function
+  for (int i = 0; i < last_func_index; i++) {
+    intermediates.push_back(functions[i].getOutput());
+  }
+
+  return intermediates;
+}
+
+std::map<const AbstractDataStructure *, const AbstractDataStructure *>
+Pipeline::generate_reuse_substitutes() {
+
+  std::map<const AbstractDataStructure *, const AbstractDataStructure *>
+      substitutes;
+
+  std::map<const AbstractDataStructure *,
+           std::set<const AbstractDataStructure *>>
+      share;
+
+  auto conflicts = getAllIntermediateConflicts();
+  auto intermediates = getAllIntermediates();
+
+  // Loop through all the intermediates
+
+  for (const auto &im : intermediates) {
+    bool inserted = false;
+    // Loop through all existing mappings
+    for (auto mapping : share) {
+      auto ds_conflicts = conflicts[im];
+      if (ds_conflicts.count(mapping.first) > 0) {
+        continue;
+      }
+
+      for (auto existing_mapping : mapping.second) {
+        if (ds_conflicts.count(existing_mapping) > 0) {
+          continue;
+        }
+      }
+
+      // DS does not conflict. Add to this entry and move on
+      share[mapping.first].insert(im);
+      inserted = true;
+      break;
+    }
+    // If not inserted, start it's own entry
+    if (!inserted)
+      share[im] = {};
+  }
+
+  // For printing out!
+  // for (auto c : share) {
+  //   std::cout << *(c.first) << std::endl;
+  //   std::cout << "********" << std::endl;
+
+  //   for (auto d : c.second) {
+  //     std::cout << *(d) << std::endl;
+  //   }
+  //   // util::printIterable(c.second);
+
+  //   std::cout << std::endl;
+  // }
+
+  // Set up the values in substitutes!
+  for (auto c : share) {
+    for (auto d : c.second) {
+      substitutes[d] = c.first;
+    }
+  }
+
+  for (auto pair : substitutes) {
+    std::cout << *(pair.first) << " is shared with " << *(pair.second)
+              << std::endl;
+  }
+
+  return substitutes;
+}
+
+// void ReuseIntermediates::constructConflictMap() {
+//   // First get all the intermediates.
+//   auto intermediates = pipeline.getAllIntermediateConflicts();
+
+//   // for all the intermediates, compute the conflict set.
+//   // Look at the last function where the intermediate is used as a
+// }
 
 } // namespace fern

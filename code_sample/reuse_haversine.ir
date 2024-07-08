@@ -1,0 +1,159 @@
+x33 = 0
+x31=x33
+len30=len32
+x29=x31
+len28=len30
+x27=x29
+len26=len28
+x25=x27
+len24=len26
+x23=x25
+len22=len24
+x15=x25
+len14=len24
+x33=x23
+len32=len22
+x21=x23
+len20=len22
+x19=x21
+len18=len20
+x17=x19
+len16=len18
+x3=x17
+len2=len16
+x13=x15
+len12=len14
+x11=x13
+len10=len12
+x9=x11
+len8=len10
+x7=x9
+len6=len8
+x5=x7
+len4=len6
+x1=x5
+len0=len4
+	dlat_q = allocate(x1 , len0 , )
+	dlon_q = allocate(x3 , len2 , )
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	{
+x33 in (a.idx, a.idx + a.size, len32)
+x31=x33
+len30=len32
+x29=x31
+len28=len30
+x27=x29
+len26=len28
+x25=x27
+len24=len26
+x23=x25
+len22=len24
+x15=x25
+len14=len24
+x33=x23
+len32=len22
+x21=x23
+len20=len22
+x19=x21
+len18=len20
+x17=x19
+len16=len18
+x3=x17
+len2=len16
+x13=x15
+len12=len14
+x11=x13
+len10=len12
+x9=x11
+len8=len10
+x7=x9
+len6=len8
+x5=x7
+len4=len6
+x1=x5
+len0=len4
+	 BLANK 
+	lat2_q2 = lat2.query(x1 , len0 , )
+	 BLANK 
+	lon2_q1 = lon2.query(x3 , len2 , )
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	a_q0 = a.query(x23 , len22 , )
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	a_q = a.query(x33 , len32 , )
+	ispc::subi_ispc(dlat : dlat_q, lat2 : lat2_q2, )
+	ispc::subi_ispc(dlon : dlon_q, lon2 : lon2_q1, )
+	ispc::divi_ispc(dlat2 : dlon_q, dlat : dlat_q, )
+	ispc::sin_ispc(dlat3 : dlon_q, dlat2 : dlon_q, )
+	ispc::sin_ispc(dlat4 : dlon_q, dlat3 : dlon_q, )
+	ispc::mul_ispc(dlat5 : dlon_q, dlat4 : dlon_q, )
+	ispc::cos_ispc(dlat6 : dlon_q, dlat5 : dlon_q, )
+	ispc::muli_ispc(dlat7 : dlat_q, dlat6 : dlon_q, )
+	ispc::divi_ispc(dlon2 : dlon_q, dlon : dlon_q, )
+	ispc::sin_ispc(dlon3 : dlon_q, dlon2 : dlon_q, )
+	ispc::mul_ispc(dlon4 : dlon_q, dlon3 : dlon_q, )
+	ispc::mul_ispc(a2 : dlon_q, a : a_q0, dlon4 : dlon_q, )
+	ispc::add_ispc(a3 : dlon_q, a2 : dlon_q, dlat7 : dlat_q, )
+	ispc::sqrt_ispc(a4 : dlon_q, a3 : dlon_q, )
+	ispc::asin_ispc(a5 : dlon_q, a4 : dlon_q, )
+	ispc::muli_ispc(a6 : dlon_q, a5 : dlon_q, )
+	ispc::muli_ispc(a6 : dlon_q, a : a_q, )
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+
+}
+
+	dlat_q.free()
+	dlon_q.free()
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 

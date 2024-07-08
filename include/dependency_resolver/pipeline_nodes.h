@@ -161,11 +161,18 @@ struct Pipeline {
   void buildFuncCalls();
   void generateOuterLoops();
 
+  void runAutomaticIntermediateReuse();
+
   std::vector<const AbstractDataStructure *> getTrueInputs() const;
   std::set<DummyDataStructure *> getDummyDatastructures() const;
   const AbstractDataStructure *getFinalOutput() const;
   std::set<const DependencyVariableNode *> getVariableArgs() const;
   std::set<const DependencyVariableNode *> getIntervalVars() const;
+
+  std::map<const AbstractDataStructure *,
+           std::set<const AbstractDataStructure *>>
+  getAllIntermediateConflicts() const;
+  std::vector<const AbstractDataStructure *> getAllIntermediates() const;
 
   Pipeline finalize(bool hoist = true);
   void run_hoisting_pass();
@@ -201,7 +208,7 @@ struct Pipeline {
                                            Variable v, std::string name);
 
   bool isIntermediate(const AbstractDataStructure *ds) const;
-
+  bool automatic_reuse = false;
   Pipeline reorder(int loop_1, int loop_2);
   Pipeline split(int loop, Variable outer, Variable inner, Variable outer_step,
                  Variable inner_step);
@@ -217,6 +224,8 @@ struct Pipeline {
           reuse_intermediates) const;
   Pipeline replaceDataStructure(const AbstractDataStructure *ds,
                                 std::string new_name) const;
+  std::map<const AbstractDataStructure *, const AbstractDataStructure *>
+  generate_reuse_substitutes();
 
   std::vector<ConcreteFunctionCall> functions;
 
@@ -244,6 +253,17 @@ struct Pipeline {
       reuse_intermediate_internal;
   std::set<const DependencyVariableNode *> interval_vars;
 };
+
+// struct ReuseIntermediates {
+//   ReuseIntermediates() = default;
+//   ReuseIntermediates(Pipeline pipeline) : pipeline(pipeline) {}
+
+//   void constructConflictMap();
+
+//   Pipeline pipeline;
+//   std::map<const AbstractDataStructure *, int> idx;
+//   std::map<int, std::set<int>> conflicts;
+// };
 
 std::ostream &operator<<(std::ostream &, const Pipeline &);
 

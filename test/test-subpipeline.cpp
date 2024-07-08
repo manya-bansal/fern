@@ -47,6 +47,10 @@ TEST(SubPipeline, Test1) {
   pipeline = pipeline.finalize();
 
   std::cout << pipeline << std::endl;
+
+  codegen::CodeGenerator code(pipeline);
+  util::printToFile(code, std::string(SOURCE_DIR) + "/code_sample/subpipeline" +
+                              "/test1.cpp");
 }
 
 TEST(SubPipeline, Test2) {
@@ -76,6 +80,10 @@ TEST(SubPipeline, Test2) {
   pipeline = pipeline.finalize();
 
   std::cout << pipeline << std::endl;
+
+  codegen::CodeGenerator code(pipeline);
+  util::printToFile(code, std::string(SOURCE_DIR) + "/code_sample/subpipeline" +
+                              "/test2.cpp");
 }
 
 TEST(SubPipeline, Illegal) {
@@ -102,6 +110,32 @@ TEST(SubPipeline, Illegal) {
 
   pipeline.constructPipeline();
   EXPECT_THROW(pipeline = pipeline.subpipeline(1, 2), std::runtime_error);
+  pipeline = pipeline.finalize();
+
+  std::cout << pipeline << std::endl;
+}
+
+TEST(SubPipeline, Illegal2) {
+
+  examples::Array<float> a("a");
+  examples::Array<float> out_a("out_a");
+  examples::Array<float> b("b");
+  examples::Array<float> c("c");
+  Variable len("arg_len", true);
+
+  examples::addi_ispc addi_ispc;
+
+  Pipeline pipeline({
+      addi_ispc(DataStructureArg(&a, "data"), 0.0f, getNode(len),
+                DataStructureArg(&out_a, "data")),
+      addi_ispc(DataStructureArg(&out_a, "data"), 0.0f, getNode(len),
+                DataStructureArg(&b, "data")),
+      addi_ispc(DataStructureArg(&b, "data"), 0.0f, getNode(len),
+                DataStructureArg(&c, "data")),
+  });
+
+  pipeline.constructPipeline();
+  EXPECT_THROW(pipeline = pipeline.subpipeline(1, 0), std::runtime_error);
   pipeline = pipeline.finalize();
 
   std::cout << pipeline << std::endl;

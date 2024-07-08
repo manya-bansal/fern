@@ -118,12 +118,14 @@ struct FreeNode : public FunctionTypeNode {
 struct ComputeNode : public FunctionTypeNode {
 
   ComputeNode(ConcreteFunctionCall func,
-              std::map<const AbstractDataStructure *, std::string> names)
-      : FunctionTypeNode(COMPUTE), func(func), names(names) {}
+              std::map<const AbstractDataStructure *, std::string> names,
+              int idx)
+      : FunctionTypeNode(COMPUTE), func(func), names(names), idx(idx) {}
 
   void print(std::ostream &stream) const override;
   ConcreteFunctionCall func;
   std::map<const AbstractDataStructure *, std::string> names;
+  int idx;
 };
 
 // Filler to manipulate objects (like vectors etc)

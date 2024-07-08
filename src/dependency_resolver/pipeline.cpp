@@ -97,7 +97,7 @@ void Pipeline::buildFuncCalls() {
     }
 
     names[output] = queried_name;
-    compute.push_back(new ComputeNode(call, names));
+    compute.push_back(new ComputeNode(call, names, i));
   }
 
   // Now, let's flip and store into pipeline
@@ -375,7 +375,8 @@ static bool validSubpipeline(std::vector<ConcreteFunctionCall> calls,
   }
 
   // Now start looking at the later functions and check if the
-  // Intermediates are being used as functions
+  // intermediates are being used as inputs
+  // If yes, this is not a valid sub-pipeline
   for (int i = end_idx + 1; i < calls.size(); i++) {
     auto func = calls[i];
     auto inputs = func.getInputs();
@@ -389,10 +390,59 @@ static bool validSubpipeline(std::vector<ConcreteFunctionCall> calls,
   return true;
 }
 
-Pipeline Pipeline::subpipeline(int func_start, int func_end) {
+Pipeline Pipeline::subpipeline(int start_idx, int end_idx) {
   Pipeline new_pipe = *this;
-  FERN_ASSERT(validSubpipeline(new_pipe.functions, func_start, func_end),
+
+  FERN_ASSERT_NO_MSG(start_idx >= 0);
+  FERN_ASSERT_NO_MSG(start_idx <= end_idx);
+  FERN_ASSERT_NO_MSG(end_idx < functions.size());
+  FERN_ASSERT(validSubpipeline(new_pipe.functions, start_idx, end_idx),
               "Invalid Subpipeline Candidate");
+
+  // Now that this is a valid subpipeline candidate, compute a new pipeline with
+  // the nested subpipeline
+  // Generate a new pipe but only of functions that compute until the
+  // reuse ds.
+  auto ds = new_pipe.functions[end_idx].getOutput();
+  auto name = ds->getVarName() + "_q";
+  std::vector<ConcreteFunctionCall> new_funcs;
+  for (int i = start_idx; i <= end_idx; i++) {
+    auto func = new_pipe.functions[i];
+    auto concreteArgs = func.getArguments();
+    concreteArgs[concreteArgs.size() - 1] = new DataStructureArg(
+        DataStructurePtr(new MyConcreteDataStructure(ds, name)));
+    auto new_func = ConcreteFunctionCall(func.getName(), concreteArgs,
+                                         func.getOriginalDataRel(),
+                                         func.getAbstractArguments());
+    new_funcs.push_back(new_func);
+    if (func.getOutput() == ds) {
+      break;
+    }
+  }
+
+  Pipeline p(new_funcs);
+  p.constructPipeline();
+  p = p.finalize();
+
+  FunctionType subpipeline_node = new PipelineNode(p);
+  // Set the previous computes to blank
+  bool inserted = false;
+  for (int i = 0; i < new_pipe.pipeline.size(); i++) {
+    auto node = new_pipe.pipeline[i];
+    if (node.getFuncType() == COMPUTE) {
+      auto compute_func = node.getNode<ComputeNode>();
+      if (compute_func->idx >= start_idx && compute_func->idx <= end_idx) {
+        // Set this to blank
+        new_pipe.pipeline[i] = new BlankNode();
+        // Insert at the first available spot.
+        if (!inserted) {
+          new_pipe.pipeline[i] = subpipeline_node;
+          inserted = true;
+        }
+      }
+    }
+  }
+
   return new_pipe;
 }
 
@@ -497,7 +547,7 @@ Pipeline Pipeline::replaceDataStructure(const AbstractDataStructure *ds,
           new_names[name.first] = new_name;
         }
       }
-      new_pipe.pipeline[i] = new ComputeNode(test->func, new_names);
+      new_pipe.pipeline[i] = new ComputeNode(test->func, new_names, i);
     }
 
     if (func.getFuncType() == FREE) {
@@ -994,8 +1044,8 @@ Pipeline::compute_valid_intersections(FunctionType parent, FunctionType child,
     }
   }
 
-  new_nodes.push_back(
-      FunctionType(new ComputeNode(computeNode->func, new_names)));
+  new_nodes.push_back(FunctionType(
+      new ComputeNode(computeNode->func, new_names, computeNodeIdx)));
 
   // Erase the compute node
   p.pipeline[computeNodeIdx] = new BlankNode();

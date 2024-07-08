@@ -31,17 +31,17 @@ y82=y87
 x_tile83=x_tile85
 y_tile84=y_tile86
 	 BLANK 
-	input_q_18 = input.query(x81 * stride_arg80 (Argument)  , y82 * stride_arg80 (Argument)  , x_tile83 + filter.H - 1 , y_tile84 + filter.W - 1 , )
+	input_q18 = input.query(x81 * stride_arg80 (Argument)  , y82 * stride_arg80 (Argument)  , x_tile83 + filter.H - 1 , y_tile84 + filter.W - 1 , )
 	 BLANK 
 	 BLANK 
 	output_tan_q = output_tan.query(x94 , y97 , x_tile96 , y_tile95 , )
-	conv_no_fern_mkl(output_conv : output_conv_q, filter : filter, input : input_q_18, )
-	relu_material(output_relu : output_relu_q, output_conv : output_conv_q_, )
-	maxpool(output : output_q, output_relu : output_relu_q_, )
-	tanh(output_tan : output_tan_q, output : output_q_, )
+	conv_no_fern_mkl(output_conv : output_conv_q, filter : filter, input : input_q18, )
+	relu_material(output_relu : output_relu_q, output_conv : output_conv_q, )
+	maxpool(output : output_q, output_relu : output_relu_q, )
+	tanh(output_tan : output_tan_q, output : output_q, )
 	output_tan.insert(x94 , y97 , x_tile96 , y_tile95 , output_tan_q)
 	 BLANK 
-	input_q_18.free()
+	input_q18.free()
 	 BLANK 
 	 BLANK 
 

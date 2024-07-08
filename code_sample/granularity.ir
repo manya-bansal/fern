@@ -16,14 +16,14 @@ len75=len78
 x74=x77
 len75=len76
 	 BLANK 
-	a_q_16 = a.query(x74 , len75 , )
-	b_q_15 = b.query(x74 , len75 , )
+	a_q16 = a.query(x74 , len75 , )
+	b_q15 = b.query(x74 , len75 , )
 	 BLANK 
-	c_q_14 = c.query(x77 , len76 , )
+	c_q14 = c.query(x77 , len76 , )
 	r3_q = r3.query(x79 , len78 , )
-	vadd(r1 : r1_q, b : b_q_15, a : a_q_16, )
-	vadd(r2 : r2_q, r1 : r1_q_, c : c_q_14, )
-	vadd(r3 : r3_q, r2 : r2_q_, r1 : r1_q_, )
+	vadd(r1 : r1_q, b : b_q15, a : a_q16, )
+	vadd(r2 : r2_q, r1 : r1_q, c : c_q14, )
+	vadd(r3 : r3_q, r2 : r2_q, r1 : r1_q, )
 	 BLANK 
 	 BLANK 
 

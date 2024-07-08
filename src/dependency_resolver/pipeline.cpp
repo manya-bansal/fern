@@ -52,12 +52,12 @@ void Pipeline::buildFuncCalls() {
     for (auto a : call.getInputs()) {
       if (isIntermediate(a)) {
         // Skip because we are going to allocate it later
-        names[a] = a->getVarName() + "_q_";
+        names[a] = a->getVarName() + "_q";
         continue;
       }
 
       // Always query twice in the case that it's an input (no LCM node merging)
-      std::string queried_name = util::uniqueName(a->getVarName() + "_q_");
+      std::string queried_name = util::uniqueName(a->getVarName() + "_q");
 
       // Otherwise query now
       auto deps = getCorrespondingDependency(call, a);

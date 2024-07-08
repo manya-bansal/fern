@@ -26,12 +26,14 @@ Expr CodeGenerator::generate_expr(
                       codegen::Type::make(op->type.getString()), op->name);
                 }
               }
-
-              //  new_e = codegen::Var::make(op->getVal<int64_t>(), Int64);
             }),
         std::function<void(const DependencyLiteralNode *, Matcher *)>(
             [&](const DependencyLiteralNode *op, Matcher *ctx) {
               new_e = Literal::make(op->getVal<int64_t>(), Int64);
+            }),
+        std::function<void(const MetaDataNode *, Matcher *)>(
+            [&](const MetaDataNode *op, Matcher *ctx) {
+              new_e = MetaData::make(Var::make(op->ds->getVarName()), op->name);
             }),
         std::function<void(const AddNode *, Matcher *)>(
             [&](const AddNode *op, Matcher *ctx) {
@@ -85,7 +87,7 @@ Stmt CodeGenerator::generate_code() {
       continue;
     auto lhs = generate_expr(get<0>(v), declared_var);
     declared_var.insert(getNode(get<0>(v)));
-    auto rhs = generate_expr(get<1>(v), declared_var);
+    auto rhs = generate_expr(get<1>(v), declared_var, false);
     stmts.push_back(VarAssign::make(lhs, rhs));
   }
 
@@ -133,13 +135,31 @@ Stmt CodeGenerator::generate_code() {
   }
 
   // Finally generate the outerloops
-  // auto lowered_code = Block::make(stmts);
-  // auto inner_loop_index = pipeline.outer_loops.size() - 1;
-  // for (int i = inner_loop_index; i >= 0; i--) {
-  //   lowered_code = For::make()
-  // }
+  auto lowered_code = Block::make(stmts);
+  auto inner_loop_index = pipeline.outer_loops.size() - 1;
 
-  return Block::make(stmts);
+  // Move from inner to outer
+  for (int i = inner_loop_index; i >= 0; i--) {
+    auto loop = pipeline.outer_loops[i];
+    // Delete outer loop vars from declared so that we can decalre in for loops
+    declared_var.erase(getNode(loop.var));
+    Stmt start =
+        VarAssign::make(generate_expr(loop.var, declared_var),
+                        generate_expr(loop.start, declared_var, false));
+    declared_var.insert(getNode(loop.var));
+
+    Expr end = Lt::make(generate_expr(loop.var, declared_var),
+                        generate_expr(loop.end, declared_var, false));
+
+    Stmt step =
+        VarAssign::make(generate_expr(loop.var, declared_var, false),
+                        generate_expr(loop.step, declared_var, false), AddEQ);
+
+    lowered_code =
+        For::make(start, end, step, lowered_code, loop.var.isParallel());
+  }
+
+  return lowered_code;
 }
 
 Stmt CodeGenerator::generateQueryNode(const QueryNode *node) {

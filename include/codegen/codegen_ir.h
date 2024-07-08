@@ -533,7 +533,7 @@ struct For : public StmtNode<For> {
     f->start = start;
     f->cond = cond;
     f->step = step;
-    f->body = body;
+    f->body = Scope::make(body);
     f->parallel = parallel;
     return f;
   }

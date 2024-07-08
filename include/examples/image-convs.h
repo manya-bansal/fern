@@ -45,7 +45,7 @@ public:
     return false;
   }
 
-  bool useAllocNotQuery() const override { return true; }
+  bool insertQueried() const override { return true; }
 
 private:
   std::string name;

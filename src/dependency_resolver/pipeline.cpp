@@ -63,6 +63,7 @@ void Pipeline::buildFuncCalls() {
       auto deps = getCorrespondingDependency(call, a);
 
       if (deps.size() == 0) {
+        names[a] = a->getVarName();
         continue;
       }
 
@@ -86,6 +87,13 @@ void Pipeline::buildFuncCalls() {
     } else {
       queries.push_back(
           new QueryNode(output, deps, output->getVarName(), queried_name));
+    }
+
+    if (i == last_func_index) {
+      if (output->insertQueried()) {
+        compute.push_back(
+            new InsertNode(output, deps, output->getVarName(), queried_name));
+      }
     }
 
     names[output] = queried_name;

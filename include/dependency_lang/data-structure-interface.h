@@ -39,7 +39,7 @@ public:
     return "__fern__not__defined__";
   }
 
-  virtual bool useAllocNotQuery() const { return false; }
+  virtual bool insertQueried() const { return false; }
   virtual std::string getAllocData() const = 0;
   virtual bool isTranslationInvariant(int index) const {
     (void)index;
@@ -77,7 +77,7 @@ public:
     return ds->getQueryFreeInterface();
   }
 
-  bool useAllocNotQuery() const { return ds->useAllocNotQuery(); }
+  bool insertQueried() const { return ds->insertQueried(); }
   std::string getAllocData() const { return ds->getAllocData(); };
   bool isTranslationInvariant(int index) const {
     return ds->isTranslationInvariant(index);

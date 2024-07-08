@@ -18,9 +18,10 @@ public:
 
   Stmt getCode() const { return code; }
   Stmt generate_code();
-  Expr generate_expr(
-      DependencyExpr e,
-      const std::set<const DependencyVariableNode *> &declared_var) const;
+  Expr
+  generate_expr(DependencyExpr e,
+                const std::set<const DependencyVariableNode *> &declared_var,
+                bool check_decl = true) const;
 
 private:
   util::ScopedSet<const DependencyVariableNode *> declared;
@@ -33,7 +34,7 @@ private:
   Stmt generatAllocateNode(const AllocateNode *node);
   Stmt generateInsertNode(const InsertNode *node);
   Stmt generateFreeNode(const FreeNode *node);
-  Stmt generateFreeNode(const PipelineNode *node);
+  Stmt generatePipelineNode(const PipelineNode *node);
 };
 
 std::ostream &operator<<(std::ostream &, const CodeGenerator &);

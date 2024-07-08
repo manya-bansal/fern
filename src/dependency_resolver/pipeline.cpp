@@ -446,6 +446,41 @@ Pipeline Pipeline::subpipeline(int start_idx, int end_idx) {
   return new_pipe;
 }
 
+static bool validBreak(std::vector<ConcreteFunctionCall> calls, int idx) {
+  // Ensure that no intermediates in the subpipeline are being used later
+  std::set<const AbstractDataStructure *> intermediates;
+
+  // Skip the last one, it's the "final output that will be exposed"
+  for (int i = 0; i < idx; i++) {
+    intermediates.insert(calls[i].getOutput());
+  }
+
+  // Now start looking at the later functions and check if the
+  // intermediates are being used as inputs
+  // If yes, this is not a valid sub-pipeline
+  for (int i = idx + 1; i < calls.size(); i++) {
+    auto func = calls[i];
+    auto inputs = func.getInputs();
+    for (const auto &in : inputs) {
+      if (intermediates.count(in)) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+Pipeline Pipeline::breakPipeline(int idx) {
+  Pipeline new_pipe = *this;
+  FERN_ASSERT_NO_MSG(idx > 0);
+  FERN_ASSERT_NO_MSG(idx < functions.size());
+  FERN_ASSERT(validBreak(new_pipe.functions, idx),
+              "Not a valid breaking point");
+
+  return new_pipe;
+}
+
 Pipeline Pipeline::reorder(int loop_1, int loop_2) {
   Pipeline new_pipe = *this;
   // Need to add a check for reorder

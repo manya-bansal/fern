@@ -1,8 +1,16 @@
 
 #include "codegen/codegen.h"
+#include "utils/printer.h"
 
 namespace fern {
 namespace codegen {
+
+CodeGenerator::CodeGenerator(Pipeline pipeline) : pipeline(pipeline) {
+  code = generateCode();
+  auto args = generateFunctionHeaderArguments();
+  fullFunction =
+      DeclFunc::make("my_fused_impl", codegen::Type::make("void"), args, code);
+}
 
 Expr CodeGenerator::generateExpr(
     DependencyExpr e,
@@ -22,8 +30,8 @@ Expr CodeGenerator::generateExpr(
 
               if (check_decl) {
                 if (declared_var.count(op) <= 0) {
-                  new_e = VarDecl::make(
-                      codegen::Type::make(op->type.getString()), op->name);
+                  new_e =
+                      VarDecl::make(Type::make(op->type.getString()), op->name);
                 }
               }
             }),
@@ -161,7 +169,7 @@ Stmt CodeGenerator::generateCode() {
   return lowered_code;
 }
 
-Stmt CodeGenerator::generateQueryNode(const QueryNode *node) {
+Stmt CodeGenerator::generateQueryNode(const QueryNode *node) const {
   std::vector<Expr> meta_data_vals;
   for (auto e : node->deps) {
     // Never want to put a declaration function arguments.
@@ -215,7 +223,7 @@ lowerArguments(Argument arg,
   }
 }
 
-Stmt CodeGenerator::generateComputeNode(const ComputeNode *node) {
+Stmt CodeGenerator::generateComputeNode(const ComputeNode *node) const {
 
   std::cout << node->func << std::endl;
 
@@ -226,7 +234,7 @@ Stmt CodeGenerator::generateComputeNode(const ComputeNode *node) {
   return VoidCall::make(Call::make(node->func.getName(), args));
 }
 
-Stmt CodeGenerator::generatAllocateNode(const AllocateNode *node) {
+Stmt CodeGenerator::generatAllocateNode(const AllocateNode *node) const {
   std::vector<Expr> meta_data_vals;
   for (auto e : node->deps) {
     // Never want to put a declaration function arguments.
@@ -240,7 +248,7 @@ Stmt CodeGenerator::generatAllocateNode(const AllocateNode *node) {
   return VarAssign::make(var_decl, func_call);
 }
 
-Stmt CodeGenerator::generateInsertNode(const InsertNode *node) {
+Stmt CodeGenerator::generateInsertNode(const InsertNode *node) const {
   std::vector<Expr> meta_data_vals;
   for (auto e : node->deps) {
     // Never want to put a declaration function arguments.
@@ -255,7 +263,7 @@ Stmt CodeGenerator::generateInsertNode(const InsertNode *node) {
   return VoidCall::make(insert_call);
 }
 
-Stmt CodeGenerator::generateFreeNode(const FreeNode *node) {
+Stmt CodeGenerator::generateFreeNode(const FreeNode *node) const {
 
   std::string func_name;
   if (node->allocate) {
@@ -266,14 +274,49 @@ Stmt CodeGenerator::generateFreeNode(const FreeNode *node) {
   return VoidCall::make(Call::make(node->name + "." + func_name, {}));
 }
 
-Stmt CodeGenerator::generatePipelineNode(const PipelineNode *node) {
+Stmt CodeGenerator::generatePipelineNode(const PipelineNode *node) const {
   CodeGenerator cg(node->pipeline);
   return cg.getCode();
 }
 
 std::ostream &operator<<(std::ostream &os, const CodeGenerator &cg) {
-  os << cg.getCode();
+  os << cg.getFullFunction();
   return os;
+}
+
+Stmt CodeGenerator::getFullFunction() const { return fullFunction; }
+
+std::vector<Expr> CodeGenerator::generateFunctionHeaderArguments() const {
+  std::vector<Expr> args;
+  for (auto input : pipeline.getTrueInputs()) {
+    args.push_back(VarDecl::make(Type::make(input->getTypeName()),
+                                 input->getVarName(), 1));
+  }
+
+  for (auto dummy : pipeline.getDummyDatastructures()) {
+    args.push_back(VarDecl::make(Type::make(dummy->getTypeName()),
+                                 dummy->getVarName(), dummy->isConst(),
+                                 dummy->numRef(), dummy->numPtr()));
+  }
+
+  auto output = pipeline.getFinalOutput();
+  args.push_back(
+      VarDecl::make(Type::make(output->getTypeName()), output->getVarName()));
+
+  for (const auto &undef : pipeline.getVariableArgs()) {
+    args.push_back(generateExpr(Variable(undef), {}, true));
+  }
+  // Get all the variables that have been left as undefined
+  // util::printIterable(pipeline.undefined);
+  auto interval_vars = pipeline.getIntervalVars();
+  for (const auto &undef : pipeline.undefined) {
+    if (interval_vars.count(undef) > 0) {
+      continue;
+    }
+    args.push_back(generateExpr(Variable(undef), {}, true));
+  }
+
+  return args;
 }
 
 } // namespace codegen

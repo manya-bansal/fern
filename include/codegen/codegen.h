@@ -12,13 +12,11 @@ namespace fern {
 namespace codegen {
 class CodeGenerator {
 public:
-  CodeGenerator(Pipeline pipeline) : pipeline(pipeline) {
-    code = generateCode();
-  }
-
+  CodeGenerator(Pipeline pipeline);
   Stmt getCode() const { return code; }
   Stmt generateCode();
-  Stmt generateFunctionHeader();
+  Stmt getFullFunction() const;
+  std::vector<Expr> generateFunctionHeaderArguments() const;
   Expr
   generateExpr(DependencyExpr e,
                const std::set<const DependencyVariableNode *> &declared_var,
@@ -26,16 +24,19 @@ public:
 
 private:
   util::ScopedSet<const DependencyVariableNode *> declared;
+  Stmt fullFunction;
   Stmt code;
   Pipeline pipeline;
 
+  void populateIntervalVars();
+
   // Functions to generate stmts for each pipeline node
-  Stmt generateQueryNode(const QueryNode *node);
-  Stmt generateComputeNode(const ComputeNode *node);
-  Stmt generatAllocateNode(const AllocateNode *node);
-  Stmt generateInsertNode(const InsertNode *node);
-  Stmt generateFreeNode(const FreeNode *node);
-  Stmt generatePipelineNode(const PipelineNode *node);
+  Stmt generateQueryNode(const QueryNode *node) const;
+  Stmt generateComputeNode(const ComputeNode *node) const;
+  Stmt generatAllocateNode(const AllocateNode *node) const;
+  Stmt generateInsertNode(const InsertNode *node) const;
+  Stmt generateFreeNode(const FreeNode *node) const;
+  Stmt generatePipelineNode(const PipelineNode *node) const;
 };
 
 std::ostream &operator<<(std::ostream &, const CodeGenerator &);

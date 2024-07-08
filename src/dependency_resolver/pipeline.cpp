@@ -192,13 +192,14 @@ void Pipeline::generateOuterLoops() {
               DependencyExpr step = op->step;
 
               outer_loops.push_back(IntervalPipe(v, start, end, step));
+              interval_vars.insert(getNode(v));
               ctx->match(op->child);
             }));
 
   // util::printIterable(outer_loops);
 }
 
-bool Pipeline::isIntermediate(const AbstractDataStructure *ds) {
+bool Pipeline::isIntermediate(const AbstractDataStructure *ds) const {
   if (computation_graph.find(ds) == computation_graph.end()) {
     return false;
   }
@@ -389,6 +390,8 @@ Pipeline Pipeline::split(int loop, Variable outer, Variable inner,
   new_pipe.outer_loops[loop] = outer_new;
   new_pipe.outer_loops.insert(new_pipe.outer_loops.begin() + loop + 1,
                               inner_new);
+  new_pipe.interval_vars.insert(getNode(outer));
+  new_pipe.interval_vars.insert(getNode(inner));
   new_pipe.derivations.push_back(std::make_tuple(old_loop.var, outer + inner));
   new_pipe.derivations.push_back(std::make_tuple(old_step, inner_step));
   // new_pipe.derivations[old_step] = inner_step;
@@ -1127,8 +1130,63 @@ void Pipeline::run_hoisting_pass() {
   outer_pipeline.to_reuse_var = to_reuse_var;
   outer_pipeline.derivations = outer_derivations;
   outer_pipeline.reuse_intermediate_internal = reuse_intermediate_internal;
+  outer_pipeline.interval_vars = interval_vars;
 
   *this = outer_pipeline;
+}
+
+std::vector<const AbstractDataStructure *> Pipeline::getTrueInputs() const {
+  std::vector<const AbstractDataStructure *> inputs;
+  // to check if the input has already been to the return vector
+  std::set<const AbstractDataStructure *> input_set;
+  for (auto func : functions) {
+    for (auto input : func.getInputs()) {
+      if (!isIntermediate(input) && input != getFinalOutput()) {
+        if (input_set.find(input) == input_set.end()) {
+          inputs.push_back(input);
+          input_set.insert(input);
+        }
+      }
+    }
+  }
+
+  return inputs;
+}
+
+std::set<DummyDataStructure *> Pipeline::getDummyDatastructures() const {
+  std::set<DummyDataStructure *> result;
+  for (const auto &func : functions) {
+    for (const auto &arg : func.getArguments()) {
+      if (arg.getArgType() == DUMMY_DATASTRUCTURE) {
+        auto ds = arg.getNode<DummyDataStructureArg>()->dsPtr();
+        result.insert(ds);
+      }
+    }
+  }
+  return result;
+}
+
+const AbstractDataStructure *Pipeline::getFinalOutput() const {
+  return functions[functions.size() - 1].getOutput();
+}
+
+std::set<const DependencyVariableNode *> Pipeline::getVariableArgs() const {
+  std::set<const DependencyVariableNode *> result;
+  for (const auto &func : functions) {
+    for (const auto &arg : func.getArguments()) {
+      if (arg.getArgType() == VARIABLE) {
+        auto v = arg.getNode<VariableArg>()->getVariable();
+        if (defined.count(v) <= 0) {
+          result.insert(v);
+        }
+      }
+    }
+  }
+  return result;
+}
+
+std::set<const DependencyVariableNode *> Pipeline::getIntervalVars() const {
+  return interval_vars;
 }
 
 } // namespace fern

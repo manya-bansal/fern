@@ -161,6 +161,12 @@ struct Pipeline {
   void buildFuncCalls();
   void generateOuterLoops();
 
+  std::vector<const AbstractDataStructure *> getTrueInputs() const;
+  std::set<DummyDataStructure *> getDummyDatastructures() const;
+  const AbstractDataStructure *getFinalOutput() const;
+  std::set<const DependencyVariableNode *> getVariableArgs() const;
+  std::set<const DependencyVariableNode *> getIntervalVars() const;
+
   Pipeline finalize(bool hoist = true);
   void run_hoisting_pass();
   bool hoist_able(const AllocateNode *node);
@@ -194,7 +200,7 @@ struct Pipeline {
                                            const AbstractDataStructure *ds,
                                            Variable v, std::string name);
 
-  bool isIntermediate(const AbstractDataStructure *ds);
+  bool isIntermediate(const AbstractDataStructure *ds) const;
 
   Pipeline reorder(int loop_1, int loop_2);
   Pipeline split(int loop, Variable outer, Variable inner, Variable outer_step,
@@ -236,6 +242,7 @@ struct Pipeline {
   std::map<Variable, Variable> derived_from;
   std::map<const AbstractDataStructure *, const AbstractDataStructure *>
       reuse_intermediate_internal;
+  std::set<const DependencyVariableNode *> interval_vars;
 };
 
 std::ostream &operator<<(std::ostream &, const Pipeline &);

@@ -18,6 +18,7 @@ namespace fern {
 class DependencySubset;
 class DependencyExpr;
 class MetaData;
+class Variable;
 class ConcreteFunctionCall;
 struct DependencyVariableNode;
 struct DataStructureArg;
@@ -330,10 +331,7 @@ struct VariableArg : public Args {
 
   const DependencyVariableNode *getVariable() const { return var; }
 
-  std::ostream &print(std::ostream &os) const override {
-    os << var;
-    return os;
-  }
+  std::ostream &print(std::ostream &os) const override;
 
   const DependencyVariableNode *var;
 };

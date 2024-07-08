@@ -471,12 +471,87 @@ static bool validBreak(std::vector<ConcreteFunctionCall> calls, int idx) {
   return true;
 }
 
+static void computeFullSteps(
+    DependencySubset dataRelationship,
+    std::vector<std::tuple<Variable, DependencyExpr>> &derivations) {
+
+  match(dataRelationship,
+        std::function<void(const IntervalNode *, Matcher *)>(
+            [&](const IntervalNode *op, Matcher *ctx) {
+              FERN_ASSERT(isa<Variable>(op->step),
+                          "Cannot compute in Full Steps");
+              derivations.push_back({op->var, 0});
+              derivations.push_back({to<Variable>(op->step), op->end});
+
+              ctx->match(op->child);
+            }));
+}
+
 Pipeline Pipeline::breakPipeline(int idx) {
-  Pipeline new_pipe = *this;
   FERN_ASSERT_NO_MSG(idx > 0);
   FERN_ASSERT_NO_MSG(idx < functions.size());
-  FERN_ASSERT(validBreak(new_pipe.functions, idx),
-              "Not a valid breaking point");
+  FERN_ASSERT(validBreak(functions, idx), "Not a valid breaking point");
+
+  // generate two sets of functions
+
+  std::vector<ConcreteFunctionCall> pipe_0;
+  std::vector<ConcreteFunctionCall> pipe_1;
+  std::vector<ConcreteFunctionCall> pipe_1_mangled;
+
+  for (int i = 0; i < idx; i++) {
+    auto func = functions[i];
+    pipe_0.push_back(func);
+    pipe_1_mangled.push_back(ConcreteFunctionCall(
+        func.getName(), func.getArguments(), func.getOriginalDataRel(),
+        func.getAbstractArguments()));
+  }
+
+  for (int i = idx; i < functions.size(); i++) {
+    auto func = functions[i];
+    pipe_1.push_back(func);
+    // Want to remangle the names
+    pipe_1_mangled.push_back(ConcreteFunctionCall(
+        func.getName(), func.getArguments(), func.getOriginalDataRel(),
+        func.getAbstractArguments()));
+  }
+
+  // Allocate the temp. To do this, we will look at the var relationship
+  // generated if the outer loops of the final output take full steps
+  auto last_func = pipe_1_mangled[pipe_1_mangled.size() - 1];
+
+  Pipeline p1_mangled(pipe_1_mangled);
+  p1_mangled.constructPipeline();
+  auto alloc_node =
+      p1_mangled.getAllocateNode(pipe_1_mangled[pipe_0.size() - 1].getOutput());
+
+  auto interval_vars = p1_mangled.getIntervalVars();
+  for (auto v : interval_vars) {
+    p1_mangled.derivations.push_back({Variable(v), 0});
+  }
+  // Will add to derivation by reference
+  computeFullSteps(last_func.getDataRelationship(), p1_mangled.derivations);
+
+  auto new_pipe = p1_mangled;
+
+  new_pipe.pipeline = {};
+  new_pipe.outer_loops = {};
+
+  // Insert a new output alloc
+  new_pipe.pipeline.push_back(new AllocateNode(alloc_node->ds, alloc_node->deps,
+                                               alloc_node->ds->getVarName(),
+                                               alloc_node->call));
+
+  // Now let's add!
+  Pipeline p0(pipe_0);
+  p0.constructPipeline();
+  p0 = p0.finalize();
+  new_pipe.pipeline.push_back(new PipelineNode(p0));
+
+  // Now let's add!
+  Pipeline p1(pipe_1);
+  p1.constructPipeline();
+  p1 = p1.finalize();
+  new_pipe.pipeline.push_back(new PipelineNode(p1));
 
   return new_pipe;
 }

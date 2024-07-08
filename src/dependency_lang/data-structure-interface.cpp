@@ -129,11 +129,14 @@ void ConcreteFunctionCall::mangle_abstract_names() {
     if (arg.getArgType() == VARIABLE) {
       auto var = arg.getNode<VariableArg>()->getVariable();
       // if (!(var->argument)) {
-      // std::cout << var->name << std::endl;
+      std::cout << this->getDataRelationship() << std::endl;
+      std::cout << var->name << std::endl;
+      util::printIterable(getAbstractArguments());
       FERN_ASSERT(mangled_names.find(var) != mangled_names.end(),
                   "Function is trying to use an argument that comes out from "
                   "nowhere??");
       arguments[i] = new VariableArg(mangled_names[var]);
+      // abstractArguments[i] = new VariableArg(mangled_names[var]);
       // }
     }
   }
@@ -160,9 +163,7 @@ void ConcreteFunctionCall::mangle_abstract_names() {
   for (int j = 0; j < arguments.size(); j++) {
     auto concrete_arg = arguments[j];
     auto abstract_arg = abstractArguments[j];
-    std::cout << "What's happening here??" << std::endl;
     if (concrete_arg.getArgType() == DATASTRUCTURE) {
-      std::cout << "inside" << std::endl;
       auto abstract_ds = abstract_arg.getNode<DataStructureArg>()->dsPtr();
       auto concrete_ds = concrete_arg.getNode<DataStructureArg>()->dsPtr();
       ReplaceRewriter rw(abstract_ds, concrete_ds);
@@ -215,6 +216,11 @@ std::ostream &operator<<(std::ostream &os, const ConcreteFunctionCall &func) {
   }
 
   os << arguments[arguments.size() - 1] << " (output) )";
+  return os;
+}
+
+std::ostream &VariableArg::print(std::ostream &os) const {
+  os << Variable(var);
   return os;
 }
 

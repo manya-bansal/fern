@@ -44,7 +44,7 @@ TEST(Break, Test1) {
 
   pipeline.constructPipeline();
   pipeline = pipeline.breakPipeline(1);
-  pipeline = pipeline.finalize();
+  // pipeline = pipeline.finalize();
 
   std::cout << pipeline << std::endl;
 
@@ -77,7 +77,7 @@ TEST(Break, Test2) {
 
   pipeline.constructPipeline();
   pipeline = pipeline.breakPipeline(2);
-  pipeline = pipeline.finalize();
+  // pipeline = pipeline.finalize();
 
   std::cout << pipeline << std::endl;
 

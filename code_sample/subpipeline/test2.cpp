@@ -1,37 +1,37 @@
-void my_fused_impl(const Array<float> a, Array<float> c, int64_t len14, int64_t len16, int64_t len18){
-  int64_t x15 = 0;
- int64_t x13 = x15;
- int64_t len12 = len14;
- int64_t x11 = x13;
- int64_t len10 = len12;
- int64_t x9 = x11;
- int64_t len8 = len10;
- Array<float> out_a_q = array_alloc<float>(x9, len8);
- Array<float> b_q = array_alloc<float>(x11, len10);
- Array<float> b2_q = array_alloc<float>(x13, len12);
- for(int64_t x15 = c.idx;x15 < c.idx + c.size; x15+=len14){
-    int64_t x13 = x15;
-  int64_t len12 = len14;
-  int64_t x11 = x13;
-  int64_t len10 = len12;
-  int64_t x9 = x11;
-  int64_t len8 = len10;
-  Array<float> a_q2 = a.array_query_no_materialize(x9, len8);
-  Array<float> c_q = c.array_query_no_materialize(x15, len14);
-    ispc::addi_ispc(a_q2.data, 0, len8, out_a_q.data);
-    int64_t x19 = 0;
-  Array<float> b2_q_q = array_alloc<float>(x17, len16);
-  for(int64_t x19 = b2_q.idx;x19 < b2_q.idx + b2_q.size; x19+=len18){
-      Array<float> out_a_q4 = out_a.array_query_no_materialize(x17, len16);
-   Array<float> b2_q_q = b2_q.array_query_no_materialize(x19, len18);
-   Array<float> b_q3 = b.array_query_no_materialize(x19, len18);
-      ispc::addi_ispc(out_a_q4.data, 0, len16, b2_q_q);
-      ispc::addi_ispc(b_q3.data, 0, len18, b2_q_q);
+void my_fused_impl(const Array<float> a, Array<float> c, int64_t len240, int64_t len242, int64_t len238){
+  int64_t x239 = 0;
+ int64_t x237 = x239;
+ int64_t len236 = len238;
+ int64_t x235 = x237;
+ int64_t len234 = len236;
+ int64_t x233 = x235;
+ int64_t len232 = len234;
+ Array<float> out_a_q = array_alloc<float>(x233, len232);
+ Array<float> b_q = array_alloc<float>(x235, len234);
+ Array<float> b2_q = array_alloc<float>(x237, len236);
+ for(int64_t x239 = c.idx;x239 < c.idx + c.size; x239+=len238){
+    int64_t x237 = x239;
+  int64_t len236 = len238;
+  int64_t x235 = x237;
+  int64_t len234 = len236;
+  int64_t x233 = x235;
+  int64_t len232 = len234;
+  Array<float> a_q45 = a.array_query_no_materialize(x233, len232);
+  Array<float> c_q = c.array_query_no_materialize(x239, len238);
+    ispc::addi_ispc(a_q45.data, 0, len232, out_a_q.data);
+    int64_t x243 = 0;
+  Array<float> b2_q_q = array_alloc<float>(x241, len240);
+  for(int64_t x243 = b2_q.idx;x243 < b2_q.idx + b2_q.size; x243+=len242){
+      Array<float> out_a_q47 = out_a.array_query_no_materialize(x241, len240);
+   Array<float> b2_q_q = b2_q.array_query_no_materialize(x243, len242);
+   Array<float> b_q46 = b.array_query_no_materialize(x243, len242);
+      ispc::addi_ispc(out_a_q47.data, 0, len240, b2_q_q);
+      ispc::addi_ispc(b_q46.data, 0, len242, b2_q_q);
 }
 
     b2_q_q.destroy();
 
-    ispc::addi_ispc(b2_q.data, 0, len14, c_q.data);
+    ispc::addi_ispc(b2_q.data, 0, len238, c_q.data);
 }
 
   out_a_q.destroy();

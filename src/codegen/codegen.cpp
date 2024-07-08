@@ -79,6 +79,7 @@ Expr CodeGenerator::generateExpr(
 }
 
 Stmt CodeGenerator::generateCode() {
+  std::cout << "Called?" << std::endl;
   std::vector<Stmt> stmts;
 
   // Set all the loop variables to be declared
@@ -145,6 +146,8 @@ Stmt CodeGenerator::generateCode() {
   auto lowered_code = Block::make(stmts);
   auto inner_loop_index = pipeline.outer_loops.size() - 1;
 
+  std::cout << Block::make(stmts) << std::endl;
+
   // Move from inner to outer
   for (int i = inner_loop_index; i >= 0; i--) {
     auto loop = pipeline.outer_loops[i];
@@ -171,13 +174,15 @@ Stmt CodeGenerator::generateCode() {
       if (pipeline.bounded_vars.count(Variable(v)) > 0) {
         continue;
       }
-      std::cout << "Inserting " << Variable(v) << std::endl;
+      // std::cout << "Inserting " << Variable(v) << std::endl;
       arg_vars.insert(v);
     }
 
     lowered_code =
         For::make(start, end, step, lowered_code, loop.var.isParallel());
   }
+
+  std::cout << Block::make(lowered_code) << std::endl;
 
   return lowered_code;
 }
@@ -323,6 +328,10 @@ std::vector<Expr> CodeGenerator::generateFunctionHeaderArguments() {
 
   for (const auto &undef : pipeline.getVariableArgs()) {
     // args.push_back(generateExpr(Variable(undef), {}, true));
+    if (declared_var.count(undef) > 0) {
+      continue;
+    }
+
     arg_vars.insert(undef);
     declared_var.insert(undef);
   }
@@ -330,6 +339,9 @@ std::vector<Expr> CodeGenerator::generateFunctionHeaderArguments() {
   // util::printIterable(pipeline.undefined);
   auto interval_vars = pipeline.getIntervalVars();
   for (const auto &undef : pipeline.undefined) {
+    if (declared_var.count(undef) > 0) {
+      continue;
+    }
     if (interval_vars.count(undef) > 0) {
       continue;
     }

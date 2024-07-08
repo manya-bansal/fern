@@ -6,8 +6,8 @@ namespace fern {
 namespace codegen {
 
 CodeGenerator::CodeGenerator(Pipeline pipeline) : pipeline(pipeline) {
-  code = generateCode();
   auto args = generateFunctionHeaderArguments();
+  code = generateCode();
   fullFunction =
       DeclFunc::make("my_fused_impl", codegen::Type::make("void"), args, code);
 }
@@ -80,7 +80,6 @@ Expr CodeGenerator::generateExpr(
 
 Stmt CodeGenerator::generateCode() {
   std::vector<Stmt> stmts;
-  std::set<const DependencyVariableNode *> declared_var;
 
   // Set all the loop variables to be declared
   // We will generate these later, but do not want to
@@ -286,7 +285,7 @@ std::ostream &operator<<(std::ostream &os, const CodeGenerator &cg) {
 
 Stmt CodeGenerator::getFullFunction() const { return fullFunction; }
 
-std::vector<Expr> CodeGenerator::generateFunctionHeaderArguments() const {
+std::vector<Expr> CodeGenerator::generateFunctionHeaderArguments() {
   std::vector<Expr> args;
   for (auto input : pipeline.getTrueInputs()) {
     args.push_back(VarDecl::make(Type::make(input->getTypeName()),
@@ -305,6 +304,7 @@ std::vector<Expr> CodeGenerator::generateFunctionHeaderArguments() const {
 
   for (const auto &undef : pipeline.getVariableArgs()) {
     args.push_back(generateExpr(Variable(undef), {}, true));
+    declared_var.insert(undef);
   }
   // Get all the variables that have been left as undefined
   // util::printIterable(pipeline.undefined);
@@ -314,6 +314,7 @@ std::vector<Expr> CodeGenerator::generateFunctionHeaderArguments() const {
       continue;
     }
     args.push_back(generateExpr(Variable(undef), {}, true));
+    declared_var.insert(undef);
   }
 
   return args;

@@ -1,4 +1,4 @@
-void my_fused_impl(const Array<float> c, const Array<float> a, const Array<float> b, const Array<float> add_6, Array<float> add_7, int64_t len146, int64_t len144, int64_t len144, int64_t x145){
+void my_fused_impl(const Array<float> c, const Array<float> a, const Array<float> b, const Array<float> add_6, Array<float> add_7, int64_t len144, int64_t len146, int64_t len144, int64_t x145){
   int64_t x147 = 0;
  int64_t x143 = x145;
  int64_t len142 = len144;

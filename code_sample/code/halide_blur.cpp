@@ -4,7 +4,6 @@ void my_fused_impl(const image<float> input, image<float> out2, int64_t x_tile4,
    cilk_for(int64_t o = 0;o < out2.logical_rows; o+=o_s){
         int64_t i = 0;
     int64_t x7 = o + i;
-    int64_t x_tile4 = 1;
     int64_t x0 = x7;
     int64_t y1 = y6;
     int64_t x_tile2 = 2+x_tile4;
@@ -20,7 +19,6 @@ void my_fused_impl(const image<float> input, image<float> out2, int64_t x_tile4,
 
     for(int64_t i = o;i < o_s; i+=1){
           int64_t x7 = o + i;
-     int64_t x_tile4 = 1;
      int64_t x0 = x7;
      int64_t y1 = y6;
      int64_t x_tile2 = 2+x_tile4;

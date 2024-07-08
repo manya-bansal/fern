@@ -13,7 +13,6 @@ void my_fused_impl(const Array<float> lat2, const Array<float> lon2,
   int64_t len124 = len126;
   int64_t x117 = x127;
   int64_t len116 = len126;
-  int64_t len134 = len124;
   int64_t x123 = x125;
   int64_t len122 = len124;
   int64_t x121 = x123;
@@ -50,7 +49,6 @@ void my_fused_impl(const Array<float> lat2, const Array<float> lon2,
     int64_t len124 = len126;
     int64_t x117 = x127;
     int64_t len116 = len126;
-    int64_t len134 = len124;
     int64_t x123 = x125;
     int64_t len122 = len124;
     int64_t x121 = x123;

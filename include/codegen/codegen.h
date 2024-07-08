@@ -16,14 +16,14 @@ public:
   Stmt getCode() const { return code; }
   Stmt generateCode();
   Stmt getFullFunction() const;
-  std::vector<Expr> generateFunctionHeaderArguments() const;
+  std::vector<Expr> generateFunctionHeaderArguments();
   Expr
   generateExpr(DependencyExpr e,
                const std::set<const DependencyVariableNode *> &declared_var,
                bool check_decl = true) const;
 
 private:
-  util::ScopedSet<const DependencyVariableNode *> declared;
+  std::set<const DependencyVariableNode *> declared_var;
   Stmt fullFunction;
   Stmt code;
   Pipeline pipeline;

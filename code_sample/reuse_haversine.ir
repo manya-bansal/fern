@@ -31,8 +31,8 @@ x154=x156
 len155=len157
 x152=x154
 len153=len155
-x149=x152
-len148=len153
+x148=x152
+len149=len153
 	 BLANK 
 	 BLANK 
 	 BLANK 
@@ -83,10 +83,10 @@ x154=x156
 len155=len157
 x152=x154
 len153=len155
-x149=x152
-len148=len153
+x148=x152
+len149=len153
 	 BLANK 
-	lat2_q32 = lat2.query(x149 , len148 , )
+	lat2_q32 = lat2.query(x148 , len149 , )
 	 BLANK 
 	lon2_q31 = lon2.query(x150 , len151 , )
 	 BLANK 

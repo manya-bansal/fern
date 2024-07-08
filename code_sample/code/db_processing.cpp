@@ -1,4 +1,4 @@
-void my_fused_impl(const image<float> input, image<float> output){
+void my_fused_impl(const image<float> input, image<float> output, int64_t x_tile100, int64_t y_tile101){
   int64_t x98 = 0;
  int64_t y99 = 0;
  for(int64_t x98 = 0;x98 < output.logical_rows; x98+=x_tile100){

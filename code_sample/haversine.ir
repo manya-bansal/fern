@@ -1,40 +1,40 @@
 x135 = 0
 x133=x135
 len132=len134
-x130=x133
-len131=len132
-x128=x130
-len129=len131
-x126=x128
-len127=len129
-x124=x126
-len125=len127
+x131=x133
+len130=len132
+x129=x131
+len128=len130
+x126=x129
+len127=len128
+x125=x126
+len124=len127
 x117=x126
 len116=len127
-x135=x124
-len134=len125
-x122=x124
-len123=len125
-x120=x122
-len121=len123
+x135=x125
+len134=len124
+x123=x125
+len122=len124
+x120=x123
+len121=len122
 x118=x120
 len119=len121
-x105=x118
-len104=len119
-x114=x117
-len115=len116
-x112=x114
-len113=len115
-x110=x112
-len111=len113
-x108=x110
-len109=len111
-x107=x108
-len106=len109
-x103=x107
-len102=len106
-	dlat_q = allocate(x103 , len102 , )
-	dlon_q = allocate(x105 , len104 , )
+x104=x118
+len105=len119
+x115=x117
+len114=len116
+x113=x115
+len112=len114
+x111=x113
+len110=len112
+x109=x111
+len108=len110
+x106=x109
+len107=len108
+x102=x106
+len103=len107
+	dlat_q = allocate(x102 , len103 , )
+	dlon_q = allocate(x104 , len105 , )
 	 BLANK 
 	 BLANK 
 	 BLANK 
@@ -44,7 +44,7 @@ len102=len106
 	 BLANK 
 	 BLANK 
 	 BLANK 
-	a2_q = allocate(x124 , len125 , )
+	a2_q = allocate(x125 , len124 , )
 	 BLANK 
 	 BLANK 
 	 BLANK 
@@ -53,44 +53,42 @@ len102=len106
 x135 in (a.idx, a.idx + a.size, len134)
 x133=x135
 len132=len134
-x130=x133
-len131=len132
-x128=x130
-len129=len131
-x126=x128
-len127=len129
-x124=x126
-len125=len127
+x131=x133
+len130=len132
+x129=x131
+len128=len130
+x126=x129
+len127=len128
+x125=x126
+len124=len127
 x117=x126
 len116=len127
-x135=x124
-len134=len125
-x122=x124
-len123=len125
-x120=x122
-len121=len123
+x135=x125
+len134=len124
+x123=x125
+len122=len124
+x120=x123
+len121=len122
 x118=x120
 len119=len121
-x105=x118
-len104=len119
-x114=x117
-len115=len116
-x112=x114
-len113=len115
-x110=x112
-len111=len113
-x108=x110
-len109=len111
-x107=x108
-len106=len109
-x103=x107
-len102=len106
+x104=x118
+len105=len119
+x115=x117
+len114=len116
+x113=x115
+len112=len114
+x111=x113
+len110=len112
+x109=x111
+len108=len110
+x106=x109
+len107=len108
+x102=x106
+len103=len107
 	 BLANK 
-	lat2_q22 = lat2.query(x103 , len102 , )
+	lat2_q22 = lat2.query(x102 , len103 , )
 	 BLANK 
-	lon2_q21 = lon2.query(x105 , len104 , )
-	 BLANK 
-	 BLANK 
+	lon2_q21 = lon2.query(x104 , len105 , )
 	 BLANK 
 	 BLANK 
 	 BLANK 
@@ -99,7 +97,9 @@ len102=len106
 	 BLANK 
 	 BLANK 
 	 BLANK 
-	a_q20 = a.query(x124 , len125 , )
+	 BLANK 
+	 BLANK 
+	a_q20 = a.query(x125 , len124 , )
 	 BLANK 
 	 BLANK 
 	 BLANK 

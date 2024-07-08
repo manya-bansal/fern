@@ -6,8 +6,8 @@ namespace fern {
 namespace codegen {
 
 CodeGenerator::CodeGenerator(Pipeline pipeline) : pipeline(pipeline) {
-  auto args = generateFunctionHeaderArguments();
   code = generateCode();
+  auto args = generateFunctionHeaderArguments();
   fullFunction =
       DeclFunc::make("my_fused_impl", codegen::Type::make("void"), args, code);
 }
@@ -161,6 +161,20 @@ Stmt CodeGenerator::generateCode() {
         VarAssign::make(generateExpr(loop.var, declared_var, false),
                         generateExpr(loop.step, declared_var, false), AddEQ);
 
+    // Do we need to push out a declaration of step?
+    // get all the vars in step
+    auto all_vars = loop.step.getSymbols();
+    for (const auto &v : all_vars) {
+      if (declared_var.count(v) > 0) {
+        continue;
+      }
+      if (pipeline.bounded_vars.count(Variable(v)) > 0) {
+        continue;
+      }
+      std::cout << "Inserting " << Variable(v) << std::endl;
+      arg_vars.insert(v);
+    }
+
     lowered_code =
         For::make(start, end, step, lowered_code, loop.var.isParallel());
   }
@@ -277,8 +291,9 @@ Stmt CodeGenerator::generateFreeNode(const FreeNode *node) const {
   return VoidCall::make(Call::make(node->name + "." + func_name, {}));
 }
 
-Stmt CodeGenerator::generatePipelineNode(const PipelineNode *node) const {
+Stmt CodeGenerator::generatePipelineNode(const PipelineNode *node) {
   CodeGenerator cg(node->pipeline);
+  arg_vars.insert(cg.arg_vars.begin(), cg.arg_vars.end());
   return cg.getCode();
 }
 
@@ -307,7 +322,8 @@ std::vector<Expr> CodeGenerator::generateFunctionHeaderArguments() {
       VarDecl::make(Type::make(output->getTypeName()), output->getVarName()));
 
   for (const auto &undef : pipeline.getVariableArgs()) {
-    args.push_back(generateExpr(Variable(undef), {}, true));
+    // args.push_back(generateExpr(Variable(undef), {}, true));
+    arg_vars.insert(undef);
     declared_var.insert(undef);
   }
   // Get all the variables that have been left as undefined
@@ -317,8 +333,13 @@ std::vector<Expr> CodeGenerator::generateFunctionHeaderArguments() {
     if (interval_vars.count(undef) > 0) {
       continue;
     }
-    args.push_back(generateExpr(Variable(undef), {}, true));
+    // args.push_back(generateExpr(Variable(undef), {}, true));
+    arg_vars.insert(undef);
     declared_var.insert(undef);
+  }
+
+  for (const auto &to_declare : arg_vars) {
+    args.push_back(generateExpr(Variable(to_declare), {}, true));
   }
 
   return args;

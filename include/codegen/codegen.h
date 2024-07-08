@@ -8,6 +8,8 @@
 #include "dependency_resolver/pipeline.h"
 #include "utils/scopedset.h"
 
+#include <set>
+
 namespace fern {
 namespace codegen {
 class CodeGenerator {
@@ -21,6 +23,7 @@ public:
   generateExpr(DependencyExpr e,
                const std::set<const DependencyVariableNode *> &declared_var,
                bool check_decl = true) const;
+  std::set<const DependencyVariableNode *> arg_vars;
 
 private:
   std::set<const DependencyVariableNode *> declared_var;
@@ -36,7 +39,7 @@ private:
   Stmt generatAllocateNode(const AllocateNode *node) const;
   Stmt generateInsertNode(const InsertNode *node) const;
   Stmt generateFreeNode(const FreeNode *node) const;
-  Stmt generatePipelineNode(const PipelineNode *node) const;
+  Stmt generatePipelineNode(const PipelineNode *node);
 };
 
 std::ostream &operator<<(std::ostream &, const CodeGenerator &);

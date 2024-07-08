@@ -12,6 +12,7 @@ void my_fused_impl(const Array<float> lat2, const Array<float> lon2, Array<float
  int64_t len171 = len173;
  int64_t x163 = x172;
  int64_t len162 = len173;
+ int64_t len180 = len171;
  int64_t x168 = x170;
  int64_t len169 = len171;
  int64_t x166 = x168;
@@ -30,8 +31,8 @@ void my_fused_impl(const Array<float> lat2, const Array<float> lon2, Array<float
  int64_t len155 = len157;
  int64_t x152 = x154;
  int64_t len153 = len155;
- int64_t x149 = x152;
- int64_t len148 = len153;
+ int64_t x148 = x152;
+ int64_t len149 = len153;
  Array<float> a3_q = array_alloc<float>(x172, len173);
  Array<float> a4_q = array_alloc<float>(x174, len175);
  Array<float> a5_q = array_alloc<float>(x177, len176);
@@ -49,6 +50,7 @@ void my_fused_impl(const Array<float> lat2, const Array<float> lon2, Array<float
   int64_t len171 = len173;
   int64_t x163 = x172;
   int64_t len162 = len173;
+  int64_t len180 = len171;
   int64_t x168 = x170;
   int64_t len169 = len171;
   int64_t x166 = x168;
@@ -67,13 +69,13 @@ void my_fused_impl(const Array<float> lat2, const Array<float> lon2, Array<float
   int64_t len155 = len157;
   int64_t x152 = x154;
   int64_t len153 = len155;
-  int64_t x149 = x152;
-  int64_t len148 = len153;
-  Array<float> lat2_q32 = lat2.array_query_no_materialize(x149, len148);
+  int64_t x148 = x152;
+  int64_t len149 = len153;
+  Array<float> lat2_q32 = lat2.array_query_no_materialize(x148, len149);
   Array<float> lon2_q31 = lon2.array_query_no_materialize(x150, len151);
   Array<float> a_q30 = a.array_query_no_materialize(x170, len171);
   Array<float> a_q = a.array_query_no_materialize(x181, len180);
-    ispc::subi_ispc(lat2_q32.data, 0.709843, len148, dlon_q.data);
+    ispc::subi_ispc(lat2_q32.data, 0.709843, len149, dlon_q.data);
     ispc::subi_ispc(lon2_q31.data, -1.23892, len151, dlat_q.data);
     ispc::divi_ispc(dlon_q.data, 2, len153, dlon_q.data);
     ispc::sin_ispc(dlon_q.data, len155, dlon_q.data);

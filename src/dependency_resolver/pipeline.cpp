@@ -364,6 +364,38 @@ std::ostream &operator<<(std::ostream &os, const Pipeline &pipe) {
 
 // Scheduling operators
 
+static bool validSubpipeline(std::vector<ConcreteFunctionCall> calls,
+                             int start_idx, int end_idx) {
+  // Ensure that no intermediates in the subpipeline are being used later
+  std::set<const AbstractDataStructure *> intermediates;
+
+  // Skip the last one, it's the "final output that will be exposed"
+  for (int i = start_idx; i < end_idx; i++) {
+    intermediates.insert(calls[i].getOutput());
+  }
+
+  // Now start looking at the later functions and check if the
+  // Intermediates are being used as functions
+  for (int i = end_idx + 1; i < calls.size(); i++) {
+    auto func = calls[i];
+    auto inputs = func.getInputs();
+    for (const auto &in : inputs) {
+      if (intermediates.count(in)) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+Pipeline Pipeline::subpipeline(int func_start, int func_end) {
+  Pipeline new_pipe = *this;
+  FERN_ASSERT(validSubpipeline(new_pipe.functions, func_start, func_end),
+              "Invalid Subpipeline Candidate");
+  return new_pipe;
+}
+
 Pipeline Pipeline::reorder(int loop_1, int loop_2) {
   Pipeline new_pipe = *this;
   // Need to add a check for reorder
@@ -1333,13 +1365,5 @@ Pipeline::generate_reuse_substitutes() {
 
   return substitutes;
 }
-
-// void ReuseIntermediates::constructConflictMap() {
-//   // First get all the intermediates.
-//   auto intermediates = pipeline.getAllIntermediateConflicts();
-
-//   // for all the intermediates, compute the conflict set.
-//   // Look at the last function where the intermediate is used as a
-// }
 
 } // namespace fern

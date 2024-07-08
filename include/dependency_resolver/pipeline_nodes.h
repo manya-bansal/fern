@@ -209,6 +209,10 @@ struct Pipeline {
 
   bool isIntermediate(const AbstractDataStructure *ds) const;
   bool automatic_reuse = false;
+
+  Pipeline subpipeline(int func_start, int func_end);
+  Pipeline breakPipeline(int idx);
+
   Pipeline reorder(int loop_1, int loop_2);
   Pipeline split(int loop, Variable outer, Variable inner, Variable outer_step,
                  Variable inner_step);

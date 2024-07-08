@@ -95,8 +95,41 @@ Stmt CodeGenerator::generate_code() {
     stmts.push_back(VarAssign::make(var_decl, EscapeExpr::make(ss.str())));
   }
 
+  // Now start generating the function calls
+  for (auto func : pipeline.pipeline) {
+    switch (func.getFuncType()) {
+    case BLANK:
+      // skip entirely
+      break;
+    case ALLOCATE:
+      stmts.push_back(generatAllocateNode(func.getNode<AllocateNode>()));
+      break;
+    case COMPUTE:
+      stmts.push_back(generatAllocateNode(func.getNode<ComputeNode>()));
+      break;
+    case QUERY:
+      stmts.push_back(generatAllocateNode(func.getNode<QueryNode>()));
+      break;
+    case FREE:
+      stmts.push_back(generatAllocateNode(func.getNode<FreeNode>()));
+      break;
+    case INSERT:
+      stmts.push_back(generatAllocateNode(func.getNode<InsertNode>()));
+      break;
+    default:
+      break;
+    }
+  }
+
   return Block::make(stmts);
 }
+
+Stmt CodeGenerator::generateQueryNode(const QueryNode *node);
+Stmt CodeGenerator::generateComputeNode(const ComputeNode *node);
+Stmt CodeGenerator::generatAllocateNode(const AllocateNode *node);
+Stmt CodeGenerator::generateInsertNode(const InsertNode *node);
+Stmt CodeGenerator::generateFreeNode(const FreeNode *node);
+Stmt CodeGenerator::generateFreeNode(const PipelineNode *node);
 
 std::ostream &operator<<(std::ostream &os, const CodeGenerator &cg) {
   os << cg.getCode();

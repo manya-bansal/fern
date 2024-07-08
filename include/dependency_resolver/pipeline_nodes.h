@@ -105,12 +105,14 @@ struct InsertNode : public FunctionTypeNode {
 };
 
 struct FreeNode : public FunctionTypeNode {
-  FreeNode(const AbstractDataStructure *ds, const std::string &name)
-      : FunctionTypeNode(FREE), ds(ds), name(name) {}
+  FreeNode(const AbstractDataStructure *ds, const std::string &name,
+           bool allocate)
+      : FunctionTypeNode(FREE), ds(ds), name(name), allocate(allocate) {}
 
   void print(std::ostream &stream) const override;
   const AbstractDataStructure *ds;
   std::string name;
+  bool allocate;
 };
 
 struct ComputeNode : public FunctionTypeNode {

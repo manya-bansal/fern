@@ -26,6 +26,14 @@ private:
   util::ScopedSet<const DependencyVariableNode *> declared;
   Stmt code;
   Pipeline pipeline;
+
+  // Functions to generate stmts for each pipeline node
+  Stmt generateQueryNode(const QueryNode *node);
+  Stmt generateComputeNode(const ComputeNode *node);
+  Stmt generatAllocateNode(const AllocateNode *node);
+  Stmt generateInsertNode(const InsertNode *node);
+  Stmt generateFreeNode(const FreeNode *node);
+  Stmt generateFreeNode(const PipelineNode *node);
 };
 
 std::ostream &operator<<(std::ostream &, const CodeGenerator &);

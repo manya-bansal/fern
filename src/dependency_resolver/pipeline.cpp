@@ -4,6 +4,7 @@
 #include "dependency_lang/dep_lang_rewriter.h"
 #include "utils/printer.h"
 #include <algorithm>
+#include <tuple>
 
 namespace fern {
 
@@ -68,7 +69,7 @@ void Pipeline::buildFuncCalls() {
       queries.push_back(new QueryNode(a, deps, a->getVarName(), queried_name));
       // Add to free if required
       if (a->getQueryFreeInterface() != "__fern__not__defined__") {
-        free.push_back(new FreeNode(a, queried_name));
+        free.push_back(new FreeNode(a, queried_name, false));
       }
 
       names[a] = queried_name;
@@ -80,7 +81,7 @@ void Pipeline::buildFuncCalls() {
     if (isIntermediate(output)) {
       queries.push_back(new AllocateNode(output, deps, queried_name, call));
       if (output->getAllocFreeInterface() != "__fern__not__defined__") {
-        free.push_back(new FreeNode(output, queried_name));
+        free.push_back(new FreeNode(output, queried_name, true));
       }
     } else {
       queries.push_back(
@@ -341,13 +342,6 @@ std::ostream &operator<<(std::ostream &os, const Pipeline &pipe) {
     os << get<0>(d) << " = " << get<1>(d) << std::endl;
   }
 
-  auto stack_copy = pipe.var_relationships_sols;
-
-  // while (!(stack_copy.empty())) {
-  //   auto elem = stack_copy.top();
-  //   os << elem << std::endl;
-  //   stack_copy.pop();
-  // }
   for (auto rel : pipe.var_relationships_sols) {
     os << rel << std::endl;
   }

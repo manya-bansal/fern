@@ -26,12 +26,12 @@ void my_fused_impl(const Array<float> c, const Array<float> a, const Array<float
   Array<float> add_7_q = add_7.array_query_no_materialize(x147, len146);
   Array<float> add_6_q24 = add_6.array_query_no_materialize(x147, len146);
   Array<float> c_q23 = c.array_query_no_materialize(x147, len146);
-    ispc::addi_ispc(c_q29, 0, len136, add_1_q);
-    ispc::add_ispc(a_q28, add_1_q, len138, add_1_q);
-    ispc::add_ispc(b_q27, add_1_q, len140, add_1_q);
-    ispc::add_ispc(b_q26, add_1_q, len142, add_1_q);
-    ispc::add_ispc(a_q25, add_1_q, len144, add_1_q);
-    ispc::add_ispc(c_q23, add_1_q, len146, add_7_q);
+    ispc::addi_ispc(c_q29.data, 0, len136, add_1_q.data);
+    ispc::add_ispc(a_q28.data, add_1_q.data, len138, add_1_q.data);
+    ispc::add_ispc(b_q27.data, add_1_q.data, len140, add_1_q.data);
+    ispc::add_ispc(b_q26.data, add_1_q.data, len142, add_1_q.data);
+    ispc::add_ispc(a_q25.data, add_1_q.data, len144, add_1_q.data);
+    ispc::add_ispc(c_q23.data, add_1_q.data, len146, add_7_q.data);
 }
 
   add_1_q.destroy();

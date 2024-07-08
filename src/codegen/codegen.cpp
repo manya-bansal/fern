@@ -212,8 +212,12 @@ lowerArguments(Argument arg,
   }
 
   case DATASTRUCTURE: {
-    auto ds = arg.getNode<DataStructureArg>()->dsPtr();
+    auto node = arg.getNode<DataStructureArg>();
+    auto ds = node->dsPtr();
     FERN_ASSERT(names.count(ds) > 0, "Should already have a name ready");
+    if (node->meta) {
+      return MetaData::make(Var::make(names[ds]), node->metaData);
+    }
     return Var::make(names[ds]);
   }
 

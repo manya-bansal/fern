@@ -1,45 +1,45 @@
-x95 = 0
+x94 = 0
 y96 = 0
-x89=x95
+x91=x94
 y90=y96
-x_tile91=x_tile94
+x_tile89=x_tile95
 y_tile92=y_tile97
-x88=maxpool_dim93*x89
-y87=y90*maxpool_dim93
-x_tile85=maxpool_dim93*x_tile91
-y_tile86=maxpool_dim93*y_tile92
-x81=x88
-y82=y87
-x_tile83=x_tile85
-y_tile84=y_tile86
+x86=maxpool_dim93*x91
+y85=maxpool_dim93*y90
+x_tile87=maxpool_dim93*x_tile89
+y_tile88=maxpool_dim93*y_tile92
+x81=x86
+y82=y85
+x_tile83=x_tile87
+y_tile84=y_tile88
 	output_conv_q = allocate(x81 , y82 , x_tile83 , y_tile84 , )
-	output_relu_q = allocate(x88 , y87 , x_tile85 , y_tile86 , )
-	output_q = allocate(x89 , y90 , x_tile91 , y_tile92 , )
+	output_relu_q = allocate(x86 , y85 , x_tile87 , y_tile88 , )
+	output_q = allocate(x91 , y90 , x_tile89 , y_tile92 , )
 	{
-x95 in (output_tan.W_start, output_tan.W_start + output_tan.LW, x_tile94)
+x94 in (output_tan.W_start, output_tan.W_start + output_tan.LW, x_tile95)
 y96 in (output_tan.H_start, output_tan.H_start + output_tan.LH, y_tile97)
-x89=x95
+x91=x94
 y90=y96
-x_tile91=x_tile94
+x_tile89=x_tile95
 y_tile92=y_tile97
-x88=maxpool_dim93*x89
-y87=y90*maxpool_dim93
-x_tile85=maxpool_dim93*x_tile91
-y_tile86=maxpool_dim93*y_tile92
-x81=x88
-y82=y87
-x_tile83=x_tile85
-y_tile84=y_tile86
+x86=maxpool_dim93*x91
+y85=maxpool_dim93*y90
+x_tile87=maxpool_dim93*x_tile89
+y_tile88=maxpool_dim93*y_tile92
+x81=x86
+y82=y85
+x_tile83=x_tile87
+y_tile84=y_tile88
 	 BLANK 
 	input_q18 = input.query(x81 * stride_arg80 (Argument)  , y82 * stride_arg80 (Argument)  , x_tile83 + filter.H - 1 , y_tile84 + filter.W - 1 , )
 	 BLANK 
 	 BLANK 
-	output_tan_q = output_tan.query(x95 , y96 , x_tile94 , y_tile97 , )
+	output_tan_q = output_tan.query(x94 , y96 , x_tile95 , y_tile97 , )
 	conv_no_fern_mkl(output_conv : output_conv_q, filter : filter, input : input_q18, )
 	relu_material(output_relu : output_relu_q, output_conv : output_conv_q, )
 	maxpool(output : output_q, output_relu : output_relu_q, )
 	tanh(output_tan : output_tan_q, output : output_q, )
-	output_tan.insert(x95 , y96 , x_tile94 , y_tile97 , output_tan_q)
+	output_tan.insert(x94 , y96 , x_tile95 , y_tile97 , output_tan_q)
 	 BLANK 
 	input_q18.free()
 	 BLANK 

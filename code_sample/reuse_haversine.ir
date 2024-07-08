@@ -33,8 +33,6 @@ x5=x7
 len4=len6
 x1=x5
 len0=len4
-	dlat_q = allocate(x1 , len0 , )
-	dlon_q = allocate(x3 , len2 , )
 	 BLANK 
 	 BLANK 
 	 BLANK 
@@ -47,8 +45,10 @@ len0=len4
 	 BLANK 
 	 BLANK 
 	 BLANK 
-	 BLANK 
-	 BLANK 
+	a3_q = allocate(x25 , len24 , )
+	a4_q = allocate(x27 , len26 , )
+	a5_q = allocate(x29 , len28 , )
+	a6_q = allocate(x31 , len30 , )
 	{
 x33 in (a.idx, a.idx + a.size, len32)
 x31=x33
@@ -105,23 +105,23 @@ len0=len4
 	 BLANK 
 	 BLANK 
 	a_q = a.query(x33 , len32 , )
-	ispc::subi_ispc(dlat : dlat_q, lat2 : lat2_q2, )
-	ispc::subi_ispc(dlon : dlon_q, lon2 : lon2_q1, )
-	ispc::divi_ispc(dlat2 : dlon_q, dlat : dlat_q, )
+	ispc::subi_ispc(dlat : dlon_q, lat2 : lat2_q2, )
+	ispc::subi_ispc(dlon : dlat_q, lon2 : lon2_q1, )
+	ispc::divi_ispc(dlat2 : dlon_q, dlat : dlon_q, )
 	ispc::sin_ispc(dlat3 : dlon_q, dlat2 : dlon_q, )
 	ispc::sin_ispc(dlat4 : dlon_q, dlat3 : dlon_q, )
 	ispc::mul_ispc(dlat5 : dlon_q, dlat4 : dlon_q, )
 	ispc::cos_ispc(dlat6 : dlon_q, dlat5 : dlon_q, )
-	ispc::muli_ispc(dlat7 : dlat_q, dlat6 : dlon_q, )
-	ispc::divi_ispc(dlon2 : dlon_q, dlon : dlon_q, )
-	ispc::sin_ispc(dlon3 : dlon_q, dlon2 : dlon_q, )
-	ispc::mul_ispc(dlon4 : dlon_q, dlon3 : dlon_q, )
-	ispc::mul_ispc(a2 : dlon_q, a : a_q0, dlon4 : dlon_q, )
-	ispc::add_ispc(a3 : dlon_q, a2 : dlon_q, dlat7 : dlat_q, )
-	ispc::sqrt_ispc(a4 : dlon_q, a3 : dlon_q, )
-	ispc::asin_ispc(a5 : dlon_q, a4 : dlon_q, )
-	ispc::muli_ispc(a6 : dlon_q, a5 : dlon_q, )
-	ispc::muli_ispc(a6 : dlon_q, a : a_q, )
+	ispc::muli_ispc(dlat7 : dlon_q, dlat6 : dlon_q, )
+	ispc::divi_ispc(dlon2 : dlat7_q, dlon : dlat_q, )
+	ispc::sin_ispc(dlon3 : dlat7_q, dlon2 : dlat7_q, )
+	ispc::mul_ispc(dlon4 : dlat7_q, dlon3 : dlat7_q, )
+	ispc::mul_ispc(a2 : dlat7_q, a : a_q0, dlon4 : dlat7_q, )
+	ispc::add_ispc(a3 : a3_q, a2 : dlat7_q, dlat7 : dlon_q, )
+	ispc::sqrt_ispc(a4 : a4_q, a3 : a3_q, )
+	ispc::asin_ispc(a5 : a5_q, a4 : a4_q, )
+	ispc::muli_ispc(a6 : a6_q, a5 : a5_q, )
+	ispc::muli_ispc(a6 : a6_q, a : a_q, )
 	 BLANK 
 	 BLANK 
 	 BLANK 
@@ -141,8 +141,6 @@ len0=len4
 
 }
 
-	dlat_q.free()
-	dlon_q.free()
 	 BLANK 
 	 BLANK 
 	 BLANK 
@@ -155,5 +153,7 @@ len0=len4
 	 BLANK 
 	 BLANK 
 	 BLANK 
-	 BLANK 
-	 BLANK 
+	a3_q.free()
+	a4_q.free()
+	a5_q.free()
+	a6_q.free()

@@ -1250,13 +1250,6 @@ Pipeline::getAllIntermediateConflicts() const {
   }
 
   return intermediateConflict;
-  // auto last_func_index = functions.size() - 1;
-  // // skip over the last function
-  // for (int i = 0; i < last_func_index; i++) {
-  //   intermediates.push_back(functions[i].getOutput());
-  // }
-
-  // return intermediates;
 }
 
 std::vector<const AbstractDataStructure *>
@@ -1290,13 +1283,14 @@ Pipeline::generate_reuse_substitutes() {
     bool inserted = false;
     // Loop through all existing mappings
     for (auto mapping : share) {
-      auto ds_conflicts = conflicts[im];
-      if (ds_conflicts.count(mapping.first) > 0) {
+      auto ds_conflicts = conflicts[mapping.first];
+      if (ds_conflicts.count(im) > 0) {
         continue;
       }
 
       for (auto existing_mapping : mapping.second) {
-        if (ds_conflicts.count(existing_mapping) > 0) {
+        auto ds_conflicts = conflicts[existing_mapping];
+        if (ds_conflicts.count(im) > 0) {
           continue;
         }
       }
@@ -1311,7 +1305,8 @@ Pipeline::generate_reuse_substitutes() {
       share[im] = {};
   }
 
-  // For printing out!
+  std::cout << std::endl;
+  // For printing out !
   // for (auto c : share) {
   //   std::cout << *(c.first) << std::endl;
   //   std::cout << "********" << std::endl;
@@ -1325,16 +1320,16 @@ Pipeline::generate_reuse_substitutes() {
   // }
 
   // Set up the values in substitutes!
-  for (auto c : share) {
+  for (auto c : conflicts) {
     for (auto d : c.second) {
       substitutes[d] = c.first;
     }
   }
 
-  for (auto pair : substitutes) {
-    std::cout << *(pair.first) << " is shared with " << *(pair.second)
-              << std::endl;
-  }
+  // for (auto pair : substitutes) {
+  //   std::cout << *(pair.first) << " is shared with " << *(pair.second)
+  //             << std::endl;
+  // }
 
   return substitutes;
 }

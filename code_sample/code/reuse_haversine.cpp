@@ -1,7 +1,43 @@
-void my_fused_impl(const Array<float> lat2, const Array<float> lon2,
-                   Array<float> a, int64_t len32) {
+void my_fused_impl(const Array<float> lat2, const Array<float> lon2, Array<float> a, int64_t len32){
   int64_t x33 = 0;
-  int64_t x31 = x33;
+ int64_t x31 = x33;
+ int64_t len30 = len32;
+ int64_t x29 = x31;
+ int64_t len28 = len30;
+ int64_t x27 = x29;
+ int64_t len26 = len28;
+ int64_t x25 = x27;
+ int64_t len24 = len26;
+ int64_t x23 = x25;
+ int64_t len22 = len24;
+ int64_t x15 = x25;
+ int64_t len14 = len24;
+ int64_t x21 = x23;
+ int64_t len20 = len22;
+ int64_t x19 = x21;
+ int64_t len18 = len20;
+ int64_t x17 = x19;
+ int64_t len16 = len18;
+ int64_t x3 = x17;
+ int64_t len2 = len16;
+ int64_t x13 = x15;
+ int64_t len12 = len14;
+ int64_t x11 = x13;
+ int64_t len10 = len12;
+ int64_t x9 = x11;
+ int64_t len8 = len10;
+ int64_t x7 = x9;
+ int64_t len6 = len8;
+ int64_t x5 = x7;
+ int64_t len4 = len6;
+ int64_t x1 = x5;
+ int64_t len0 = len4;
+ Array<float> a3_q = array_alloc<float>(x25, len24);
+ Array<float> a4_q = array_alloc<float>(x27, len26);
+ Array<float> a5_q = array_alloc<float>(x29, len28);
+ Array<float> a6_q = array_alloc<float>(x31, len30);
+ for(int64_t x33 = a.idx;x33 < a.idx + a.size; x33+=len32){
+    int64_t x31 = x33;
   int64_t len30 = len32;
   int64_t x29 = x31;
   int64_t len28 = len30;
@@ -33,64 +69,32 @@ void my_fused_impl(const Array<float> lat2, const Array<float> lon2,
   int64_t len4 = len6;
   int64_t x1 = x5;
   int64_t len0 = len4;
-  Array<float> dlat_q = array_alloc<float>(x1, len0);
-  Array<float> dlon_q = array_alloc<float>(x3, len2);
-  for (int64_t x33 = a.idx; x33 < a.idx + a.size; x33 += len32) {
-    int64_t x31 = x33;
-    int64_t len30 = len32;
-    int64_t x29 = x31;
-    int64_t len28 = len30;
-    int64_t x27 = x29;
-    int64_t len26 = len28;
-    int64_t x25 = x27;
-    int64_t len24 = len26;
-    int64_t x23 = x25;
-    int64_t len22 = len24;
-    int64_t x15 = x25;
-    int64_t len14 = len24;
-    int64_t x21 = x23;
-    int64_t len20 = len22;
-    int64_t x19 = x21;
-    int64_t len18 = len20;
-    int64_t x17 = x19;
-    int64_t len16 = len18;
-    int64_t x3 = x17;
-    int64_t len2 = len16;
-    int64_t x13 = x15;
-    int64_t len12 = len14;
-    int64_t x11 = x13;
-    int64_t len10 = len12;
-    int64_t x9 = x11;
-    int64_t len8 = len10;
-    int64_t x7 = x9;
-    int64_t len6 = len8;
-    int64_t x5 = x7;
-    int64_t len4 = len6;
-    int64_t x1 = x5;
-    int64_t len0 = len4;
-    Array<float> lat2_q2 = lat2.array_query_no_materialize(x1, len0);
-    Array<float> lon2_q1 = lon2.array_query_no_materialize(x3, len2);
-    Array<float> a_q0 = a.array_query_no_materialize(x23, len22);
-    Array<float> a_q = a.array_query_no_materialize(x33, len32);
-    ispc::subi_ispc(lat2_q2, 0.709843, len0, dlat_q);
-    ispc::subi_ispc(lon2_q1, -1.23892, len2, dlon_q);
-    ispc::divi_ispc(dlat_q, 2, len4, dlon_q);
+  Array<float> lat2_q2 = lat2.array_query_no_materialize(x1, len0);
+  Array<float> lon2_q1 = lon2.array_query_no_materialize(x3, len2);
+  Array<float> a_q0 = a.array_query_no_materialize(x23, len22);
+  Array<float> a_q = a.array_query_no_materialize(x33, len32);
+    ispc::subi_ispc(lat2_q2, 0.709843, len0, dlon_q);
+    ispc::subi_ispc(lon2_q1, -1.23892, len2, dlat_q);
+    ispc::divi_ispc(dlon_q, 2, len4, dlon_q);
     ispc::sin_ispc(dlon_q, len6, dlon_q);
     ispc::sin_ispc(dlon_q, len8, dlon_q);
     ispc::mul_ispc(dlon_q, dlon_q, len10, dlon_q);
     ispc::cos_ispc(dlon_q, len12, dlon_q);
-    ispc::muli_ispc(dlon_q, 0.758464, len14, dlat_q);
-    ispc::divi_ispc(dlon_q, 2, len16, dlon_q);
-    ispc::sin_ispc(dlon_q, len18, dlon_q);
-    ispc::mul_ispc(dlon_q, dlon_q, len20, dlon_q);
-    ispc::mul_ispc(a_q0, dlon_q, len22, dlon_q);
-    ispc::add_ispc(dlon_q, dlat_q, len24, dlon_q);
-    ispc::sqrt_ispc(dlon_q, len26, dlon_q);
-    ispc::asin_ispc(dlon_q, len28, dlon_q);
-    ispc::muli_ispc(dlon_q, 2, len30, dlon_q);
-    ispc::muli_ispc(dlon_q, 3959, len32, a_q);
-  }
-
-  dlat_q.destroy();
-  dlon_q.destroy();
+    ispc::muli_ispc(dlon_q, 0.758464, len14, dlon_q);
+    ispc::divi_ispc(dlat_q, 2, len16, dlat7_q);
+    ispc::sin_ispc(dlat7_q, len18, dlat7_q);
+    ispc::mul_ispc(dlat7_q, dlat7_q, len20, dlat7_q);
+    ispc::mul_ispc(a_q0, dlat7_q, len22, dlat7_q);
+    ispc::add_ispc(dlat7_q, dlon_q, len24, a3_q);
+    ispc::sqrt_ispc(a3_q, len26, a4_q);
+    ispc::asin_ispc(a4_q, len28, a5_q);
+    ispc::muli_ispc(a5_q, 2, len30, a6_q);
+    ispc::muli_ispc(a6_q, 3959, len32, a_q);
 }
+
+  a3_q.destroy();
+  a4_q.destroy();
+  a5_q.destroy();
+  a6_q.destroy();
+}
+

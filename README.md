@@ -1,6 +1,6 @@
 
 
-A (semi-) reimplementation of Fern with cleaner design decisions.
+A (semi-)reimplementation of Fern with clean(er) design decisions.
 
 
 Stuff I am still skipping: 
@@ -12,4 +12,6 @@ Stuff I am still skipping:
   figure out which interval var in local output is affected by which var in final
   output.
 -  Place in the spot of the original host in the sliding window output, currently 
-  returns the new host. Will not work if we try multiple.
+   returns the new host. Will not work if we try multiple.
+-  Break and finalize do not interact well
+-  Fork nodes needs to ignore inputs (finalize does this, but need to add an early exit to node merge)

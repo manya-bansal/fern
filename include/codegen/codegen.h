@@ -40,6 +40,8 @@ private:
   Stmt generateInsertNode(const InsertNode *node) const;
   Stmt generateFreeNode(const FreeNode *node) const;
   Stmt generatePipelineNode(const PipelineNode *node);
+
+  Stmt generateRelNodes(NodeMergeRel rel);
 };
 
 std::ostream &operator<<(std::ostream &, const CodeGenerator &);

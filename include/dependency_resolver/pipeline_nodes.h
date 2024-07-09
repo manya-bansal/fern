@@ -149,6 +149,15 @@ struct IntervalPipe {
 
 std::ostream &operator<<(std::ostream &, const IntervalPipe &);
 
+struct NodeMergeRel {
+  Variable v;
+  Variable step;
+  std::vector<DependencyExpr> v_rel;
+  std::vector<DependencyExpr> step_rel;
+};
+
+// std::ostream &operator<<(std::ostream &, const NodeMergeRel &);
+
 struct Pipeline {
   Pipeline() = default;
   Pipeline(std::vector<ConcreteFunctionCall> functions) : functions(functions) {
@@ -156,6 +165,7 @@ struct Pipeline {
   }
 
   void constructPipeline();
+  void constructMergedPipeline();
   void buildDataFlowGraph();
   void buildComputationGraph();
 
@@ -258,6 +268,8 @@ struct Pipeline {
   std::map<const AbstractDataStructure *, const AbstractDataStructure *>
       reuse_intermediate_internal;
   std::set<const DependencyVariableNode *> interval_vars;
+
+  std::vector<NodeMergeRel> merge_rel_nodes;
 };
 
 // struct ReuseIntermediates {

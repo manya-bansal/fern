@@ -2,6 +2,7 @@
 #include "dependency_lang/dep_lang.h"
 #include "dependency_lang/dep_lang_nodes.h"
 #include "dependency_lang/dep_lang_rewriter.h"
+#include "dependency_resolver/dependency_graph.h"
 #include "utils/printer.h"
 #include <algorithm>
 #include <tuple>
@@ -13,6 +14,15 @@ std::ostream &operator<<(std::ostream &os, const IntervalPipe &i) {
      << std::endl;
   return os;
 }
+
+// std::ostream &operator<<(std::ostream &os, const NodeMergeRel &rel) {
+
+//   FERN_ASSERT_NO_MSG(v_rel == step_rel);
+//   os << rel.v << " = ";
+//   util::printIterable(rel.v_rel);
+//   os << rel.step << " = ";
+
+// }
 
 void Pipeline::constructPipeline() {
 
@@ -1330,6 +1340,7 @@ void Pipeline::run_hoisting_pass() {
   outer_pipeline.derivations = outer_derivations;
   outer_pipeline.reuse_intermediate_internal = reuse_intermediate_internal;
   outer_pipeline.interval_vars = interval_vars;
+  outer_pipeline.merge_rel_nodes = merge_rel_nodes;
 
   *this = outer_pipeline;
 }
@@ -1524,6 +1535,205 @@ Pipeline::generate_reuse_substitutes() {
   // }
 
   return substitutes;
+}
+
+static std::vector<FunctionType>
+changeQueryToAlloc(std::vector<FunctionType> functions,
+                   const AbstractDataStructure *ds, ConcreteFunctionCall call) {
+  std::vector<FunctionType> to_return;
+  for (auto f : functions) {
+    if (f.getFuncType() == QUERY) {
+      auto node = f.getNode<QueryNode>();
+      if (node->ds == ds) {
+        to_return.push_back(
+            new AllocateNode(node->ds, node->deps, node->parent, call));
+      } else {
+        to_return.push_back(f);
+      }
+
+    } else if (f.getFuncType() == COMPUTE) {
+      auto node = f.getNode<ComputeNode>();
+      std::map<const AbstractDataStructure *, std::string> new_names;
+      for (auto name : node->names) {
+        if (name.first == ds) {
+          new_names[name.first] = name.first->getVarName();
+        } else {
+          new_names[name.first] = name.second;
+        }
+      }
+      to_return.push_back(new ComputeNode(node->func, new_names, node->idx));
+    } else {
+      to_return.push_back(f);
+    }
+  }
+  return to_return;
+}
+
+int getIntervalVarIndex(DependencySubset dataRelationship, Variable v) {
+  int index = -1;
+  match(dataRelationship,
+        std::function<void(const ProducerNode *, Matcher *)>(
+            [&](const ProducerNode *op, Matcher *ctx) {
+              FERN_ASSERT(isa<DataStructure>(op->child),
+                          "Should always be a datastructure dep");
+              auto ds = to<DataStructure>(op->child);
+              auto deps = ds.getAnnotations();
+
+              for (int i = 0; i < deps.size(); i++) {
+                auto dep = deps[i];
+                FERN_ASSERT(isa<Variable>(dep), "Should always be a var");
+                auto dep_v = to<Variable>(dep);
+                if (dep_v == v) {
+                  index = i;
+                }
+              }
+            }));
+
+  return index;
+}
+
+static std::vector<std::vector<DependencyExpr>>
+getAllQueryDeps(std::vector<FunctionType> functions,
+                const AbstractDataStructure *ds) {
+  std::vector<std::vector<DependencyExpr>> all_deps;
+
+  for (auto f : functions) {
+    if (f.getFuncType() == QUERY) {
+      auto node = f.getNode<QueryNode>();
+      if (node->ds == ds) {
+        all_deps.push_back(node->deps);
+      }
+    }
+  }
+  return all_deps;
+}
+
+std::vector<NodeMergeRel>
+generateDepRelationships(DependencySubset dataRelationship,
+                         std::vector<std::vector<DependencyExpr>> all_deps) {
+
+  std::vector<NodeMergeRel> rel_nodes;
+  match(dataRelationship,
+        std::function<void(const IntervalNode *, Matcher *)>(
+            [&](const IntervalNode *op, Matcher *ctx) {
+              int index_v = getIntervalVarIndex(dataRelationship, op->var);
+              FERN_ASSERT_NO_MSG(index_v != -1);
+              // std::cout << op->var << " = " << index_v << std::endl;
+              FERN_ASSERT_NO_MSG(isa<Variable>(op->step));
+              auto step_v = to<Variable>(op->step);
+              int index_step = getIntervalVarIndex(dataRelationship, step_v);
+              // std::cout << step_v << " = " << index_step << std::endl;
+
+              std::vector<DependencyExpr> v_rel;
+              std::vector<DependencyExpr> step_rel;
+              for (auto deps : all_deps) {
+                v_rel.push_back(deps[index_v]);
+                step_rel.push_back(deps[index_step]);
+              }
+
+              rel_nodes.push_back(NodeMergeRel{
+                  .v = op->var,
+                  .step = step_v,
+                  .v_rel = v_rel,
+                  .step_rel = step_rel,
+              });
+            }));
+
+  return rel_nodes;
+}
+
+void Pipeline::constructMergedPipeline() {
+
+  constructPipeline();
+  // First detect if we have a case where two functions request
+  // output from the same function
+  // To do so, build a graph and then query it!
+  DependencyGraph graph(functions);
+  auto fork_nodes = graph.identify_forks();
+  FERN_ASSERT(fork_nodes.size() <= 1,
+              "Cannot handle more than one fork node rn");
+
+  // Loop from last call to first call (order is set up identify forks!)
+  for (auto fork : fork_nodes) {
+    // check if the children impose different constraints
+    auto node_index = fork - 1;
+    auto func = functions[node_index];
+    auto children = graph.get_children(fork);
+    bool merge = false;
+
+    FERN_ASSERT(children.size() > 1,
+                "Children size is less than 2, how is this a fork node?");
+    // check for every pair, if there is one that breaks,
+    // we will split
+    for (int i = 0; i < children.size() - 1; i++) {
+      auto func_1 = functions[children[i] - 1];
+      auto func_2 = functions[children[i + 1] - 1];
+
+      // Get the corresponding dependency of func_1
+      auto constraints_1 = getCorrespondingDependency(func_1, func.getOutput());
+
+      // Get the corresponding dependency of func_2
+      auto constraints_2 = getCorrespondingDependency(func_2, func.getOutput());
+
+      if (!check_abstract_equality(constraints_1, constraints_2)) {
+        merge = true;
+      }
+    }
+
+    if (merge) {
+      // Now start the node merging
+
+      // Generate a new pipeline (mangled) uptil the fork node
+      std::vector<ConcreteFunctionCall> mangled_fork;
+
+      for (int i = 0; i <= node_index; i++) {
+        auto f = functions[i];
+        mangled_fork.push_back(ConcreteFunctionCall(
+            f.getName(), f.getArguments(), f.getOriginalDataRel(),
+            f.getAbstractArguments()));
+      }
+
+      // Generate a normal pipeline after the fork node (no need to mangle
+      // here)
+      std::vector<ConcreteFunctionCall> after_fork;
+      for (int i = node_index + 1; i < functions.size(); i++) {
+        auto f = functions[i];
+        after_fork.push_back(f);
+      }
+
+      // Construct a pipeline with the mangled nodes
+      Pipeline b_fork(mangled_fork);
+      b_fork.constructPipeline();
+      b_fork.pipeline =
+          changeQueryToAlloc(b_fork.pipeline, func.getOutput(), func);
+      std::cout << b_fork << std::endl;
+
+      // Construct a pipeline with the normal nodes
+      Pipeline a_fork(after_fork);
+      a_fork.constructPipeline();
+
+      // Add the constraints for the new vars
+
+      // Get the meta data values used in the Query Deps
+      auto allQueryDeps = getAllQueryDeps(a_fork.pipeline, func.getOutput());
+
+      // Loop through each interval var in b_fork data rel and generate the
+      // equations
+      auto rel_nodes = generateDepRelationships(
+          b_fork.functions[b_fork.functions.size() - 1].getDataRelationship(),
+          allQueryDeps);
+
+      a_fork.var_relationships_sols.insert(
+          a_fork.var_relationships_sols.begin(),
+          b_fork.var_relationships_sols.begin(),
+          b_fork.var_relationships_sols.end());
+      a_fork.pipeline.insert(a_fork.pipeline.begin(), b_fork.pipeline.begin(),
+                             b_fork.pipeline.end());
+      a_fork.merge_rel_nodes = rel_nodes;
+
+      *this = a_fork;
+    }
+  }
 }
 
 } // namespace fern

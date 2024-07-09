@@ -79,7 +79,6 @@ Expr CodeGenerator::generateExpr(
 }
 
 Stmt CodeGenerator::generateCode() {
-  std::cout << "Called?" << std::endl;
   std::vector<Stmt> stmts;
 
   // Set all the loop variables to be declared
@@ -109,6 +108,10 @@ Stmt CodeGenerator::generateCode() {
     std::stringstream ss;
     ss << v.solution;
     stmts.push_back(VarAssign::make(var_decl, EscapeExpr::make(ss.str())));
+  }
+
+  for (auto rel_nodes : pipeline.merge_rel_nodes) {
+    stmts.push_back(generateRelNodes(rel_nodes));
   }
 
   // Now start generating the function calls
@@ -200,6 +203,41 @@ Stmt CodeGenerator::generateQueryNode(const QueryNode *node) const {
       node->parent + "." + node->ds->getDataQueryInterface(), meta_data_vals);
 
   return VarAssign::make(var_decl, func_call);
+}
+
+Stmt CodeGenerator::generateRelNodes(NodeMergeRel rel) {
+  std::vector<Stmt> decls;
+  auto v_rel = rel.v_rel;
+  auto step_rel = rel.step_rel;
+  FERN_ASSERT_NO_MSG(v_rel.size() == step_rel.size());
+  FERN_ASSERT_NO_MSG(v_rel.size() > 0);
+
+  Variable merge(util::uniqueName("merge"));
+
+  auto v_decl = generateExpr(rel.v, {}, true);
+  auto step_decl = generateExpr(merge, {}, true);
+
+  decls.push_back(VarAssign::make(v_decl, generateExpr(v_rel[0], {}, false)));
+  decls.push_back(VarAssign::make(
+      step_decl, generateExpr(v_rel[0] + step_rel[0], {}, false)));
+
+  auto v = generateExpr(rel.v, {}, false);
+  auto m = generateExpr(merge, {}, false);
+  for (auto i = 1; i < v_rel.size(); i++) {
+    auto v_next = generateExpr(v_rel[i], {}, false);
+    auto m_next = generateExpr(v_rel[i] + step_rel[i], {}, false);
+
+    Expr min_call = Call::make("std::min", {v, v_next});
+    Expr max_call = Call::make("std::max", {m, m_next});
+
+    decls.push_back(VarAssign::make(v, min_call));
+    decls.push_back(VarAssign::make(m, max_call));
+  }
+
+  decls.push_back(VarAssign::make(generateExpr(rel.step, {}, true),
+                                  generateExpr(merge - rel.v, {}, false)));
+
+  return Block::make(decls);
 }
 
 static Expr

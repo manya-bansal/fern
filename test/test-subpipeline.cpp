@@ -140,3 +140,4 @@ TEST(SubPipeline, Illegal2) {
 
   std::cout << pipeline << std::endl;
 }
+

@@ -1,3 +1,13 @@
+## Building Fern
+
+```
+mkdir build && cd build
+cmake ..
+make
+```
+
+## Running Tests/Examples
+
 
 
 A (semi-)reimplementation of Fern with clean(er) design decisions.

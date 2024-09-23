@@ -372,30 +372,6 @@ TEST(Eval, BlackScholes) {
                               "/black_scholes_impl.cpp");
 }
 
-TEST(Eval, SimpleAddition) {
-    examples::Array<float> inp("inp");
-    examples::Array<float> sub("sub");
-    examples::Array<float> out("out");
-    Variable arg_len("arg_len", true);
-
-    examples::addi_ispc addi_ispc;
-    examples::subi_ispc subi_ispc;
-
-    Pipeline pipeline({
-        addi_ispc(DataStructureArg(&inp, "data"), 1.0f, getNode(arg_len), DataStructureArg(&sub, "data")),
-        subi_ispc(DataStructureArg(&sub, "data"), 2.0f, getNode(arg_len), DataStructureArg(&out, "data"))
-    });
-
-    pipeline.constructPipeline();
-    pipeline = pipeline.finalize();
-
-    util::printToFile(pipeline,
-                      std::string(SOURCE_DIR) + "/code_sample" + "/simple_addition.ir");
-    codegen::CodeGenerator code(pipeline);
-    util::printToFile(code, std::string(SOURCE_DIR) + "/code_sample/code" +
-                              "/simple_addition.cpp");
-}
-
 TEST(Eval, Haversine) {
   float lat1 = 0.70984286;
   float lon1 = -1.23892197;

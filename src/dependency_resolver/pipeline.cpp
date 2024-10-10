@@ -6,8 +6,12 @@
 #include "utils/printer.h"
 #include <algorithm>
 #include <tuple>
+#include <pybind11/pybind11.h>
 
 namespace fern {
+int add(int i, int j) {
+    return i + j;
+}
 
 std::ostream &operator<<(std::ostream &os, const IntervalPipe &i) {
   os << i.var << " in (" << i.start << ", " << i.end << ", " << i.step << ")"
@@ -1737,3 +1741,9 @@ void Pipeline::constructMergedPipeline() {
 }
 
 } // namespace fern
+
+PYBIND11_MODULE(fern_py, m) {
+    m.doc() = "pybind11 example plugin"; // optional module docstring
+
+    m.def("add", &fern::add, "A function that adds two numbers");
+}

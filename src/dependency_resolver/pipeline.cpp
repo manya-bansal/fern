@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <tuple>
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include "utils/instrusive_ptr.h"
 
 namespace fern {
 int add(int i, int j) {
@@ -29,6 +31,9 @@ std::ostream &operator<<(std::ostream &os, const IntervalPipe &i) {
 // }
 
 void Pipeline::constructPipeline() {
+	
+	std::cout << "constructPipeline" << std::endl;
+	std::cout << functions.size() << std::endl;
 
   buildDataFlowGraph();
 
@@ -57,7 +62,9 @@ void Pipeline::buildFuncCalls() {
   for (int i = last_func_index; i >= 0; i--) {
     std::map<const AbstractDataStructure *, std::string> names;
     auto call = functions[i];
-    // std::cout << call << std::endl;
+	std::cout << "HERE" << std::endl;
+    std::cout << call << std::endl;
+	std::cout << "INPUTS HERE " << call.getInputs().size() << std::endl;
     std::vector<
         std::tuple<std::vector<DependencyExpr>, std::vector<DependencyExpr>>>
         dependencies;
@@ -1742,8 +1749,62 @@ void Pipeline::constructMergedPipeline() {
 
 } // namespace fern
 
-PYBIND11_MODULE(fern_py, m) {
-    m.doc() = "pybind11 example plugin"; // optional module docstring
+#include "examples/pointwise-array.h"
+// PYBIND11_DECLARE_HOLDER_TYPE(T, fern::util::IntrusivePtr<T>, true);
 
+fern::ConcreteFunctionCall getCall() {
+	examples::Array<float> a("a");
+	examples::Array<float> out("out");
+	examples::addi_mock addi_mock;	
+	fern::Variable arg_len("arg_len", true);
+	return addi_mock(fern::DataStructureArg(&a, "data"), 1.0f, fern::getNode(arg_len), fern::DataStructureArg(&out, "data"));
+}
+
+
+examples::Array<float> a("a");
+examples::Array<float> out("out");
+examples::addi_mock addi_mock;
+fern::Variable arg_len("arg_len", true);
+fern::ConcreteFunctionCall call1 = addi_mock(fern::DataStructureArg(&a, "data"), 1.0f, fern::getNode(arg_len), fern::DataStructureArg(&out, "data"));
+
+PYBIND11_MODULE(fern_py, m) {
     m.def("add", &fern::add, "A function that adds two numbers");
+	m.attr("test") = 42;
+	pybind11::class_<fern::Pipeline>(m, "Pipeline")
+	
+		.def(
+			pybind11::init([]() { 
+				std::cout << "CALL1 " << call1 << std::endl;
+
+
+				// DOESN'T WORK 
+				fern::ConcreteFunctionCall call = getCall();
+				std::cout << "CALL " << call << std::endl;
+
+				fern::Pipeline pipeline({call});
+
+				return pipeline;
+			})
+		)
+		.def("constructPipeline", &fern::Pipeline::constructPipeline)
+		.def("finalize", &fern::Pipeline::finalize);
+
+	pybind11::class_<fern::util::IntrusivePtr<fern::Args>, std::unique_ptr<fern::util::IntrusivePtr<fern::Args>, pybind11::nodelete>>(m, "IntrusivePtr")
+		.def(pybind11::init<>());
+
+	pybind11::class_<fern::ConcreteFunctionCall, std::unique_ptr<fern::ConcreteFunctionCall, pybind11::nodelete>>(m, "ConcreteFunctionCall")
+		.def(pybind11::init([]() {
+			fern::ConcreteFunctionCall call = getCall();
+			std::cout << "concrete function call " << call << std::endl;
+			return call;
+		}))
+		.def("getInputs", &fern::ConcreteFunctionCall::getInputs)
+		.def("getName", &fern::ConcreteFunctionCall::getName)
+		.def("getIntervalVars", &fern::ConcreteFunctionCall::getIntervalVars);
+
+	m.def("getfuncs", &getCall, pybind11::return_value_policy::reference_internal);
+	m.def("printfuncs", [](fern::ConcreteFunctionCall a) {
+		std::cout << "printfuncs" << std::endl;
+		std::cout << a << std::endl;
+	});
 }

@@ -1,38 +1,38 @@
-x243 = 0
-x241=x243
-len240=len242
-x239=x241
-len238=len240
+x239 = 0
 x237=x239
 len236=len238
-x235=x237
-len234=len236
-x233=x235
-len232=len234
-x225=x235
-len224=len234
-x243=x233
-len242=len232
-x231=x233
-len230=len232
-x229=x231
-len228=len230
-x227=x229
-len226=len228
-x213=x227
-len212=len226
-x223=x225
-len222=len224
-x221=x223
-len220=len222
-x219=x221
-len218=len220
-x217=x219
-len216=len218
-x215=x217
-len214=len216
-x211=x215
-len210=len214
+x234=x237
+len235=len236
+x232=x234
+len233=len235
+x230=x232
+len231=len233
+x228=x230
+len229=len231
+x221=x230
+len220=len231
+x239=x228
+len238=len229
+x227=x228
+len226=len229
+x224=x227
+len225=len226
+x222=x224
+len223=len225
+x209=x222
+len208=len223
+x218=x221
+len219=len220
+x216=x218
+len217=len219
+x214=x216
+len215=len217
+x212=x214
+len213=len215
+x211=x212
+len210=len213
+x207=x211
+len206=len210
 	 BLANK 
 	 BLANK 
 	 BLANK 
@@ -45,68 +45,68 @@ len210=len214
 	 BLANK 
 	 BLANK 
 	 BLANK 
-	a3_q = allocate(x235 , len234 , )
-	a4_q = allocate(x237 , len236 , )
-	a5_q = allocate(x239 , len238 , )
-	a6_q = allocate(x241 , len240 , )
+	a3_q = allocate(x230 , len231 , )
+	a4_q = allocate(x232 , len233 , )
+	a5_q = allocate(x234 , len235 , )
+	a6_q = allocate(x237 , len236 , )
 	{
-x243 in (a.idx, a.idx + a.size, len242)
-x241=x243
-len240=len242
-x239=x241
-len238=len240
+x239 in (a.idx, a.idx + a.size, len238)
 x237=x239
 len236=len238
-x235=x237
-len234=len236
-x233=x235
-len232=len234
-x225=x235
-len224=len234
-x243=x233
-len242=len232
-x231=x233
-len230=len232
-x229=x231
-len228=len230
-x227=x229
-len226=len228
-x213=x227
-len212=len226
-x223=x225
-len222=len224
-x221=x223
-len220=len222
-x219=x221
-len218=len220
-x217=x219
-len216=len218
-x215=x217
-len214=len216
-x211=x215
-len210=len214
+x234=x237
+len235=len236
+x232=x234
+len233=len235
+x230=x232
+len231=len233
+x228=x230
+len229=len231
+x221=x230
+len220=len231
+x239=x228
+len238=len229
+x227=x228
+len226=len229
+x224=x227
+len225=len226
+x222=x224
+len223=len225
+x209=x222
+len208=len223
+x218=x221
+len219=len220
+x216=x218
+len217=len219
+x214=x216
+len215=len217
+x212=x214
+len213=len215
+x211=x212
+len210=len213
+x207=x211
+len206=len210
 	 BLANK 
-	lat2_q48 = lat2.query(x211 , len210 , )
+	lat2_q47 = lat2.query(x207 , len206 , )
 	 BLANK 
-	lon2_q47 = lon2.query(x213 , len212 , )
-	 BLANK 
-	 BLANK 
-	 BLANK 
-	 BLANK 
-	 BLANK 
-	 BLANK 
+	lon2_q46 = lon2.query(x209 , len208 , )
 	 BLANK 
 	 BLANK 
 	 BLANK 
 	 BLANK 
-	a_q46 = a.query(x233 , len232 , )
 	 BLANK 
 	 BLANK 
 	 BLANK 
 	 BLANK 
-	a_q = a.query(x243 , len242 , )
-	ispc::subi_ispc(dlat : dlon_q, lat2 : lat2_q48, )
-	ispc::subi_ispc(dlon : dlat_q, lon2 : lon2_q47, )
+	 BLANK 
+	 BLANK 
+	a_q45 = a.query(x228 , len229 , )
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	 BLANK 
+	a_q = a.query(x239 , len238 , )
+	ispc::subi_ispc(dlat : dlon_q, lat2 : lat2_q47, )
+	ispc::subi_ispc(dlon : dlat_q, lon2 : lon2_q46, )
 	ispc::divi_ispc(dlat2 : dlon_q, dlat : dlon_q, )
 	ispc::sin_ispc(dlat3 : dlon_q, dlat2 : dlon_q, )
 	ispc::sin_ispc(dlat4 : dlon_q, dlat3 : dlon_q, )
@@ -116,7 +116,7 @@ len210=len214
 	ispc::divi_ispc(dlon2 : dlat7_q, dlon : dlat_q, )
 	ispc::sin_ispc(dlon3 : dlat7_q, dlon2 : dlat7_q, )
 	ispc::mul_ispc(dlon4 : dlat7_q, dlon3 : dlat7_q, )
-	ispc::mul_ispc(a2 : dlat7_q, a : a_q46, dlon4 : dlat7_q, )
+	ispc::mul_ispc(a2 : dlat7_q, a : a_q45, dlon4 : dlat7_q, )
 	ispc::add_ispc(a3 : a3_q, a2 : dlat7_q, dlat7 : dlon_q, )
 	ispc::sqrt_ispc(a4 : a4_q, a3 : a3_q, )
 	ispc::asin_ispc(a5 : a5_q, a4 : a4_q, )

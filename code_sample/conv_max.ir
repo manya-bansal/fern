@@ -1,26 +1,26 @@
 x84 = 0
 y85 = 0
-x79=maxpool_dim83*x84
-y80=maxpool_dim83*y85
-x_tile81=maxpool_dim83*x_tile86
-y_tile82=maxpool_dim83*y_tile87
-x75=x79
-y76=y80
-x_tile77=x_tile81
-y_tile78=y_tile82
+x82=maxpool_dim83*x84
+y81=y85*maxpool_dim83
+x_tile79=maxpool_dim83*x_tile86
+y_tile80=maxpool_dim83*y_tile87
+x75=x82
+y76=y81
+x_tile77=x_tile79
+y_tile78=y_tile80
 	output_conv_q = allocate(x75 , y76 , x_tile77 , y_tile78 , )
-	output_relu_q = allocate(x79 , y80 , x_tile81 , y_tile82 , )
+	output_relu_q = allocate(x82 , y81 , x_tile79 , y_tile80 , )
 	{
 x84 in (output.W_start, output.W_start + output.LW, x_tile86)
 y85 in (output.H_start, output.H_start + output.LH, y_tile87)
-x79=maxpool_dim83*x84
-y80=maxpool_dim83*y85
-x_tile81=maxpool_dim83*x_tile86
-y_tile82=maxpool_dim83*y_tile87
-x75=x79
-y76=y80
-x_tile77=x_tile81
-y_tile78=y_tile82
+x82=maxpool_dim83*x84
+y81=y85*maxpool_dim83
+x_tile79=maxpool_dim83*x_tile86
+y_tile80=maxpool_dim83*y_tile87
+x75=x82
+y76=y81
+x_tile77=x_tile79
+y_tile78=y_tile80
 	 BLANK 
 	input_q21 = input.query(x75 * stride_arg74 (Argument)  , y76 * stride_arg74 (Argument)  , x_tile77 + filter.H - 1 , y_tile78 + filter.W - 1 , )
 	 BLANK 

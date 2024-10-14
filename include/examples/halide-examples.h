@@ -69,8 +69,8 @@ public:
 
   std::vector<fern::Argument> getArguments() override {
     return {
-        new fern::DataStructureArg(fern::DataStructurePtr(&img)),
-        new fern::DataStructureArg(fern::DataStructurePtr(&result)),
+        fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&img))),
+        fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&result))),
     };
   }
 
@@ -103,8 +103,8 @@ public:
 
   std::vector<fern::Argument> getArguments() override {
     return {
-        new fern::DataStructureArg(fern::DataStructurePtr(&img)),
-        new fern::DataStructureArg(fern::DataStructurePtr(&result)),
+        fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&img))),
+        fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&result))),
     };
   }
 
@@ -137,8 +137,8 @@ public:
 
   std::vector<fern::Argument> getArguments() override {
     return {
-        new fern::DataStructureArg(fern::DataStructurePtr(&img)),
-        new fern::DataStructureArg(fern::DataStructurePtr(&result)),
+        fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&img))),
+        fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&result))),
     };
   }
 
@@ -172,8 +172,8 @@ public:
 
   std::vector<fern::Argument> getArguments() override {
     return {
-        new fern::DataStructureArg(fern::DataStructurePtr(&img)),
-        new fern::DataStructureArg(fern::DataStructurePtr(&result)),
+        fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&img))),
+        fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&result))),
     };
   }
 
@@ -206,8 +206,8 @@ public:
 
   std::vector<fern::Argument> getArguments() override {
     return {
-        new fern::DataStructureArg(fern::DataStructurePtr(&img)),
-        new fern::DataStructureArg(fern::DataStructurePtr(&result)),
+        fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&img))),
+        fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&result))),
     };
   }
 
@@ -240,8 +240,8 @@ public:
 
   std::vector<fern::Argument> getArguments() override {
     return {
-        new fern::DataStructureArg(fern::DataStructurePtr(&img)),
-        new fern::DataStructureArg(fern::DataStructurePtr(&result)),
+        fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&img))),
+        fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&result))),
     };
   }
 
@@ -277,9 +277,9 @@ public:
 
   std::vector<fern::Argument> getArguments() override {
     return {
-        new fern::DataStructureArg(fern::DataStructurePtr(&gray)),
-        new fern::DataStructureArg(fern::DataStructurePtr(&blur_x)),
-        new fern::DataStructureArg(fern::DataStructurePtr(&result)),
+        fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&gray))),
+        fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&blur_x))),
+        fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&result))),
     };
   }
 
@@ -317,9 +317,9 @@ public:
 
   std::vector<fern::Argument> getArguments() override {
     return {
-        new fern::DataStructureArg(fern::DataStructurePtr(&gray)),
-        new fern::DataStructureArg(fern::DataStructurePtr(&sharpen_im)),
-        new fern::DataStructureArg(fern::DataStructurePtr(&result)),
+        fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&gray))),
+        fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&sharpen_im))),
+        fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&result))),
     };
   }
 
@@ -357,9 +357,9 @@ public:
 
   std::vector<fern::Argument> getArguments() override {
     return {
-        new fern::DataStructureArg(fern::DataStructurePtr(&img)),
-        new fern::DataStructureArg(fern::DataStructurePtr(&ratio_im)),
-        new fern::DataStructureArg(fern::DataStructurePtr(&result)),
+        fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&img))),
+        fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&ratio_im))),
+        fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&result))),
     };
   }
 

@@ -2,34 +2,34 @@ x156 = 0
 y157 = 0
 x152=x156
 y153=y157
-x_tile151=x_tile158
-y_tile154=y_tile159
-x147=maxpool_dim155*x152
-y148=y153*maxpool_dim155
-x_tile149=maxpool_dim155*x_tile151
-y_tile150=y_tile154*maxpool_dim155
-x143=x147
+x_tile154=x_tile158
+y_tile155=y_tile159
+x149=maxpool_dim151*x152
+y148=y153*maxpool_dim151
+x_tile150=maxpool_dim151*x_tile154
+y_tile147=y_tile155*maxpool_dim151
+x143=x149
 y144=y148
-x_tile145=x_tile149
-y_tile146=y_tile150
+x_tile145=x_tile150
+y_tile146=y_tile147
 	output_conv_q = allocate(x143 , y144 , x_tile145 , y_tile146 , )
-	output_relu_q = allocate(x147 , y148 , x_tile149 , y_tile150 , )
-	output_q = allocate(x152 , y153 , x_tile151 , y_tile154 , )
+	output_relu_q = allocate(x149 , y148 , x_tile150 , y_tile147 , )
+	output_q = allocate(x152 , y153 , x_tile154 , y_tile155 , )
 	{
 x156 in (output_tan.W_start, output_tan.W_start + output_tan.LW, x_tile158)
 y157 in (output_tan.H_start, output_tan.H_start + output_tan.LH, y_tile159)
 x152=x156
 y153=y157
-x_tile151=x_tile158
-y_tile154=y_tile159
-x147=maxpool_dim155*x152
-y148=y153*maxpool_dim155
-x_tile149=maxpool_dim155*x_tile151
-y_tile150=y_tile154*maxpool_dim155
-x143=x147
+x_tile154=x_tile158
+y_tile155=y_tile159
+x149=maxpool_dim151*x152
+y148=y153*maxpool_dim151
+x_tile150=maxpool_dim151*x_tile154
+y_tile147=y_tile155*maxpool_dim151
+x143=x149
 y144=y148
-x_tile145=x_tile149
-y_tile146=y_tile150
+x_tile145=x_tile150
+y_tile146=y_tile147
 	 BLANK 
 	input_q34 = input.query(x143 * stride_arg142 (Argument)  , y144 * stride_arg142 (Argument)  , x_tile145 + filter.H - 1 , y_tile146 + filter.W - 1 , )
 	 BLANK 

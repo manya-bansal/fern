@@ -82,11 +82,11 @@ public:
   }
 
   std::vector<fern::Argument> getArguments() override {
-    return {new fern::DataStructureArg(fern::DataStructurePtr(&input)),
-            new fern::DataStructureArg(fern::DataStructurePtr(&filter)),
-            new fern::DummyDataStructureArg(&bias),
-            new fern::VariableArg(fern::getNode(stride_arg)),
-            new fern::DataStructureArg(fern::DataStructurePtr(&output))};
+    return {fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&input))),
+            fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&filter))),
+            fern::Argument(std::make_shared<fern::DummyDataStructureArg>(&bias)),
+            fern::Argument(std::make_shared<fern::VariableArg>(fern::getNode(stride_arg))),
+            fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&output)))};
   }
 
   Weights input;
@@ -125,9 +125,9 @@ public:
 
   std::vector<fern::Argument> getArguments() override {
     return {
-        new fern::DataStructureArg(fern::DataStructurePtr(&input)),
-        new fern::DummyDataStructureArg(&bias),
-        new fern::DataStructureArg(fern::DataStructurePtr(&output)),
+        fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&input))),
+        fern::Argument(std::make_shared<fern::DummyDataStructureArg>(&bias)),
+        fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&output))),
     };
   }
 
@@ -163,8 +163,8 @@ public:
 
   std::vector<fern::Argument> getArguments() override {
     return {
-        new fern::DataStructureArg(fern::DataStructurePtr(&input)),
-        new fern::DataStructureArg(fern::DataStructurePtr(&output)),
+        fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&input))),
+        fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&output))),
     };
   }
 
@@ -203,9 +203,9 @@ public:
 
   std::vector<fern::Argument> getArguments() override {
     return {
-        new fern::DataStructureArg(fern::DataStructurePtr(&input)),
-        new fern::VariableArg(fern::getNode(maxpool_dim)),
-        new fern::DataStructureArg(fern::DataStructurePtr(&output)),
+        fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&input))),
+        fern::Argument(std::make_shared<fern::VariableArg>(fern::getNode(maxpool_dim))),
+        fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&output))),
     };
   }
 
@@ -245,11 +245,11 @@ public:
   }
 
   std::vector<fern::Argument> getArguments() override {
-    return {std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&input)),
-            std::make_shared< fern::DataStructureArg>(fern::DataStructurePtr(&filter)),
-            std::make_shared< fern::DummyDataStructureArg>(&bias),
-            std::make_shared< fern::VariableArg>(fern::getNode(stride_arg)),
-            std::make_shared< fern::DataStructureArg>(fern::DataStructurePtr(&output))};
+    return {fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&input))),
+            fern::Argument(std::make_shared< fern::DataStructureArg>(fern::DataStructurePtr(&filter))),
+           fern::Argument( std::make_shared< fern::DummyDataStructureArg>(&bias)),
+            fern::Argument(std::make_shared< fern::VariableArg>(fern::getNode(stride_arg))),
+            fern::Argument(std::make_shared< fern::DataStructureArg>(fern::DataStructurePtr(&output)))};
   }
 
   Weights input;
@@ -290,11 +290,11 @@ public:
   }
 
   std::vector<fern::Argument> getArguments() override {
-    return {new fern::DataStructureArg(fern::DataStructurePtr(&input)),
-            new fern::DataStructureArg(fern::DataStructurePtr(&filter)),
-            new fern::DummyDataStructureArg(&bias),
-            new fern::VariableArg(fern::getNode(stride_arg)),
-            new fern::DataStructureArg(fern::DataStructurePtr(&output))};
+    return {fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&input))),
+            fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&filter))),
+            fern::Argument(std::make_shared<fern::DummyDataStructureArg>(&bias)),
+            fern::Argument(std::make_shared<fern::VariableArg>(fern::getNode(stride_arg))),
+            fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&output)))};
   }
 
   Weights input;
@@ -331,8 +331,8 @@ public:
 
   std::vector<fern::Argument> getArguments() override {
     return {
-        new fern::DataStructureArg(fern::DataStructurePtr(&input)),
-        new fern::DataStructureArg(fern::DataStructurePtr(&output)),
+        fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&input))),
+        fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&output))),
     };
   }
 

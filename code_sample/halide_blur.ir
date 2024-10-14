@@ -1,12 +1,12 @@
-y67 in (0, out2.logical_cols, y_tile69)
+y67 in (0, out2.logical_cols, y_tile66)
 o in (0, out2.logical_rows, o_s)
 i = 0
-x66 = o + i
-x_tile68 = i_s
-x62=x66
+x68 = o + i
+x_tile69 = i_s
+x62=x68
 y63=y67
-x_tile64=2+x_tile68
-y_tile65=y_tile69
+x_tile64=2+x_tile69
+y_tile65=y_tile66
 	out1_q = allocate(x62 , y63 , x_tile64 , y_tile65 , )
 	{
 x70 in (0, out1_q.logical_rows, x_tile72)
@@ -19,15 +19,15 @@ y71 in (0, out1_q.logical_cols, y_tile73)
 
 	{
 i in (o, o_s, i_s)
-x66 = o + i
-x_tile68 = i_s
-x62=x66
+x68 = o + i
+x_tile69 = i_s
+x62=x68
 y63=y67
-x_tile64=2+x_tile68
-y_tile65=y_tile69
+x_tile64=2+x_tile69
+y_tile65=y_tile66
 	 BLANK 
 	 BLANK 
-	out2_q = out2.query(x66 , y67 , x_tile68 , y_tile69 , )
+	out2_q = out2.query(x68 , y67 , x_tile69 , y_tile66 , )
 	out1_q_q = out1_q.query(x_tile64 - 1 , y63 , 1 , y_tile65 , )
 	input_q16 = input.query(x62 + x_tile64 - 1 , y63 , 1 , y_tile65 + 2 , )
 	naive_blur_x_take_2_vec(out1 : out1_q_q, input : input_q16, )

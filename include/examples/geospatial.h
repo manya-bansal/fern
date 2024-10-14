@@ -153,9 +153,9 @@ public:
   }
 
   std::vector<fern::Argument> getArguments() override {
-    return {new fern::DummyDataStructureArg(&prepgeom),
-            new fern::DataStructureArg(fern::DataStructurePtr(&node)),
-            new fern::DataStructureArg(fern::DataStructurePtr(&result))};
+    return {fern::Argument(std::make_shared<fern::DummyDataStructureArg>(&prepgeom)),
+            fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&node))),
+            fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&result)))};
   }
 
   geom_prepgeom prepgeom{"prepgeom_f"};
@@ -183,9 +183,9 @@ public:
   }
 
   std::vector<fern::Argument> getArguments() override {
-    return {new fern::DummyDataStructureArg(&queryEnv_f),
-            new fern::DataStructureArg(fern::DataStructurePtr(&node)),
-            new fern::DataStructureArg(fern::DataStructurePtr(&result))};
+    return {fern::Argument(std::make_shared<fern::DummyDataStructureArg>(&queryEnv_f)),
+            fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&node))),
+            fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&result)))};
   }
 
   BoundsType queryEnv_f{"queryEnv_f"};
@@ -204,12 +204,12 @@ public:
   }
 
   std::vector<fern::Argument> getArguments() override {
-    return {new fern::DummyDataStructureArg(&queryEnv_f),
-            new fern::DummyDataStructureArg(&func),
-            new fern::DummyDataStructureArg(&visitor),
-            new fern::DummyDataStructureArg(&prepgeom),
-            new fern::DummyDataStructureArg(&g),
-            new fern::DataStructureArg(fern::DataStructurePtr(&node))};
+    return {fern::Argument(std::make_shared<fern::DummyDataStructureArg>(&queryEnv_f)),
+            fern::Argument(std::make_shared<fern::DummyDataStructureArg>(&func)),
+            fern::Argument(std::make_shared<fern::DummyDataStructureArg>(&visitor)),
+            fern::Argument(std::make_shared<fern::DummyDataStructureArg>(&prepgeom)),
+            fern::Argument(std::make_shared<fern::DummyDataStructureArg>(&g)),
+            fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&node)))};
   }
 
   BoundsType queryEnv_f{"queryEnv_f"};

@@ -1,34 +1,34 @@
 x104 = 0
 y105 = 0
 x99=x104*maxpool_dim103
-y101=y105*maxpool_dim103
-x_tile102=maxpool_dim103*x_tile106
-y_tile100=y_tile107*maxpool_dim103
-x96=stride_arg98*x99
-y94=stride_arg98*y101
-x_tile95=-1+x_tile102+filter0.H
-y_tile97=-1+y_tile100+filter0.W
-x89=maxpool_dim93*x96
-y90=y94*maxpool_dim93
-x_tile91=maxpool_dim93*x_tile95
+y98=y105*maxpool_dim103
+x_tile100=maxpool_dim103*x_tile106
+y_tile101=y_tile107*maxpool_dim103
+x94=stride_arg102*x99
+y95=stride_arg102*y98
+x_tile96=-1+x_tile100+filter0.H
+y_tile97=-1+y_tile101+filter0.W
+x89=maxpool_dim93*x94
+y90=y95*maxpool_dim93
+x_tile91=maxpool_dim93*x_tile96
 y_tile92=y_tile97*maxpool_dim93
 	output_conv1_q = allocate(x89 , y90 , x_tile91 , y_tile92 , )
-	output_max1_q = allocate(x96 , y94 , x_tile95 , y_tile97 , )
-	output_conv2_q = allocate(x99 , y101 , x_tile102 , y_tile100 , )
+	output_max1_q = allocate(x94 , y95 , x_tile96 , y_tile97 , )
+	output_conv2_q = allocate(x99 , y98 , x_tile100 , y_tile101 , )
 	{
 x104 in (output_t.W_start, output_t.W_start + output_t.LW, x_tile106)
 y105 in (output_t.H_start, output_t.H_start + output_t.LH, y_tile107)
 x99=x104*maxpool_dim103
-y101=y105*maxpool_dim103
-x_tile102=maxpool_dim103*x_tile106
-y_tile100=y_tile107*maxpool_dim103
-x96=stride_arg98*x99
-y94=stride_arg98*y101
-x_tile95=-1+x_tile102+filter0.H
-y_tile97=-1+y_tile100+filter0.W
-x89=maxpool_dim93*x96
-y90=y94*maxpool_dim93
-x_tile91=maxpool_dim93*x_tile95
+y98=y105*maxpool_dim103
+x_tile100=maxpool_dim103*x_tile106
+y_tile101=y_tile107*maxpool_dim103
+x94=stride_arg102*x99
+y95=stride_arg102*y98
+x_tile96=-1+x_tile100+filter0.H
+y_tile97=-1+y_tile101+filter0.W
+x89=maxpool_dim93*x94
+y90=y95*maxpool_dim93
+x_tile91=maxpool_dim93*x_tile96
 y_tile92=y_tile97*maxpool_dim93
 	 BLANK 
 	input_q24 = input.query(x89 * stride_arg88 (Argument)  , y90 * stride_arg88 (Argument)  , x_tile91 + filter0.H - 1 , y_tile92 + filter0.W - 1 , )

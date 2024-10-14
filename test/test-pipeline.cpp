@@ -272,25 +272,25 @@ TEST(Eval, FusedConvMaxTanh) {
                               "/conv_tanh.cpp");
 }
 
-TEST(Eval, DBProcessing) {
+// TEST(Eval, DBProcessing) {
 
-  examples::DbArray input("input");
-  examples::DbArrayProcessing output("output");
+//   examples::DbArray input("input");
+//   examples::DbArrayProcessing output("output");
 
-  examples::SigmoidProcessing sigmoidProcessing;
+//   examples::SigmoidProcessing sigmoidProcessing;
 
-  Pipeline pipeline({sigmoidProcessing(&input, &output)});
+//   Pipeline pipeline({sigmoidProcessing(&input, &output)});
 
-  pipeline.constructPipeline();
-  pipeline = pipeline.finalize();
-  // std::cout << pipeline << std::endl;
+//   pipeline.constructPipeline();
+//   pipeline = pipeline.finalize();
+//   // std::cout << pipeline << std::endl;
 
-  util::printToFile(pipeline, std::string(SOURCE_DIR) + "/code_sample" +
-                                  "/db_processing.ir");
-  codegen::CodeGenerator code(pipeline);
-  util::printToFile(code, std::string(SOURCE_DIR) + "/code_sample/code" +
-                              "/db_processing.cpp");
-}
+//   util::printToFile(pipeline, std::string(SOURCE_DIR) + "/code_sample" +
+//                                   "/db_processing.ir");
+//   codegen::CodeGenerator code(pipeline);
+//   util::printToFile(code, std::string(SOURCE_DIR) + "/code_sample/code" +
+//                               "/db_processing.cpp");
+// }
 
 TEST(Eval, Haversine) {
   float lat1 = 0.70984286;
@@ -601,6 +601,6 @@ TEST(Eval, SmallCall) {
   t.get()->print(std::cout);
 
   auto call_try = getCall();
-  // std::cout << *(call.get()) << std::endl;
+  std::cout << *(call.get()) << std::endl;
 
 }

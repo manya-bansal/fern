@@ -567,3 +567,40 @@ TEST(Eval, ReuseHaversine) {
   util::printToFile(code, std::string(SOURCE_DIR) + "/code_sample/code" +
                               "/reuse_haversine.cpp");
 }
+
+
+std::shared_ptr<fern::ConcreteFunctionCall> getCall() {
+	examples::Array<float> a("a");
+	examples::Array<float> out("out");
+	examples::addi_ispc addi_mock;	
+	fern::Variable arg_len("arg_len", true);
+	return std::make_shared<fern::ConcreteFunctionCall>(
+    addi_mock(fern::DataStructureArg(&a, "data"), 1.0f, fern::getNode(arg_len), fern::DataStructureArg(&out, "data")));
+}
+
+std::shared_ptr<Args> test(){
+  examples::Array<float> a("a");
+  // return Argument(new fern::DataStructureArg(&a, "data"));
+  return std::make_shared<Args>(fern::DataStructureArg(&a, "data"));
+}
+
+
+
+
+TEST(Eval, SmallCall) {
+  examples::Array<float> a("a");
+  auto call = std::make_shared<fern::DataStructureArg>(&a, "data");
+  std::cout << call << std::endl;
+  call.get()->print(std::cout);
+  std::cout << "Print now" << std::endl;
+  Argument c(call);
+  c.getNode()->print(std::cout);
+  std::cout << c << std::endl;
+
+  auto t =  test();
+  t.get()->print(std::cout);
+
+  auto call_try = getCall();
+  // std::cout << *(call.get()) << std::endl;
+
+}

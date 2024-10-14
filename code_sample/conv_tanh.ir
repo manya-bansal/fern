@@ -1,47 +1,47 @@
-x136 = 0
-y138 = 0
-x135=x136
-y132=y138
-x_tile133=x_tile137
-y_tile134=y_tile139
-x128=x135*maxpool_dim131
-y127=y132*maxpool_dim131
-x_tile129=maxpool_dim131*x_tile133
-y_tile130=y_tile134*maxpool_dim131
-x123=x128
-y124=y127
-x_tile125=x_tile129
-y_tile126=y_tile130
-	output_conv_q = allocate(x123 , y124 , x_tile125 , y_tile126 , )
-	output_relu_q = allocate(x128 , y127 , x_tile129 , y_tile130 , )
-	output_q = allocate(x135 , y132 , x_tile133 , y_tile134 , )
+x156 = 0
+y157 = 0
+x152=x156
+y153=y157
+x_tile151=x_tile158
+y_tile154=y_tile159
+x147=maxpool_dim155*x152
+y148=y153*maxpool_dim155
+x_tile149=maxpool_dim155*x_tile151
+y_tile150=y_tile154*maxpool_dim155
+x143=x147
+y144=y148
+x_tile145=x_tile149
+y_tile146=y_tile150
+	output_conv_q = allocate(x143 , y144 , x_tile145 , y_tile146 , )
+	output_relu_q = allocate(x147 , y148 , x_tile149 , y_tile150 , )
+	output_q = allocate(x152 , y153 , x_tile151 , y_tile154 , )
 	{
-x136 in (output_tan.W_start, output_tan.W_start + output_tan.LW, x_tile137)
-y138 in (output_tan.H_start, output_tan.H_start + output_tan.LH, y_tile139)
-x135=x136
-y132=y138
-x_tile133=x_tile137
-y_tile134=y_tile139
-x128=x135*maxpool_dim131
-y127=y132*maxpool_dim131
-x_tile129=maxpool_dim131*x_tile133
-y_tile130=y_tile134*maxpool_dim131
-x123=x128
-y124=y127
-x_tile125=x_tile129
-y_tile126=y_tile130
+x156 in (output_tan.W_start, output_tan.W_start + output_tan.LW, x_tile158)
+y157 in (output_tan.H_start, output_tan.H_start + output_tan.LH, y_tile159)
+x152=x156
+y153=y157
+x_tile151=x_tile158
+y_tile154=y_tile159
+x147=maxpool_dim155*x152
+y148=y153*maxpool_dim155
+x_tile149=maxpool_dim155*x_tile151
+y_tile150=y_tile154*maxpool_dim155
+x143=x147
+y144=y148
+x_tile145=x_tile149
+y_tile146=y_tile150
 	 BLANK 
-	input_q28 = input.query(x123 * stride_arg122 (Argument)  , y124 * stride_arg122 (Argument)  , x_tile125 + filter.H - 1 , y_tile126 + filter.W - 1 , )
+	input_q34 = input.query(x143 * stride_arg142 (Argument)  , y144 * stride_arg142 (Argument)  , x_tile145 + filter.H - 1 , y_tile146 + filter.W - 1 , )
 	 BLANK 
 	 BLANK 
-	output_tan_q = output_tan.query(x136 , y138 , x_tile137 , y_tile139 , )
-	conv_no_fern_mkl(output_conv : output_conv_q, filter : filter, input : input_q28, )
+	output_tan_q = output_tan.query(x156 , y157 , x_tile158 , y_tile159 , )
+	conv_no_fern_mkl(output_conv : output_conv_q, filter : filter, input : input_q34, )
 	relu_material(output_relu : output_relu_q, output_conv : output_conv_q, )
 	maxpool(output : output_q, output_relu : output_relu_q, )
 	tanh(output_tan : output_tan_q, output : output_q, )
-	output_tan.insert(x136 , y138 , x_tile137 , y_tile139 , output_tan_q)
+	output_tan.insert(x156 , y157 , x_tile158 , y_tile159 , output_tan_q)
 	 BLANK 
-	input_q28.free()
+	input_q34.free()
 	 BLANK 
 	 BLANK 
 

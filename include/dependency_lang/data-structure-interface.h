@@ -159,7 +159,7 @@ enum ArgType {
 
 // TransferTypeArgs is the parent class that all internal arguments inherit
 // from.
-struct Args : public util::Manageable<Args> {
+struct Args {
   Args() : argType(UNKNOWN) {}
   Args(ArgType argType) : argType(argType) {}
 
@@ -174,16 +174,19 @@ struct Args : public util::Manageable<Args> {
 };
 
 // The Argument class is a pointer to a Args object.
-class Argument : public util::IntrusivePtr<const Args> {
+class Argument {
 public:
-  Argument(Args *arg) : IntrusivePtr(arg) {}
-  Argument() : Argument(new Args()) {}
+  Argument(std::shared_ptr<Args> arg) : ptr_(arg) {}
+  Argument(Args a) : ptr_(std::make_shared<Args>(a)) {}
+  Argument() : Argument(Args()) {}
 
   template <typename T> const T *getNode() const {
-    return static_cast<const T *>(ptr);
+    return static_cast<const T *>(ptr_.get());
   }
-  const Args *getNode() const { return ptr; }
+  const Args *getNode() const { return ptr_.get(); }
   ArgType getArgType() const { return getNode()->argType; };
+private: 
+ std::shared_ptr<Args> ptr_;
 };
 
 std::ostream &operator<<(std::ostream &, const Argument &);

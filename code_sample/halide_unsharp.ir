@@ -1,106 +1,106 @@
-y110 in (0, final_out.logical_cols, y_tile111)
+y129 in (0, final_out.logical_cols, y_tile131)
 o in (0, final_out.logical_rows, o_s)
 i = 0
-x108 = o + i
-x_tile109 = i_s
-x105=x108
-y106=y110
-x_tile107=x_tile109
-y_tile104=y_tile111
-x101=x105
-y102=y106
-x_tile103=x_tile107
-y_tile100=y_tile104
-x88=x105
-y89=y106
-x_tile90=x_tile107
-y_tile91=y_tile104
-x97=x101
-y98=y102
-x_tile99=x_tile103
-y_tile96=y_tile100
-x88=x101
-y89=y102
-x_tile90=x_tile103
-y_tile91=y_tile100
-x92=x97
-y93=y98
-x_tile94=x_tile99
-y_tile95=6+y_tile96
-x88=x92
-y89=y93
-x_tile90=6+x_tile94
-y_tile91=y_tile95
-	gray_out_q = allocate(x88 , y89 , x_tile90 , y_tile91 , )
-	blur_y_temp_q = allocate(x92 , y93 , x_tile94 , y_tile95 , )
-	blur_x_temp_q = allocate(x97 , y98 , x_tile99 , y_tile96 , )
-	sharpen_temp_q = allocate(x101 , y102 , x_tile103 , y_tile100 , )
-	ratio_temp_q = allocate(x105 , y106 , x_tile107 , y_tile104 , )
+x128 = o + i
+x_tile130 = i_s
+x124=x128
+y125=y129
+x_tile126=x_tile130
+y_tile127=y_tile131
+x121=x124
+y122=y125
+x_tile120=x_tile126
+y_tile123=y_tile127
+x108=x124
+y109=y125
+x_tile110=x_tile126
+y_tile111=y_tile127
+x117=x121
+y116=y122
+x_tile118=x_tile120
+y_tile119=y_tile123
+x108=x121
+y109=y122
+x_tile110=x_tile120
+y_tile111=y_tile123
+x112=x117
+y113=y116
+x_tile114=x_tile118
+y_tile115=6+y_tile119
+x108=x112
+y109=y113
+x_tile110=6+x_tile114
+y_tile111=y_tile115
+	gray_out_q = allocate(x108 , y109 , x_tile110 , y_tile111 , )
+	blur_y_temp_q = allocate(x112 , y113 , x_tile114 , y_tile115 , )
+	blur_x_temp_q = allocate(x117 , y116 , x_tile118 , y_tile119 , )
+	sharpen_temp_q = allocate(x121 , y122 , x_tile120 , y_tile123 , )
+	ratio_temp_q = allocate(x124 , y125 , x_tile126 , y_tile127 , )
 	{
-x112 in (0, gray_out_q.logical_rows, x_tile114)
-y113 in (0, gray_out_q.logical_cols, y_tile115)
-	gray_out_q_q = gray_out_q.query(x112 , y113 , x_tile114 , y_tile115 , )
-	input_q23 = input.query(x112 , y113 * 3 , x_tile114 + 6 , y_tile115 * 3 + 18 , )
-	gray_mine(gray_out_q : gray_out_q_q, input : input_q23, )
+x132 in (0, gray_out_q.logical_rows, x_tile134)
+y133 in (0, gray_out_q.logical_cols, y_tile135)
+	gray_out_q_q = gray_out_q.query(x132 , y133 , x_tile134 , y_tile135 , )
+	input_q29 = input.query(x132 , y133 * 3 , x_tile134 + 6 , y_tile135 * 3 + 18 , )
+	gray_mine(gray_out_q : gray_out_q_q, input : input_q29, )
 
 }
 
 	{
 i in (o, o_s, i_s)
-x108 = o + i
-x_tile109 = i_s
-x105=x108
-y106=y110
-x_tile107=x_tile109
-y_tile104=y_tile111
-x101=x105
-y102=y106
-x_tile103=x_tile107
-y_tile100=y_tile104
-x88=x105
-y89=y106
-x_tile90=x_tile107
-y_tile91=y_tile104
-x97=x101
-y98=y102
-x_tile99=x_tile103
-y_tile96=y_tile100
-x88=x101
-y89=y102
-x_tile90=x_tile103
-y_tile91=y_tile100
-x92=x97
-y93=y98
-x_tile94=x_tile99
-y_tile95=6+y_tile96
-x88=x92
-y89=y93
-x_tile90=6+x_tile94
-y_tile91=y_tile95
+x128 = o + i
+x_tile130 = i_s
+x124=x128
+y125=y129
+x_tile126=x_tile130
+y_tile127=y_tile131
+x121=x124
+y122=y125
+x_tile120=x_tile126
+y_tile123=y_tile127
+x108=x124
+y109=y125
+x_tile110=x_tile126
+y_tile111=y_tile127
+x117=x121
+y116=y122
+x_tile118=x_tile120
+y_tile119=y_tile123
+x108=x121
+y109=y122
+x_tile110=x_tile120
+y_tile111=y_tile123
+x112=x117
+y113=y116
+x_tile114=x_tile118
+y_tile115=6+y_tile119
+x108=x112
+y109=y113
+x_tile110=6+x_tile114
+y_tile111=y_tile115
 	 BLANK 
 	 BLANK 
 	 BLANK 
 	 BLANK 
 	 BLANK 
 	 BLANK 
-	final_out_q = final_out.query(x108 , y110 , x_tile109 , y_tile111 , )
-	input_q19 = input.query(x108 , y110 * 3 , x_tile109 , y_tile111 * 3 , )
-	gray_out_q_q = gray_out_q.query(x_tile90 - 1 , y89 , 1 , y_tile91 , )
-	input_q20 = input.query(x88 + x_tile90 - 1 , y89 * 3 , 1 + 6 , y_tile91 * 3 + 18 , )
-	gray_mine(gray_out : gray_out_q_q, input : input_q20, )
+	final_out_q = final_out.query(x128 , y129 , x_tile130 , y_tile131 , )
+	input_q25 = input.query(x128 , y129 * 3 , x_tile130 , y_tile131 * 3 , )
+	gray_out_q_q = gray_out_q.query(x_tile110 - 1 , y109 , 1 , y_tile111 , )
+	input_q26 = input.query(x108 + x_tile110 - 1 , y109 * 3 , 1 + 6 , y_tile111 * 3 + 18 , )
+	gray_mine(gray_out : gray_out_q_q, input : input_q26, )
 	 BLANK 
 	naive_blur_y_unsharp_vec(blur_y_temp : blur_y_temp_q, gray_out : gray_out_q, )
 	naive_blur_x_unsharp_vec(blur_x_temp : blur_x_temp_q, blur_y_temp : blur_y_temp_q, )
 	sharpen_vec(sharpen_temp : sharpen_temp_q, blur_x_temp : blur_x_temp_q, gray_out : gray_out_q, )
 	ratio_vec(ratio_temp : ratio_temp_q, sharpen_temp : sharpen_temp_q, gray_out : gray_out_q, )
-	output_assign_mine(final_out : final_out_q, ratio_temp : ratio_temp_q, input : input_q19, )
+	output_assign_mine(final_out : final_out_q, ratio_temp : ratio_temp_q, input : input_q25, )
 	 BLANK 
 	 BLANK 
 	 BLANK 
 	 BLANK 
 	 BLANK 
-	gray_out_q_move_src = gray_out_q.query(1 , y89 , x_tile90 - 1 , y_tile91 , )
-	gray_out_q.insert(0 , y89 , x_tile90 - 1 , y_tile91 , gray_out_q_move_src)
+	gray_out_q_move_src = gray_out_q.query(1 , y109 , x_tile110 - 1 , y_tile111 , )
+	gray_out_q.insert(0 , y109 , x_tile110 - 1 , y_tile111 , gray_out_q_move_src)
 
 }
 

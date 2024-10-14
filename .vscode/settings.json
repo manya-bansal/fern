@@ -1,5 +1,6 @@
 {
   "files.associations": {
+    "*.cu": "cuda-cpp",
     "string": "cpp",
     "algorithm": "cpp",
     "__bit_reference": "cpp",
@@ -67,6 +68,8 @@
     "vector": "cpp",
     "version": "cpp",
     "functional": "cpp",
-    "stack": "cpp"
+    "stack": "cpp",
+    "typeindex": "cpp",
+    "valarray": "cpp"
   }
 }

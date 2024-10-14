@@ -1,41 +1,41 @@
-y48 in (0, out2.logical_cols, y_tile46)
+y67 in (0, out2.logical_cols, y_tile69)
 o in (0, out2.logical_rows, o_s)
 i = 0
-x47 = o + i
-x_tile49 = i_s
-x42=x47
-y43=y48
-x_tile44=2+x_tile49
-y_tile45=y_tile46
-	out1_q = allocate(x42 , y43 , x_tile44 , y_tile45 , )
+x66 = o + i
+x_tile68 = i_s
+x62=x66
+y63=y67
+x_tile64=2+x_tile68
+y_tile65=y_tile69
+	out1_q = allocate(x62 , y63 , x_tile64 , y_tile65 , )
 	{
-x50 in (0, out1_q.logical_rows, x_tile52)
-y51 in (0, out1_q.logical_cols, y_tile53)
-	out1_q_q = out1_q.query(x50 , y51 , x_tile52 , y_tile53 , )
-	input_q13 = input.query(x50 , y51 , x_tile52 , y_tile53 + 2 , )
-	naive_blur_x_take_2_vec(out1_q : out1_q_q, input : input_q13, )
+x70 in (0, out1_q.logical_rows, x_tile72)
+y71 in (0, out1_q.logical_cols, y_tile73)
+	out1_q_q = out1_q.query(x70 , y71 , x_tile72 , y_tile73 , )
+	input_q19 = input.query(x70 , y71 , x_tile72 , y_tile73 + 2 , )
+	naive_blur_x_take_2_vec(out1_q : out1_q_q, input : input_q19, )
 
 }
 
 	{
 i in (o, o_s, i_s)
-x47 = o + i
-x_tile49 = i_s
-x42=x47
-y43=y48
-x_tile44=2+x_tile49
-y_tile45=y_tile46
+x66 = o + i
+x_tile68 = i_s
+x62=x66
+y63=y67
+x_tile64=2+x_tile68
+y_tile65=y_tile69
 	 BLANK 
 	 BLANK 
-	out2_q = out2.query(x47 , y48 , x_tile49 , y_tile46 , )
-	out1_q_q = out1_q.query(x_tile44 - 1 , y43 , 1 , y_tile45 , )
-	input_q10 = input.query(x42 + x_tile44 - 1 , y43 , 1 , y_tile45 + 2 , )
-	naive_blur_x_take_2_vec(out1 : out1_q_q, input : input_q10, )
+	out2_q = out2.query(x66 , y67 , x_tile68 , y_tile69 , )
+	out1_q_q = out1_q.query(x_tile64 - 1 , y63 , 1 , y_tile65 , )
+	input_q16 = input.query(x62 + x_tile64 - 1 , y63 , 1 , y_tile65 + 2 , )
+	naive_blur_x_take_2_vec(out1 : out1_q_q, input : input_q16, )
 	 BLANK 
 	naive_blur_y_take_2_vec(out2 : out2_q, out1 : out1_q, )
 	 BLANK 
-	out1_q_move_src = out1_q.query(1 , y43 , x_tile44 - 1 , y_tile45 , )
-	out1_q.insert(0 , y43 , x_tile44 - 1 , y_tile45 , out1_q_move_src)
+	out1_q_move_src = out1_q.query(1 , y63 , x_tile64 - 1 , y_tile65 , )
+	out1_q.insert(0 , y63 , x_tile64 - 1 , y_tile65 , out1_q_move_src)
 
 }
 

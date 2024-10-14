@@ -419,8 +419,8 @@ Pipeline Pipeline::subpipeline(int start_idx, int end_idx) {
   for (int i = start_idx; i <= end_idx; i++) {
     auto func = new_pipe.functions[i];
     auto concreteArgs = func.getArguments();
-    concreteArgs[concreteArgs.size() - 1] = new DataStructureArg(
-        DataStructurePtr(new MyConcreteDataStructure(ds, name)));
+    concreteArgs[concreteArgs.size() - 1] =   Argument(std::make_shared<DataStructureArg>(
+        DataStructurePtr(new MyConcreteDataStructure(ds, name))));
     auto new_func = ConcreteFunctionCall(func.getName(), concreteArgs,
                                          func.getOriginalDataRel(),
                                          func.getAbstractArguments());
@@ -829,8 +829,8 @@ FunctionType Pipeline::getReusePreamble(const AbstractDataStructure *ds,
   std::vector<ConcreteFunctionCall> new_funcs;
   for (auto func : functions) {
     auto concreteArgs = func.getArguments();
-    concreteArgs[concreteArgs.size() - 1] = new DataStructureArg(
-        DataStructurePtr(new MyConcreteDataStructure(ds, name)));
+    concreteArgs[concreteArgs.size() - 1] =  Argument(std::make_shared<DataStructureArg>(
+        DataStructurePtr(new MyConcreteDataStructure(ds, name))));
     auto new_func = ConcreteFunctionCall(func.getName(), concreteArgs,
                                          func.getOriginalDataRel(),
                                          func.getAbstractArguments());

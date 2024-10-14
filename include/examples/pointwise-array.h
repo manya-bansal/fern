@@ -75,9 +75,9 @@ public:
   }
 
   std::vector<fern::Argument> getArguments() override {
-    return {new fern::DataStructureArg(fern::DataStructurePtr(&a)),
-            new fern::DataStructureArg(fern::DataStructurePtr(&b)),
-            new fern::DataStructureArg(fern::DataStructurePtr(&out))};
+    return {std::make_shared< fern::DataStructureArg(fern::DataStructurePtr(&a)),
+            std::make_shared< fern::DataStructureArg(fern::DataStructurePtr(&b)),
+            std::make_shared< fern::DataStructureArg(fern::DataStructurePtr(&out))};
   }
 
   examples::Array<float> a;
@@ -110,9 +110,9 @@ public:
   }
 
   std::vector<fern::Argument> getArguments() override {
-    return {new fern::DataStructureArg(fern::DataStructurePtr(&a)),
-            new fern::DataStructureArg(fern::DataStructurePtr(&b)),
-            new fern::DataStructureArg(fern::DataStructurePtr(&out))};
+    return {std::make_shared< fern::DataStructureArg>(fern::DataStructurePtr(&a)),
+            std::make_shared< fern::DataStructureArg>(fern::DataStructurePtr(&b)),
+            std::make_shared< fern::DataStructureArg>(fern::DataStructurePtr(&out))};
   }
 
   examples::Array<float> a;
@@ -145,9 +145,9 @@ public:
   }
 
   std::vector<fern::Argument> getArguments() override {
-    return {new fern::DataStructureArg(fern::DataStructurePtr(&a)),
-            new fern::DataStructureArg(fern::DataStructurePtr(&b)),
-            new fern::DataStructureArg(fern::DataStructurePtr(&out))};
+    return {std::make_shared< fern::DataStructureArg>(fern::DataStructurePtr(&a)),
+            std::make_shared< fern::DataStructureArg>(fern::DataStructurePtr(&b)),
+            std::make_shared< fern::DataStructureArg>(fern::DataStructurePtr(&out))};
   }
 
   examples::Array<float> a;
@@ -179,10 +179,10 @@ public:
   }
 
   std::vector<fern::Argument> getArguments() override {
-    return {new fern::DataStructureArg(fern::DataStructurePtr(&a), "data"),
-            new fern::LiteralArg(fern::Datatype::Float32, 0.0f),
-            new fern::VariableArg(fern::getNode(len)),
-            new fern::DataStructureArg(fern::DataStructurePtr(&out), "data")};
+    return {std::make_shared< fern::DataStructureArg(fern::DataStructurePtr(&a), "data"),
+            std::make_shared< fern::LiteralArg(fern::Datatype::Float32, 0.0f),
+            std::make_shared< fern::VariableArg(fern::getNode(len)),
+            std::make_shared< fern::DataStructureArg(fern::DataStructurePtr(&out), "data")};
   }
 
   examples::Array<float> a;
@@ -215,10 +215,10 @@ public:
   }
 
   std::vector<fern::Argument> getArguments() override {
-    return {new fern::DataStructureArg(fern::DataStructurePtr(&a)),
-            new fern::LiteralArg(fern::Datatype::Float32, 0.0f),
-            new fern::VariableArg(fern::getNode(len)),
-            new fern::DataStructureArg(fern::DataStructurePtr(&out))};
+    return {std::make_shared< fern::DataStructureArg(fern::DataStructurePtr(&a)),
+            std::make_shared< fern::LiteralArg(fern::Datatype::Float32, 0.0f),
+            std::make_shared< fern::VariableArg(fern::getNode(len)),
+            std::make_shared< fern::DataStructureArg(fern::DataStructurePtr(&out))};
   }
 
   examples::Array<float> a;
@@ -253,10 +253,10 @@ public:
   }
 
   std::vector<fern::Argument> getArguments() override {
-    return {new fern::DataStructureArg(fern::DataStructurePtr(&a)),
-            new fern::LiteralArg(fern::Datatype::Float32, 0.0f),
-            new fern::VariableArg(fern::getNode(len)),
-            new fern::DataStructureArg(fern::DataStructurePtr(&out))};
+    return { std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&a)),
+            std::make_shared<fern::LiteralArg>(fern::Datatype::Float32, 0.0f),
+            std::make_shared<fern::VariableArg>(fern::getNode(len)),
+            std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&out))};
   }
 
   examples::Array<float> a;
@@ -290,9 +290,9 @@ public:
   }
 
   std::vector<fern::Argument> getArguments() override {
-    return {new fern::DataStructureArg(fern::DataStructurePtr(&a)),
-            new fern::VariableArg(fern::getNode(len)),
-            new fern::DataStructureArg(fern::DataStructurePtr(&out))};
+    return {std::make_shared< fern::DataStructureArg(fern::DataStructurePtr(&a)),
+            std::make_shared< fern::VariableArg(fern::getNode(len)),
+            std::make_shared< fern::DataStructureArg(fern::DataStructurePtr(&out))};
   }
 
   examples::Array<float> a;
@@ -325,9 +325,9 @@ public:
   }
 
   std::vector<fern::Argument> getArguments() override {
-    return {new fern::DataStructureArg(fern::DataStructurePtr(&a)),
-            new fern::VariableArg(fern::getNode(len)),
-            new fern::DataStructureArg(fern::DataStructurePtr(&out))};
+    return {std::make_shared< fern::DataStructureArg(fern::DataStructurePtr(&a)),
+            std::make_shared< fern::VariableArg(fern::getNode(len)),
+            std::make_shared< fern::DataStructureArg(fern::DataStructurePtr(&out))};
   }
 
   examples::Array<float> a;
@@ -360,9 +360,9 @@ public:
   }
 
   std::vector<fern::Argument> getArguments() override {
-    return {new fern::DataStructureArg(fern::DataStructurePtr(&a)),
-            new fern::VariableArg(fern::getNode(len)),
-            new fern::DataStructureArg(fern::DataStructurePtr(&out))};
+    return {std::make_shared< fern::DataStructureArg(fern::DataStructurePtr(&a)),
+            std::make_shared< fern::VariableArg(fern::getNode(len)),
+            std::make_shared< fern::DataStructureArg(fern::DataStructurePtr(&out))};
   }
 
   examples::Array<float> a;
@@ -395,9 +395,9 @@ public:
   }
 
   std::vector<fern::Argument> getArguments() override {
-    return {new fern::DataStructureArg(fern::DataStructurePtr(&a)),
-            new fern::VariableArg(fern::getNode(len)),
-            new fern::DataStructureArg(fern::DataStructurePtr(&out))};
+    return {std::make_shared< fern::DataStructureArg(fern::DataStructurePtr(&a)),
+            std::make_shared< fern::VariableArg(fern::getNode(len)),
+            std::make_shared< fern::DataStructureArg(fern::DataStructurePtr(&out))};
   }
 
   examples::Array<float> a;
@@ -430,10 +430,10 @@ public:
   }
 
   std::vector<fern::Argument> getArguments() override {
-    return {new fern::DataStructureArg(fern::DataStructurePtr(&a)),
-            new fern::DataStructureArg(fern::DataStructurePtr(&b)),
-            new fern::VariableArg(fern::getNode(len)),
-            new fern::DataStructureArg(fern::DataStructurePtr(&out))};
+    return {std::make_shared< fern::DataStructureArg(fern::DataStructurePtr(&a)),
+            std::make_shared< fern::DataStructureArg(fern::DataStructurePtr(&b)),
+            std::make_shared< fern::VariableArg(fern::getNode(len)),
+            std::make_shared< fern::DataStructureArg(fern::DataStructurePtr(&out))};
   }
 
   examples::Array<float> a;
@@ -466,10 +466,10 @@ public:
   }
 
   std::vector<fern::Argument> getArguments() override {
-    return {new fern::DataStructureArg(fern::DataStructurePtr(&a)),
-            new fern::DataStructureArg(fern::DataStructurePtr(&b)),
-            new fern::VariableArg(fern::getNode(len)),
-            new fern::DataStructureArg(fern::DataStructurePtr(&out))};
+    return {std::make_shared< fern::DataStructureArg(fern::DataStructurePtr(&a)),
+            std::make_shared< fern::DataStructureArg(fern::DataStructurePtr(&b)),
+            std::make_shared< fern::VariableArg(fern::getNode(len)),
+            std::make_shared< fern::DataStructureArg(fern::DataStructurePtr(&out))};
   }
 
   examples::Array<float> a;
@@ -504,10 +504,10 @@ public:
   }
 
   std::vector<fern::Argument> getArguments() override {
-    return {new fern::DataStructureArg(fern::DataStructurePtr(&a)),
-            new fern::LiteralArg(fern::Datatype::Float32, 0.0f),
-            new fern::LiteralArg(fern::Datatype::Int64, 8),
-            new fern::DataStructureArg(fern::DataStructurePtr(&out))};
+    return {std::make_shared< fern::DataStructureArg(fern::DataStructurePtr(&a)),
+            std::make_shared< fern::LiteralArg(fern::Datatype::Float32, 0.0f),
+            std::make_shared< fern::LiteralArg(fern::Datatype::Int64, 8),
+            std::make_shared< fern::DataStructureArg(fern::DataStructurePtr(&out))};
   }
 
   examples::Array<float> a;
@@ -542,10 +542,10 @@ public:
   }
 
   std::vector<fern::Argument> getArguments() override {
-    return {new fern::DataStructureArg(fern::DataStructurePtr(&a)),
-            new fern::LiteralArg(fern::Datatype::Float32, 0.0f),
-            new fern::VariableArg(fern::getNode(len)),
-            new fern::DataStructureArg(fern::DataStructurePtr(&out))};
+    return {std::make_shared< fern::DataStructureArg(fern::DataStructurePtr(&a)),
+            std::make_shared< fern::LiteralArg(fern::Datatype::Float32, 0.0f),
+            std::make_shared< fern::VariableArg(fern::getNode(len)),
+            std::make_shared< fern::DataStructureArg(fern::DataStructurePtr(&out))};
   }
 
   examples::Array<float> a;
@@ -581,10 +581,10 @@ public:
   }
 
   std::vector<fern::Argument> getArguments() override {
-    return {new fern::DataStructureArg(fern::DataStructurePtr(&a)),
-            new fern::LiteralArg(fern::Datatype::Float32, 0.0f),
-            new fern::VariableArg(fern::getNode(len)),
-            new fern::DataStructureArg(fern::DataStructurePtr(&out))};
+    return {std::make_shared< fern::DataStructureArg(fern::DataStructurePtr(&a)),
+            std::make_shared< fern::LiteralArg(fern::Datatype::Float32, 0.0f),
+            std::make_shared< fern::VariableArg(fern::getNode(len)),
+            std::make_shared< fern::DataStructureArg(fern::DataStructurePtr(&out))};
   }
 
   examples::Array<float> a;

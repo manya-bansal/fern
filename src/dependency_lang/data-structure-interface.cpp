@@ -135,7 +135,7 @@ void ConcreteFunctionCall::mangle_abstract_names() {
       FERN_ASSERT(mangled_names.find(var) != mangled_names.end(),
                   "Function is trying to use an argument that comes out from "
                   "nowhere??");
-      arguments[i] = new VariableArg(mangled_names[var]);
+      arguments[i] =  Argument(std::make_shared<VariableArg>(mangled_names[var]));
       // abstractArguments[i] = new VariableArg(mangled_names[var]);
       // }
     }
@@ -206,13 +206,16 @@ std::ostream &operator<<(std::ostream &os, AbstractFunctionCall &func) {
 std::ostream &operator<<(std::ostream &os, const ConcreteFunctionCall &func) {
   os << func.getName() << "(";
   auto arguments = func.getArguments();
+  std::cout << std::endl;
   if (arguments.size() == 0) {
     os << "()";
     return os;
   }
-
+    std::cout << "arguments.size() " << arguments.size() << std::endl;
   for (int i = 0; i < arguments.size() - 1; i++) {
+    std::cout << "Yup!" << std::endl;
     os << arguments[i] << ", ";
+    std::cout << std::endl;
   }
 
   os << arguments[arguments.size() - 1] << " (output) )";

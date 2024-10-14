@@ -1,36 +1,36 @@
-x64 = 0
-y65 = 0
-x59=x64*maxpool_dim63
-y60=y65*maxpool_dim63
-x_tile61=x_tile66*maxpool_dim63
-y_tile62=y_tile67*maxpool_dim63
-x54=x59
-y55=y60
-x_tile56=x_tile61
-y_tile57=y_tile62
-	output_conv_q = allocate(x54 , y55 , x_tile56 , y_tile57 , )
-	output_relu_q = allocate(x59 , y60 , x_tile61 , y_tile62 , )
+x84 = 0
+y85 = 0
+x79=maxpool_dim83*x84
+y80=maxpool_dim83*y85
+x_tile81=maxpool_dim83*x_tile86
+y_tile82=maxpool_dim83*y_tile87
+x75=x79
+y76=y80
+x_tile77=x_tile81
+y_tile78=y_tile82
+	output_conv_q = allocate(x75 , y76 , x_tile77 , y_tile78 , )
+	output_relu_q = allocate(x79 , y80 , x_tile81 , y_tile82 , )
 	{
-x64 in (output.W_start, output.W_start + output.LW, x_tile66)
-y65 in (output.H_start, output.H_start + output.LH, y_tile67)
-x59=x64*maxpool_dim63
-y60=y65*maxpool_dim63
-x_tile61=x_tile66*maxpool_dim63
-y_tile62=y_tile67*maxpool_dim63
-x54=x59
-y55=y60
-x_tile56=x_tile61
-y_tile57=y_tile62
+x84 in (output.W_start, output.W_start + output.LW, x_tile86)
+y85 in (output.H_start, output.H_start + output.LH, y_tile87)
+x79=maxpool_dim83*x84
+y80=maxpool_dim83*y85
+x_tile81=maxpool_dim83*x_tile86
+y_tile82=maxpool_dim83*y_tile87
+x75=x79
+y76=y80
+x_tile77=x_tile81
+y_tile78=y_tile82
 	 BLANK 
-	input_q15 = input.query(x54 * stride_arg58 (Argument)  , y55 * stride_arg58 (Argument)  , x_tile56 + filter.H - 1 , y_tile57 + filter.W - 1 , )
+	input_q21 = input.query(x75 * stride_arg74 (Argument)  , y76 * stride_arg74 (Argument)  , x_tile77 + filter.H - 1 , y_tile78 + filter.W - 1 , )
 	 BLANK 
-	output_q = output.query(x64 , y65 , x_tile66 , y_tile67 , )
-	conv_no_fern_mkl(output_conv : output_conv_q, filter : filter, input : input_q15, )
+	output_q = output.query(x84 , y85 , x_tile86 , y_tile87 , )
+	conv_no_fern_mkl(output_conv : output_conv_q, filter : filter, input : input_q21, )
 	relu_material(output_relu : output_relu_q, output_conv : output_conv_q, )
 	maxpool(output : output_q, output_relu : output_relu_q, )
-	output.insert(x64 , y65 , x_tile66 , y_tile67 , output_q)
+	output.insert(x84 , y85 , x_tile86 , y_tile87 , output_q)
 	 BLANK 
-	input_q15.free()
+	input_q21.free()
 	 BLANK 
 
 }

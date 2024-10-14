@@ -1,47 +1,47 @@
-x85 = 0
-y83 = 0
-x78=maxpool_dim87*x85
-y79=y83*maxpool_dim87
-x_tile80=maxpool_dim87*x_tile84
-y_tile81=maxpool_dim87*y_tile86
-x73=x78*stride_arg82
-y75=y79*stride_arg82
-x_tile74=-1+x_tile80+filter0.H
-y_tile76=-1+y_tile81+filter0.W
-x70=maxpool_dim77*x73
-y71=maxpool_dim77*y75
-x_tile68=maxpool_dim77*x_tile74
-y_tile72=maxpool_dim77*y_tile76
-	output_conv1_q = allocate(x70 , y71 , x_tile68 , y_tile72 , )
-	output_max1_q = allocate(x73 , y75 , x_tile74 , y_tile76 , )
-	output_conv2_q = allocate(x78 , y79 , x_tile80 , y_tile81 , )
+x104 = 0
+y105 = 0
+x99=x104*maxpool_dim103
+y101=y105*maxpool_dim103
+x_tile102=maxpool_dim103*x_tile106
+y_tile100=y_tile107*maxpool_dim103
+x96=stride_arg98*x99
+y94=stride_arg98*y101
+x_tile95=-1+x_tile102+filter0.H
+y_tile97=-1+y_tile100+filter0.W
+x89=maxpool_dim93*x96
+y90=y94*maxpool_dim93
+x_tile91=maxpool_dim93*x_tile95
+y_tile92=y_tile97*maxpool_dim93
+	output_conv1_q = allocate(x89 , y90 , x_tile91 , y_tile92 , )
+	output_max1_q = allocate(x96 , y94 , x_tile95 , y_tile97 , )
+	output_conv2_q = allocate(x99 , y101 , x_tile102 , y_tile100 , )
 	{
-x85 in (output_t.W_start, output_t.W_start + output_t.LW, x_tile84)
-y83 in (output_t.H_start, output_t.H_start + output_t.LH, y_tile86)
-x78=maxpool_dim87*x85
-y79=y83*maxpool_dim87
-x_tile80=maxpool_dim87*x_tile84
-y_tile81=maxpool_dim87*y_tile86
-x73=x78*stride_arg82
-y75=y79*stride_arg82
-x_tile74=-1+x_tile80+filter0.H
-y_tile76=-1+y_tile81+filter0.W
-x70=maxpool_dim77*x73
-y71=maxpool_dim77*y75
-x_tile68=maxpool_dim77*x_tile74
-y_tile72=maxpool_dim77*y_tile76
+x104 in (output_t.W_start, output_t.W_start + output_t.LW, x_tile106)
+y105 in (output_t.H_start, output_t.H_start + output_t.LH, y_tile107)
+x99=x104*maxpool_dim103
+y101=y105*maxpool_dim103
+x_tile102=maxpool_dim103*x_tile106
+y_tile100=y_tile107*maxpool_dim103
+x96=stride_arg98*x99
+y94=stride_arg98*y101
+x_tile95=-1+x_tile102+filter0.H
+y_tile97=-1+y_tile100+filter0.W
+x89=maxpool_dim93*x96
+y90=y94*maxpool_dim93
+x_tile91=maxpool_dim93*x_tile95
+y_tile92=y_tile97*maxpool_dim93
 	 BLANK 
-	input_q18 = input.query(x70 * stride_arg69 (Argument)  , y71 * stride_arg69 (Argument)  , x_tile68 + filter0.H - 1 , y_tile72 + filter0.W - 1 , )
+	input_q24 = input.query(x89 * stride_arg88 (Argument)  , y90 * stride_arg88 (Argument)  , x_tile91 + filter0.H - 1 , y_tile92 + filter0.W - 1 , )
 	 BLANK 
 	 BLANK 
-	output_t_q = output_t.query(x85 , y83 , x_tile84 , y_tile86 , )
-	conv_new_mkl(output_conv1 : output_conv1_q, filter0 : filter0, input : input_q18, )
+	output_t_q = output_t.query(x104 , y105 , x_tile106 , y_tile107 , )
+	conv_new_mkl(output_conv1 : output_conv1_q, filter0 : filter0, input : input_q24, )
 	maxpool(output_max1 : output_max1_q, output_conv1 : output_conv1_q, )
 	conv_new_mkl(output_max1 : output_max1_q, output_conv2 : output_conv2_q, filter0 : filter0, )
 	maxpool(output_t : output_t_q, output_conv2 : output_conv2_q, )
-	output_t.insert(x85 , y83 , x_tile84 , y_tile86 , output_t_q)
+	output_t.insert(x104 , y105 , x_tile106 , y_tile107 , output_t_q)
 	 BLANK 
-	input_q18.free()
+	input_q24.free()
 	 BLANK 
 	 BLANK 
 

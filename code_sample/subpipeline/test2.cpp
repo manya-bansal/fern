@@ -1,37 +1,37 @@
-void my_fused_impl(const Array<float> a, Array<float> c, int64_t len240, int64_t len242, int64_t len238){
-  int64_t x239 = 0;
- int64_t x237 = x239;
- int64_t len236 = len238;
- int64_t x235 = x237;
- int64_t len234 = len236;
- int64_t x233 = x235;
- int64_t len232 = len234;
- Array<float> out_a_q = array_alloc<float>(x233, len232);
- Array<float> b_q = array_alloc<float>(x235, len234);
- Array<float> b2_q = array_alloc<float>(x237, len236);
- for(int64_t x239 = c.idx;x239 < c.idx + c.size; x239+=len238){
-    int64_t x237 = x239;
-  int64_t len236 = len238;
-  int64_t x235 = x237;
-  int64_t len234 = len236;
-  int64_t x233 = x235;
-  int64_t len232 = len234;
-  Array<float> a_q45 = a.array_query_no_materialize(x233, len232);
-  Array<float> c_q = c.array_query_no_materialize(x239, len238);
-    ispc::addi_ispc(a_q45.data, 0, len232, out_a_q.data);
-    int64_t x243 = 0;
-  Array<float> b2_q_q = array_alloc<float>(x241, len240);
-  for(int64_t x243 = b2_q.idx;x243 < b2_q.idx + b2_q.size; x243+=len242){
-      Array<float> out_a_q47 = out_a.array_query_no_materialize(x241, len240);
-   Array<float> b2_q_q = b2_q.array_query_no_materialize(x243, len242);
-   Array<float> b_q46 = b.array_query_no_materialize(x243, len242);
-      ispc::addi_ispc(out_a_q47.data, 0, len240, b2_q_q);
-      ispc::addi_ispc(b_q46.data, 0, len242, b2_q_q);
+void my_fused_impl(const Array<float> a, Array<float> c, int64_t len260, int64_t len262, int64_t len264){
+  int64_t x261 = 0;
+ int64_t x259 = x261;
+ int64_t len258 = len260;
+ int64_t x257 = x259;
+ int64_t len256 = len258;
+ int64_t x255 = x257;
+ int64_t len254 = len256;
+ Array<float> out_a_q = array_alloc<float>(x255, len254);
+ Array<float> b_q = array_alloc<float>(x257, len256);
+ Array<float> b2_q = array_alloc<float>(x259, len258);
+ for(int64_t x261 = c.idx;x261 < c.idx + c.size; x261+=len260){
+    int64_t x259 = x261;
+  int64_t len258 = len260;
+  int64_t x257 = x259;
+  int64_t len256 = len258;
+  int64_t x255 = x257;
+  int64_t len254 = len256;
+  Array<float> a_q51 = a.array_query_no_materialize(x255, len254);
+  Array<float> c_q = c.array_query_no_materialize(x261, len260);
+    ispc::addi_ispc(a_q51.data, 0, len254, out_a_q.data);
+    int64_t x265 = 0;
+  Array<float> b2_q_q = array_alloc<float>(x263, len262);
+  for(int64_t x265 = b2_q.idx;x265 < b2_q.idx + b2_q.size; x265+=len264){
+      Array<float> out_a_q53 = out_a.array_query_no_materialize(x263, len262);
+   Array<float> b2_q_q = b2_q.array_query_no_materialize(x265, len264);
+   Array<float> b_q52 = b.array_query_no_materialize(x265, len264);
+      ispc::addi_ispc(out_a_q53.data, 0, len262, b2_q_q);
+      ispc::addi_ispc(b_q52.data, 0, len264, b2_q_q);
 }
 
     b2_q_q.destroy();
 
-    ispc::addi_ispc(b2_q.data, 0, len238, c_q.data);
+    ispc::addi_ispc(b2_q.data, 0, len260, c_q.data);
 }
 
   out_a_q.destroy();

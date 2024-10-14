@@ -242,33 +242,34 @@ template <typename SubType> bool isa(DependencySubset);
 template <typename SubType> SubType to(DependencySubset);
 
 inline void addArg(std::vector<Argument> &argument, AbstractDataStructure *ds) {
-  argument.push_back(new DataStructureArg(DataStructurePtr(ds)));
+  argument.push_back(Argument
+  (std::make_shared<fern::DataStructureArg>(DataStructurePtr(ds))));
 }
 
 inline void addArg(std::vector<Argument> &argument, DummyDataStructure *ds) {
-  argument.push_back(new DummyDataStructureArg(ds));
+  argument.push_back(Argument(std::make_shared<DummyDataStructureArg>(ds)));
 }
 
 inline void addArg(std::vector<Argument> &argument, DataStructurePtr ds) {
-  argument.push_back(new DataStructureArg(ds));
+  argument.push_back(Argument(std::make_shared<DataStructureArg>(ds)));
 }
 
 inline void addArg(std::vector<Argument> &argument, DataStructureArg d_arg) {
   argument.push_back(
-      new DataStructureArg(d_arg.ds, d_arg.metaData, d_arg.meta));
+      Argument(std::make_shared<DataStructureArg>(d_arg.ds, d_arg.metaData, d_arg.meta)));
 }
 
 inline void addArg(std::vector<Argument> &argument,
                    const DependencyVariableNode *node) {
-  argument.push_back(new VariableArg(node));
+  argument.push_back(Argument(std::make_shared<VariableArg>(node)));
 }
 
 inline void addArg(std::vector<Argument> &argument, int64_t val) {
-  argument.push_back(new LiteralArg(Datatype(Int64), val));
+  argument.push_back(Argument(std::make_shared<LiteralArg>(Datatype(Int64), val)));
 }
 
 inline void addArg(std::vector<Argument> &argument, float val) {
-  argument.push_back(new LiteralArg(Datatype(Float32), val));
+  argument.push_back(Argument(std::make_shared<LiteralArg>(Datatype(Float32), val)));
 }
 
 inline void addArg(std::vector<Argument> &argument, Argument arg) {
@@ -276,7 +277,7 @@ inline void addArg(std::vector<Argument> &argument, Argument arg) {
 }
 
 inline void addArg(std::vector<Argument> &argument, std::string str) {
-  argument.push_back(new StringArg(str));
+  argument.push_back(Argument(std::make_shared<StringArg>(str)));
 }
 
 inline void addArguments(std::vector<Argument> &arg) {

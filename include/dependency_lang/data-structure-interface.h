@@ -119,9 +119,9 @@ std::ostream &operator<<(std::ostream &, const DummyDataStructure &);
 
 class DataStructurePtr {
 public:
-  explicit DataStructurePtr(AbstractDataStructure *ds) : ds(ds) {}
+  explicit DataStructurePtr(AbstractDataStructure* ds) : ds(ds) {}
 
-  virtual std::ostream &print(std::ostream &os) const {
+  std::ostream &print(std::ostream &os) const {
     FERN_ASSERT(ds != nullptr, "Data Structure is not defined");
     os << *(ds);
     return os;
@@ -129,22 +129,22 @@ public:
 
   AbstractDataStructure *dsPtr() const { return ds; };
 
-  AbstractDataStructure *ds;
+  AbstractDataStructure * ds;
 };
 
 class DummyDataStructurePtr {
 public:
   explicit DummyDataStructurePtr(DummyDataStructure *ds) : ds(ds) {}
 
-  virtual std::ostream &print(std::ostream &os) const {
+  std::ostream &print(std::ostream &os) const {
     FERN_ASSERT(ds != nullptr, "Data Structure is not defined");
     os << *(ds);
     return os;
   };
 
-  DummyDataStructure *dsPtr() const { return ds; };
+  DummyDataStructure *dsPtr() const { return ds.get(); };
 
-  DummyDataStructure *ds;
+  std::shared_ptr<DummyDataStructure> ds;
 };
 
 // Different types of arguments for Functions.
@@ -324,7 +324,7 @@ struct DummyDataStructureArg : public Args {
   DummyDataStructure *dsPtr() const { return ds.dsPtr(); }
 
   DummyDataStructurePtr ds;
-  // TODO: Should evetually come back and add
+  // TODO: Should eventually come back and add
   // std::string metaData;
   // bool meta;
 };

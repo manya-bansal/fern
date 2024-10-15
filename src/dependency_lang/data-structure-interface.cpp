@@ -18,6 +18,7 @@ AbstractDataStructure::operator[](const std::string &name) const {
 
 std::ostream &operator<<(std::ostream &os, const AbstractDataStructure &ds) {
   os << ds.getTypeName() << " " << ds.getVarName() << " {";
+  os << std::endl;
   auto metaDataFields = ds.getMetaData();
   for (int i = 0; i < metaDataFields.size(); i++) {
     os << metaDataFields[i] << ", ";
@@ -213,9 +214,7 @@ std::ostream &operator<<(std::ostream &os, const ConcreteFunctionCall &func) {
   }
     std::cout << "arguments.size() " << arguments.size() << std::endl;
   for (int i = 0; i < arguments.size() - 1; i++) {
-    std::cout << "Yup!" << std::endl;
     os << arguments[i] << ", ";
-    std::cout << std::endl;
   }
 
   os << arguments[arguments.size() - 1] << " (output) )";

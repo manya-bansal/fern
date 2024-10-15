@@ -272,25 +272,25 @@ TEST(Eval, FusedConvMaxTanh) {
                               "/conv_tanh.cpp");
 }
 
-// TEST(Eval, DBProcessing) {
+TEST(Eval, DBProcessing) {
 
-//   examples::DbArray input("input");
-//   examples::DbArrayProcessing output("output");
+  examples::DbArray input("input");
+  examples::DbArrayProcessing output("output");
 
-//   examples::SigmoidProcessing sigmoidProcessing;
+  examples::SigmoidProcessing sigmoidProcessing;
 
-//   Pipeline pipeline({sigmoidProcessing(&input, &output)});
+  Pipeline pipeline({sigmoidProcessing(&input, &output)});
 
-//   pipeline.constructPipeline();
-//   pipeline = pipeline.finalize();
-//   // std::cout << pipeline << std::endl;
+  pipeline.constructPipeline();
+  pipeline = pipeline.finalize();
+  // std::cout << pipeline << std::endl;
 
-//   util::printToFile(pipeline, std::string(SOURCE_DIR) + "/code_sample" +
-//                                   "/db_processing.ir");
-//   codegen::CodeGenerator code(pipeline);
-//   util::printToFile(code, std::string(SOURCE_DIR) + "/code_sample/code" +
-//                               "/db_processing.cpp");
-// }
+  util::printToFile(pipeline, std::string(SOURCE_DIR) + "/code_sample" +
+                                  "/db_processing.ir");
+  codegen::CodeGenerator code(pipeline);
+  util::printToFile(code, std::string(SOURCE_DIR) + "/code_sample/code" +
+                              "/db_processing.cpp");
+}
 
 TEST(Eval, Haversine) {
   float lat1 = 0.70984286;
@@ -569,38 +569,35 @@ TEST(Eval, ReuseHaversine) {
 }
 
 
-std::shared_ptr<fern::ConcreteFunctionCall> getCall() {
-	examples::Array<float> a("a");
-	examples::Array<float> out("out");
+fern::ConcreteFunctionCall getCall() {
+  examples::Array<float> * a_ptr = new examples::Array<float>("a");
+  examples::Array<float> * out_ptr = new examples::Array<float>("out");
+
+	// examples::Array<float> out("out");
 	examples::addi_ispc addi_mock;	
 	fern::Variable arg_len("arg_len", true);
-	return std::make_shared<fern::ConcreteFunctionCall>(
-    addi_mock(fern::DataStructureArg(&a, "data"), 1.0f, fern::getNode(arg_len), fern::DataStructureArg(&out, "data")));
+	return 
+    addi_mock(fern::DataStructureArg(a_ptr, "data"), 
+      1.0f, 
+      fern::getNode(arg_len), 
+      fern::DataStructureArg(out_ptr, "data"));
 }
 
-std::shared_ptr<Args> test(){
-  examples::Array<float> a("a");
-  // return Argument(new fern::DataStructureArg(&a, "data"));
-  return std::make_shared<Args>(fern::DataStructureArg(&a, "data"));
+fern::Argument test(){
+  examples::Array<float> * a_ptr = new examples::Array<float>("a");
+  auto t =  fern::Argument(std::make_shared<DataStructureArg>(a_ptr, "data"));
+  std::cout << t << std::endl;
+  return t;
 }
 
 
 
 
 TEST(Eval, SmallCall) {
-  examples::Array<float> a("a");
-  auto call = std::make_shared<fern::DataStructureArg>(&a, "data");
-  std::cout << call << std::endl;
-  call.get()->print(std::cout);
-  std::cout << "Print now" << std::endl;
-  Argument c(call);
-  c.getNode()->print(std::cout);
-  std::cout << c << std::endl;
-
   auto t =  test();
-  t.get()->print(std::cout);
+  std::cout << t << std::endl;
 
+  // This leaks, so will want to free eventually
   auto call_try = getCall();
-  std::cout << *(call.get()) << std::endl;
-
+  std::cout << call_try << std::endl;
 }

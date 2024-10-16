@@ -1,125 +1,125 @@
-x195 = 0
+x197 = 0
+x195=x197
+len194=len196
+x187=x197
+len186=len196
+x191=x195
+len190=len194
 x193=x195
 len192=len194
-x185=x195
-len184=len194
-x188=x193
-len189=len192
-x191=x193
-len190=len192
-x187=x188
-len186=len189
-x179=x187
-len178=len186
-x181=x187
-len180=len186
-x182=x185
-len183=len184
-x181=x182
-len180=len183
-x179=x181
-len178=len180
-x177=x181
-len176=len180
+x189=x191
+len188=len190
+x181=x189
+len180=len188
+x183=x189
+len182=len188
+x185=x187
+len184=len186
+x183=x185
+len182=len184
+x181=x183
+len180=len182
+x179=x183
+len178=len182
+x177=x179
+len176=len178
+x169=x179
+len168=len178
 x175=x177
 len174=len176
-x167=x177
-len166=len176
 x173=x175
 len172=len174
 x171=x173
 len170=len172
-x169=x171
-len168=len170
-x165=x167
-len164=len166
-	s_over_k_q = allocate(x165 , len164 , )
-	log_res_q = allocate(x167 , len166 , )
-	vol_sq_q = allocate(x169 , len168 , )
-	vol_sq_half_q = allocate(x171 , len170 , )
-	vol_sq_half_plusr_q = allocate(x173 , len172 , )
-	vol_inter_q = allocate(x175 , len174 , )
-	d1_inter_q = allocate(x177 , len176 , )
-	vol_sqrt_T_q = allocate(x179 , len178 , )
-	d1_q = allocate(x181 , len180 , )
-	d1_cdf_q = allocate(x182 , len183 , )
-	part1_q = allocate(x185 , len184 , )
-	d2_q = allocate(x187 , len186 , )
-	d2_cdf_q = allocate(x188 , len189 , )
-	k_scaled_q = allocate(x191 , len190 , )
-	part2_q = allocate(x193 , len192 , )
+x167=x169
+len166=len168
+	s_over_k_q = allocate(x167 , len166 , )
+	log_res_q = allocate(x169 , len168 , )
+	vol_sq_q = allocate(x171 , len170 , )
+	vol_sq_half_q = allocate(x173 , len172 , )
+	vol_sq_half_plusr_q = allocate(x175 , len174 , )
+	vol_inter_q = allocate(x177 , len176 , )
+	d1_inter_q = allocate(x179 , len178 , )
+	vol_sqrt_T_q = allocate(x181 , len180 , )
+	d1_q = allocate(x183 , len182 , )
+	d1_cdf_q = allocate(x185 , len184 , )
+	part1_q = allocate(x187 , len186 , )
+	d2_q = allocate(x189 , len188 , )
+	d2_cdf_q = allocate(x191 , len190 , )
+	k_scaled_q = allocate(x193 , len192 , )
+	part2_q = allocate(x195 , len194 , )
 	{
-x195 in (out.idx, out.idx + out.size, len194)
+x197 in (out.idx, out.idx + out.size, len196)
+x195=x197
+len194=len196
+x187=x197
+len186=len196
+x191=x195
+len190=len194
 x193=x195
 len192=len194
-x185=x195
-len184=len194
-x188=x193
-len189=len192
-x191=x193
-len190=len192
-x187=x188
-len186=len189
-x179=x187
-len178=len186
-x181=x187
-len180=len186
-x182=x185
-len183=len184
-x181=x182
-len180=len183
-x179=x181
-len178=len180
-x177=x181
-len176=len180
+x189=x191
+len188=len190
+x181=x189
+len180=len188
+x183=x189
+len182=len188
+x185=x187
+len184=len186
+x183=x185
+len182=len184
+x181=x183
+len180=len182
+x179=x183
+len178=len182
+x177=x179
+len176=len178
+x169=x179
+len168=len178
 x175=x177
 len174=len176
-x167=x177
-len166=len176
 x173=x175
 len172=len174
 x171=x173
 len170=len172
-x169=x171
-len168=len170
-x165=x167
-len164=len166
+x167=x169
+len166=len168
 	 BLANK 
-	stock_price_q41 = stock_price.query(x165 , len164 , )
-	strike_price_q40 = strike_price.query(x165 , len164 , )
+	stock_price_q42 = stock_price.query(x167 , len166 , )
+	strike_price_q41 = strike_price.query(x167 , len166 , )
 	 BLANK 
 	 BLANK 
-	volatility_q39 = volatility.query(x169 , len168 , )
+	volatility_q40 = volatility.query(x171 , len170 , )
 	 BLANK 
 	 BLANK 
 	 BLANK 
 	 BLANK 
 	 BLANK 
-	volatility_q38 = volatility.query(x179 , len178 , )
+	volatility_q39 = volatility.query(x181 , len180 , )
 	 BLANK 
 	 BLANK 
 	 BLANK 
-	stock_price_q37 = stock_price.query(x185 , len184 , )
+	stock_price_q38 = stock_price.query(x187 , len186 , )
 	 BLANK 
 	 BLANK 
 	 BLANK 
-	strike_price_q36 = strike_price.query(x191 , len190 , )
+	strike_price_q37 = strike_price.query(x193 , len192 , )
 	 BLANK 
-	out_q = out.query(x195 , len194 , )
-	mock::div(s_over_k : s_over_k_q, strike_price : strike_price_q40, stock_price : stock_price_q41, )
+	out_q = out.query(x197 , len196 , )
+	mock::div(s_over_k : s_over_k_q, strike_price : strike_price_q41, stock_price : stock_price_q42, )
 	mock::vlog(log_res : log_res_q, s_over_k : s_over_k_q, )
-	mock::mul(vol_sq : vol_sq_q, volatility : volatility_q39, )
+	mock::mul(vol_sq : vol_sq_q, volatility : volatility_q40, )
 	mock::divi(vol_sq_half : vol_sq_half_q, vol_sq : vol_sq_q, )
 	mock::addi(vol_sq_half_plusr : vol_sq_half_plusr_q, vol_sq_half : vol_sq_half_q, )
 	mock::muli(vol_inter : vol_inter_q, vol_sq_half_plusr : vol_sq_half_plusr_q, )
 	mock::add(d1_inter : d1_inter_q, vol_inter : vol_inter_q, log_res : log_res_q, )
-	mock::muli(vol_sqrt_T : vol_sqrt_T_q, volatility : volatility_q38, )
+	mock::muli(vol_sqrt_T : vol_sqrt_T_q, volatility : volatility_q39, )
 	mock::div(vol_sqrt_T : vol_sqrt_T_q, d1 : d1_q, d1_inter : d1_inter_q, )
 	mock::cdf(d1_cdf : d1_cdf_q, d1 : d1_q, )
-	mock::mul(part1 : part1_q, d1_cdf : d1_cdf_q, stock_price : stock_price_q37, )
+	mock::mul(part1 : part1_q, d1_cdf : d1_cdf_q, stock_price : stock_price_q38, )
 	mock::sub(d2 : d2_q, vol_sqrt_T : vol_sqrt_T_q, d1 : d1_q, )
 	mock::cdf(d2_cdf : d2_cdf_q, d2 : d2_q, )
-	mock::muli(k_scaled : k_scaled_q, strike_price : strike_price_q36, )
+	mock::muli(k_scaled : k_scaled_q, strike_price : strike_price_q37, )
 	mock::mul(part2 : part2_q, d2_cdf : d2_cdf_q, k_scaled : k_scaled_q, )
 	mock::sub(out : out_q, part2 : part2_q, part1 : part1_q, )
 	 BLANK 

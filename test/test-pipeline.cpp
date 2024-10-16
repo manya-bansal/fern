@@ -292,6 +292,24 @@ TEST(Eval, DBProcessing) {
                               "/db_processing.cpp");
 }
 
+TEST(Eval, SimpleAddition) {
+	examples::Array<float> a("a");
+	examples::Array<float> out("out");
+	examples::addi_mock addi_mock;
+	fern::Variable arg_len("arg_len", true);
+	fern::ConcreteFunctionCall call = addi_mock(fern::DataStructureArg(&a, "data"), 1.0f, fern::getNode(arg_len), fern::DataStructureArg(&out, "data"));
+
+	Pipeline pipeline({call});
+	pipeline.constructPipeline();
+    pipeline = pipeline.finalize();
+
+    util::printToFile(pipeline,
+                      std::string(SOURCE_DIR) + "/code_sample" + "/simple_addition.ir");
+    codegen::CodeGenerator code(pipeline);
+    util::printToFile(code, std::string(SOURCE_DIR) + "/code_sample/code" +
+                              "/simple_addition.cpp");
+}
+
 TEST(Eval, BlackScholes) {
     examples::Array<float> stock_price("stock_price");
     examples::Array<float> strike_price("strike_price");

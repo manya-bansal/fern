@@ -1,13 +1,19 @@
 import fern_py
-# # funcs = fern_py.getfuncs()
-# # print("FUNCS", funcs)
-# pipeline = fern_py.Pipeline()
-# # print(fern_py.Pipeline.functions)
-# pipeline.constructPipeline()
-# pipeline.finalize(False)
 
-# call = fern_py.getfuncs()
-# print(call.getName())
-# print(call.getInputs())
+arg_len = fern_py.Variable("arg_len", True)
 
-print(fern_py.ConcreteFunctionCall())
+a_arg = fern_py.DataStructureArg(fern_py.Array.init("a"), "data")
+b_arg = fern_py.DataStructureArg(fern_py.Array.init("b"), "data")
+out_arg = fern_py.DataStructureArg(fern_py.Array.init("out"), "data")
+
+add_call = fern_py.addi_mock(a_arg, 5.0, arg_len, b_arg)
+sub_call = fern_py.addi_mock(b_arg, -3.0, arg_len, out_arg)
+
+pipeline = fern_py.Pipeline([add_call, sub_call])
+
+pipeline.constructPipeline()
+pipeline.finalize(False)
+
+fern_py.printToFile(pipeline, "pipeline1.ir")
+code = fern_py.CodeGenerator(pipeline)
+fern_py.printToFile(code, "pipeline1.cpp")

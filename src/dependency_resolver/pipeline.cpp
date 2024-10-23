@@ -9,6 +9,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include "utils/instrusive_ptr.h"
+#include "codegen/codegen.h"
 
 namespace fern {
 int add(int i, int j) {
@@ -1760,48 +1761,58 @@ fern::ConcreteFunctionCall getConcreteFuncCall() {
 	return addi_mock(fern::DataStructureArg(a_ptr, "data"), 1.0f, fern::getNode(arg_len), fern::DataStructureArg(out_ptr, "data"));
 }
 
-
-examples::Array<float> a("a");
-examples::Array<float> out("out");
-examples::addi_mock addi_mock;
-fern::Variable arg_len("arg_len", true);
-fern::ConcreteFunctionCall call1 = addi_mock(fern::DataStructureArg(&a, "data"), 1.0f, fern::getNode(arg_len), fern::DataStructureArg(&out, "data"));
-
 PYBIND11_MODULE(fern_py, m) {
     m.def("add", &fern::add, "A function that adds two numbers");
 	m.attr("test") = 42;
 	pybind11::class_<fern::Pipeline>(m, "Pipeline")
-	
 		.def(
-			pybind11::init([]() { 
-				std::cout << "CALL1 " << call1 << std::endl;
-
-
-				// DOESN'T WORK 
-				fern::ConcreteFunctionCall call = getConcreteFuncCall();
-				std::cout << "CALL " << call << std::endl;
-
-				fern::Pipeline pipeline({call});
-
+			pybind11::init([](std::vector<fern::ConcreteFunctionCall> functions) { 
+				fern::Pipeline pipeline(functions);
 				return pipeline;
 			})
 		)
 		.def("constructPipeline", &fern::Pipeline::constructPipeline)
 		.def("finalize", &fern::Pipeline::finalize);
+	
+	pybind11::class_<fern::codegen::CodeGenerator>(m, "CodeGenerator")
+		.def(pybind11::init<fern::Pipeline>());
+	
+	m.def("printToFile", &fern::util::printToFile<fern::Pipeline>);
+	m.def("printToFile", &fern::util::printToFile<fern::codegen::CodeGenerator>);
 
-	pybind11::class_<fern::ConcreteFunctionCall, std::unique_ptr<fern::ConcreteFunctionCall, pybind11::nodelete>>(m, "ConcreteFunctionCall")
-		.def(pybind11::init([]() {
-			fern::ConcreteFunctionCall call = getConcreteFuncCall();
-			std::cout << "concrete function call " << call << std::endl;
-			return call;
-		}))
+	pybind11::class_<fern::AbstractDataStructure>(m, "AbstractDataStructure");
+	pybind11::class_<examples::Array<float>, fern::AbstractDataStructure>(m, "Array")
+		.def("init", [](std::string &name) { return new examples::Array<float>(name); }, pybind11::return_value_policy::reference)
+		.def("init", []() { return new examples::Array<float>(); }, pybind11::return_value_policy::reference);
+
+	pybind11::class_<fern::DataStructureArg>(m, "DataStructureArg")
+		.def(pybind11::init<fern::AbstractDataStructure *, std::string>());
+	
+	pybind11::class_<fern::Variable>(m, "Variable")
+		.def(pybind11::init<const std::string &, bool>());
+	
+	// pybind11::class_<fern::DependencyVariableNode>(m, "DependencyVariableNode");
+	
+	// m.def("getNode", &fern::getNode<fern::Variable>);
+
+	pybind11::class_<fern::ConcreteFunctionCall>(m, "ConcreteFunctionCall")
 		.def("getInputs", &fern::ConcreteFunctionCall::getInputs)
 		.def("getName", &fern::ConcreteFunctionCall::getName)
 		.def("getIntervalVars", &fern::ConcreteFunctionCall::getIntervalVars);
 
-	m.def("getfuncs", &getConcreteFuncCall, pybind11::return_value_policy::reference_internal);
-	m.def("printfuncs", [](fern::ConcreteFunctionCall a) {
-		std::cout << "printfuncs" << std::endl;
-		std::cout << a << std::endl;
+	m.def("addi_mock", [](fern::DataStructureArg a, float i, fern::Variable len_var, fern::DataStructureArg out){
+		examples::addi_mock addi_mock;
+		return addi_mock(a, i, fern::getNode(len_var), out);
 	});
+
+	m.def("add_mock", [](fern::DataStructureArg a, fern::DataStructureArg b, fern::Variable len_var, fern::DataStructureArg out){
+		examples::add_mock add_mock;
+		return add_mock(a, b, fern::getNode(len_var), out);
+	});
+		
+	// m.def("getfuncs", &getConcreteFuncCall, pybind11::return_value_policy::reference_internal);
+	// m.def("printfuncs", [](fern::ConcreteFunctionCall a) {
+	// 	std::cout << "printfuncs" << std::endl;
+	// 	std::cout << a << std::endl;
+	// });
 }

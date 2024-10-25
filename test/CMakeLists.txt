@@ -13,9 +13,6 @@ target_compile_options(all_tests PRIVATE
 -Wl,-no_compact_unwind
 )
 
-link_directories(/opt/homebrew/opt/openblas/lib/
-/opt/homebrew/lib)
-
 target_link_libraries(all_tests
 gtest_main
 "libginac.a"

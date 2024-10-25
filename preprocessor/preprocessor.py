@@ -1,9 +1,8 @@
 import annot_parser
-from annot_parser import parse_annotation_structure
 import expr_parser
-from expr_parser import parse_expression
-from signature_parse import parse_function_signature
-
+import signature_parse
+import argparse
+import re
 
 
 test_input = """
@@ -36,7 +35,7 @@ test_input = """
 signature = "void vadd(Array<float> B, Array<float> C, Array<float> A);"
 
 def cpp_gen_expr(expr_str, declared):
-    expr = parse_expression(expr_str)
+    expr = expr_parser.parse_expression(expr_str)
     
     def generate_string(expr):
         match expr:
@@ -133,7 +132,7 @@ def cpp_gen_data_dep(structure):
 
 
 def generate_full_func(signature, data_dep, constrained_subsets):
-    func_name, args  = parse_function_signature(signature)
+    func_name, args  = signature_parse.parse_function_signature(signature)
     
     fern_arguments = []
     private_vars = []
@@ -141,13 +140,13 @@ def generate_full_func(signature, data_dep, constrained_subsets):
     for arg in args:
         if arg[0] == "int":
             fern_arguments.append(f"new fern::VariableArg(fern::getNode({arg[1]}))")
-            private_vars.append(f"fern::Variable {arg[1]}")
+            private_vars.append(f"fern::Variable {arg[1]};")
         elif arg[1] not in constrained_subsets:
             fern_arguments.append(f"fern::DataStructureArg(fern::DataStructurePtr(&{arg[1]}))")
-            private_vars.append(f"{arg[0]} {arg[1]}")
+            private_vars.append(f"{arg[0]} {arg[1]};")
         else:
             fern_arguments.append(f"new fern::DataStructureArg(fern::DataStructurePtr(&{arg[1]}))")
-            private_vars.append(f"{arg[0]} {arg[1]}")
+            private_vars.append(f"{arg[0]} {arg[1]};")
     
     return f"class {func_name} : public fern::AbstractFunctionCall {{\n\n"\
            f"public:\n"\
@@ -155,18 +154,58 @@ def generate_full_func(signature, data_dep, constrained_subsets):
            f"\tstd::string getName() const override {{ return {{\"{func_name}\"}}; }}\n\n"\
            f"\t{data_dep}\n\n"\
            f"\tstd::vector<fern::Argument> getArguments() override {{\n"\
-           f"\t\treturn {{ {',\n\t\t'.join(fern_arguments)} }}\n\n"\
+           f"\t\treturn {{ {',\n\t\t'.join(fern_arguments)} }}; }}\n\n"\
            f"{'\n'.join(private_vars)}\n"\
            f"}};"
     
     
 def parse_fern_annotation(signature:str, annot: str):
-    try:    
-        structure = parse_annotation_structure(annot)
-        constrained_subsets, data_dep_func =cpp_gen_data_dep(structure)
-        full_func = generate_full_func(signature, data_dep_func, constrained_subsets)
-        print(full_func)
-    except Exception as e:
-        print(f"Parsing failed: {str(e)}")
+    structure = annot_parser.parse_annotation_structure(annot)
+    constrained_subsets, data_dep_func =cpp_gen_data_dep(structure)
+    full_func = generate_full_func(signature, data_dep_func, constrained_subsets)
+    return full_func
         
-parse_fern_annotation(signature, test_input)
+
+        
+# parse_fern_annotation(signature, test_input)
+
+
+def main():
+    parser = argparse.ArgumentParser(description='Convert Fern Annotations into cpp classes automatically')
+    parser.add_argument('--header_file', type=str, help='Path to the input file')
+    parser.add_argument('--cpp_file', type=str, help='Path to the input file')
+    args = parser.parse_args()
+    
+    # Read the file and print its contents
+    try:
+        with open(args.header_file, 'r') as file:
+            with open(args.cpp_file, 'w') as out_file:
+                file_contents = file.read()
+                # Read all the relevant annotations from the file
+                pattern = r'(/\*.*?\*/)\s*(void\s+\w+\(.*?\);)'
+                matches = re.findall(pattern, file_contents, re.DOTALL)  
+                parsed_results = [{"annotation": match[0], "function": match[1]} for match in matches]
+                
+                out_file.write(
+                   "#include \"dependency_lang/data-structure-interface.h\"\n"\
+                   "#include \"dependency_lang/dep_lang.h\"\n"\
+                   "#include \"dependency_lang/dep_lang_nodes.h\"\n"\
+                   "#include \"examples/common-ds.h\"\n"\
+                   "#include \"utils/name.h\"\n"\
+                   "\n\n"\
+                   "namespace examples {\n\n"
+                )
+                for result in parsed_results:
+                    out_file.write(parse_fern_annotation(result['function'], result['annotation']))
+                    out_file.write("\n\n")
+                
+                # close namespace
+                out_file.write("\n\n}")
+            
+    except FileNotFoundError:
+        print(f"Error: The file '{args.header_file}' does not exist.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+if __name__ == '__main__':
+    main()

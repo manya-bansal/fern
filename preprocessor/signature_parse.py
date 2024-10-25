@@ -23,12 +23,3 @@ def parse_function_signature(signature: str) -> Tuple[str, List[Tuple[str, str]]
             raise ValueError("Unexpected argument format")
 
     return func_name, args
-
-# Example usage
-signature = "void vadd(Array<float> B, Array<float> C, Array<float> A);"
-func_name, args = parse_function_signature(signature)
-
-print("Function Name:", func_name)
-print("Arguments:")
-for arg_type, arg_name in args:
-    print(f"Type: {arg_type}, Name: {arg_name}")

@@ -1,7 +1,7 @@
 /*
 <Fern Annotation>
 len : Symbolic
-for i in [a.idx, a.idx + a.size, len]{
+for i in [A.idx, A.idx + A.size, len]{
     produce{
         A {
             idx: i,
@@ -21,4 +21,4 @@ for i in [a.idx, a.idx + a.size, len]{
 }
 </Fern Annotation>
 */
-template <typename T> void vadd(Array<T> a, Array<T> b, Array<T> out);
+template <typename T> void vadd(Array<T> B, Array<T> C, Array<T> A);

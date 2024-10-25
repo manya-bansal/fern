@@ -1,30 +1,27 @@
 from dataclasses import dataclass
-from enum import Enum, auto
-from typing import List, Optional, Dict, Union
+from typing import List, Union, Optional
+from enum import Enum
 import re
 
-# Token definitions
 class TokenType(Enum):
-    FERN_START = auto()        # <Fern Annotation>
-    FERN_END = auto()          # </Fern Annotation>
-    IDENTIFIER = auto()        # [a-zA-Z][a-zA-Z0-9_]*
-    COLON = auto()            # :
-    SYMBOLIC = auto()         # Symbolic
-    FOR = auto()              # for
-    IN = auto()               # in
-    LBRACKET = auto()         # [
-    RBRACKET = auto()         # ]
-    LBRACE = auto()           # {
-    RBRACE = auto()           # }
-    DOT = auto()              # .
-    PLUS = auto()             # +
-    COMMA = auto()            # ,
-    PRODUCE = auto()          # produce
-    CONSUME = auto()          # when consume
-    COMMENT_START = auto()    # /*
-    COMMENT_END = auto()      # */
-    WHITESPACE = auto()       # \s+
-    EOF = auto()              # end of file
+    IDENTIFIER = "IDENTIFIER"
+    NUMBER = "NUMBER"
+    SYMBOLIC = "SYMBOLIC"
+    COLON = "COLON"
+    DOT = "DOT"
+    PLUS = "PLUS"
+    COMMA = "COMMA"
+    LEFT_BRACE = "LEFT_BRACE"
+    RIGHT_BRACE = "RIGHT_BRACE"
+    LEFT_BRACKET = "LEFT_BRACKET"
+    RIGHT_BRACKET = "RIGHT_BRACKET"
+    FOR = "FOR"
+    IN = "IN"
+    PRODUCE = "PRODUCE"
+    WHEN = "WHEN"
+    CONSUME = "CONSUME"
+    ANNOTATION_START = "ANNOTATION_START"
+    ANNOTATION_END = "ANNOTATION_END"
 
 @dataclass
 class Token:
@@ -33,6 +30,28 @@ class Token:
     line: int
     column: int
 
+@dataclass
+class ObjectDef:
+    name: str
+    properties: dict
+
+@dataclass
+class ProduceConsumeBlock:
+    produce_objects: List[ObjectDef]
+    consume_objects: List[ObjectDef]
+
+@dataclass
+class ForLoop:
+    iterator: str
+    range_values: List[str]
+    nested_loops: List['ForLoop']
+    produce_consume_block: Optional[ProduceConsumeBlock] = None
+
+@dataclass
+class FernAnnotation:
+    symbols: List[str]
+    loops: List[ForLoop]
+
 class Tokenizer:
     def __init__(self, text: str):
         self.text = text
@@ -40,345 +59,277 @@ class Tokenizer:
         self.line = 1
         self.column = 1
         self.tokens = []
-        
-        # Token patterns
-        self.patterns = [
-            (r'/\*', TokenType.COMMENT_START),
-            (r'\*/', TokenType.COMMENT_END),
-            (r'<Fern Annotation>', TokenType.FERN_START),
-            (r'</Fern Annotation>', TokenType.FERN_END),
-            (r'Symbolic', TokenType.SYMBOLIC),
-            (r'for\b', TokenType.FOR),
-            (r'in\b', TokenType.IN),
-            (r'produce\b', TokenType.PRODUCE),
-            (r'when\s+consume\b', TokenType.CONSUME),
-            (r'[a-zA-Z][a-zA-Z0-9_]*', TokenType.IDENTIFIER),
-            (r':', TokenType.COLON),
-            (r'\[', TokenType.LBRACKET),
-            (r'\]', TokenType.RBRACKET),
-            (r'{', TokenType.LBRACE),
-            (r'}', TokenType.RBRACE),
-            (r'\.', TokenType.DOT),
-            (r'\+', TokenType.PLUS),
-            (r',', TokenType.COMMA),
-            (r'\s+', TokenType.WHITESPACE),
-        ]
-        
-        self.token_regex = '|'.join(f'(?P<{token_type.name}>{pattern})' 
-                                   for pattern, token_type in self.patterns)
-        self.regex = re.compile(self.token_regex)
-    
+
+    def add_token(self, type: TokenType, value: str):
+        self.tokens.append(Token(type, value, self.line, self.column))
+
+    def skip_whitespace(self):
+        while self.pos < len(self.text) and self.text[self.pos].isspace():
+            if self.text[self.pos] == '\n':
+                self.line += 1
+                self.column = 1
+            else:
+                self.column += 1
+            self.pos += 1
+
     def tokenize(self) -> List[Token]:
         while self.pos < len(self.text):
-            match = self.regex.match(self.text, self.pos)
-            if match is None:
-                raise ValueError(f"Invalid character at line {self.line}, column {self.column}")
+            self.skip_whitespace()
+            if self.pos >= len(self.text):
+                break
+
+            char = self.text[self.pos]
             
-            token_type_name = match.lastgroup
-            token_value = match.group()
+            # Handle annotation tags
+            if self.text[self.pos:].startswith("<Fern Annotation>"):
+                self.add_token(TokenType.ANNOTATION_START, "<Fern Annotation>")
+                self.pos += len("<Fern Annotation>")
+                self.column += len("<Fern Annotation>")
+                continue
             
-            if token_type_name != 'WHITESPACE':
-                token = Token(
-                    type=TokenType[token_type_name],
-                    value=token_value,
-                    line=self.line,
-                    column=self.column
-                )
-                self.tokens.append(token)
-            
-            # Update position and line/column numbers
-            if '\n' in token_value:
-                self.line += token_value.count('\n')
-                self.column = len(token_value.split('\n')[-1])
-            else:
-                self.column += len(token_value)
-            
-            self.pos = match.end()
-        
-        # Add EOF token
-        self.tokens.append(Token(TokenType.EOF, "", self.line, self.column))
+            if self.text[self.pos:].startswith("</Fern Annotation>"):
+                self.add_token(TokenType.ANNOTATION_END, "</Fern Annotation>")
+                self.pos += len("</Fern Annotation>")
+                self.column += len("</Fern Annotation>")
+                continue
+
+            # Handle keywords and identifiers
+            if char.isalpha():
+                identifier = ""
+                while self.pos < len(self.text) and (self.text[self.pos].isalnum() or self.text[self.pos] == '_'):
+                    identifier += self.text[self.pos]
+                    self.pos += 1
+                    self.column += 1
+
+                if identifier in ["for", "in", "produce", "when", "consume", "Symbolic"]:
+                    self.add_token(TokenType[identifier.upper()], identifier)
+                else:
+                    self.add_token(TokenType.IDENTIFIER, identifier)
+                continue
+
+            # Handle numbers
+            if char.isdigit():
+                number = ""
+                while self.pos < len(self.text) and self.text[self.pos].isdigit():
+                    number += self.text[self.pos]
+                    self.pos += 1
+                    self.column += 1
+                self.add_token(TokenType.NUMBER, number)
+                continue
+
+            # Handle special characters
+            char_tokens = {
+                ':': TokenType.COLON,
+                '.': TokenType.DOT,
+                '+': TokenType.PLUS,
+                ',': TokenType.COMMA,
+                '{': TokenType.LEFT_BRACE,
+                '}': TokenType.RIGHT_BRACE,
+                '[': TokenType.LEFT_BRACKET,
+                ']': TokenType.RIGHT_BRACKET,
+            }
+
+            if char in char_tokens:
+                self.add_token(char_tokens[char], char)
+                self.pos += 1
+                self.column += 1
+                continue
+
+            # Skip comments and unknown characters
+            self.pos += 1
+            self.column += 1
+
         return self.tokens
-
-@dataclass
-class VarRef:
-    base: str
-    field: str
-
-@dataclass
-class Expression:
-    is_symbolic: bool
-    var_ref: Optional[VarRef] = None
-    raw_value: Optional[str] = None
-    produce: Optional['ProduceClause'] = None
-    consume: Optional['ConsumeClause'] = None
-    loops: List['Loop'] = None
-
-    def __post_init__(self):
-        if self.loops is None:
-            self.loops = []
-
-@dataclass
-class StructInstance:
-    name: str
-    fields: Dict[str, Expression]
-
-@dataclass
-class ProduceClause:
-    instances: List[StructInstance]
-
-@dataclass
-class ConsumeClause:
-    instances: List[StructInstance]
-
-@dataclass
-class Loop:
-    iterator: str
-    range_exprs: List[Expression]
-    expression: Expression
-
-@dataclass
-class FernAnnotation:
-    symbolic_vars: List[Expression]
-    loops: List[Loop]
 
 class Parser:
     def __init__(self, tokens: List[Token]):
         self.tokens = tokens
         self.current = 0
-    
-    def parse(self) -> FernAnnotation:
-        self.expect(TokenType.COMMENT_START)
-        self.expect(TokenType.FERN_START)
+
+    def match(self, *types: TokenType) -> Optional[Token]:
+        if self.current < len(self.tokens):
+            current_token = self.tokens[self.current]
+            if current_token.type in types:
+                self.current += 1
+                return current_token
+        return None
+
+    def expect(self, *types: TokenType) -> Token:
+        token = self.match(*types)
+        if token is None:
+            raise SyntaxError(f"Expected one of {types} but got {self.tokens[self.current].type}")
+        return token
+
+    def peek(self) -> Optional[Token]:
+        if self.current < len(self.tokens):
+            return self.tokens[self.current]
+        return None
+
+    def parse_object_def(self) -> ObjectDef:
+        name = self.expect(TokenType.IDENTIFIER).value
+        self.expect(TokenType.LEFT_BRACE)
         
-        symbolic_vars = []
-        loops = []
-        
-        while not self.match(TokenType.FERN_END):
-            if self.check(TokenType.IDENTIFIER):
-                # Parse symbolic variable
-                var_name = self.expect(TokenType.IDENTIFIER).value
-                self.expect(TokenType.COLON)
-                self.expect(TokenType.SYMBOLIC)
-                symbolic_vars.append(Expression(is_symbolic=True, raw_value=var_name))
-            elif self.check(TokenType.FOR):
-                loops.append(self.parse_loop())
-            else:
-                self.advance()
-        
-        self.expect(TokenType.COMMENT_END)
-        return FernAnnotation(symbolic_vars=symbolic_vars, loops=loops)
-    
-    def parse_loop(self) -> Loop:
+        properties = {}
+        while self.current < len(self.tokens) and self.tokens[self.current].type != TokenType.RIGHT_BRACE:
+            prop_name = self.expect(TokenType.IDENTIFIER).value
+            self.expect(TokenType.COLON)
+            
+            value = []
+            while self.current < len(self.tokens):
+                token = self.tokens[self.current]
+                if token.type in [TokenType.COMMA, TokenType.RIGHT_BRACE]:
+                    break
+                value.append(token.value)
+                self.current += 1
+                
+            properties[prop_name] = " ".join(value)
+            
+            if self.match(TokenType.COMMA):
+                continue
+            
+        self.expect(TokenType.RIGHT_BRACE)
+        return ObjectDef(name, properties)
+
+    def parse_for_loop(self) -> ForLoop:
         self.expect(TokenType.FOR)
         iterator = self.expect(TokenType.IDENTIFIER).value
         self.expect(TokenType.IN)
-        self.expect(TokenType.LBRACKET)
+        self.expect(TokenType.LEFT_BRACKET)
         
-        range_exprs = []
-        while not self.match(TokenType.RBRACKET):
-            if self.check(TokenType.COMMA):
-                self.advance()
+        range_values = []
+        while self.current < len(self.tokens) and self.tokens[self.current].type != TokenType.RIGHT_BRACKET:
+            value = []
+            while self.current < len(self.tokens):
+                token = self.tokens[self.current]
+                if token.type in [TokenType.COMMA, TokenType.RIGHT_BRACKET]:
+                    break
+                value.append(token.value)
+                self.current += 1
+            
+            range_values.append("".join(value))
+            
+            if self.match(TokenType.COMMA):
                 continue
-            
-            range_exprs.append(self.parse_range_expression())
-        
-        self.expect(TokenType.LBRACE)
-        
-        expr = Expression(is_symbolic=False)
-        
-        while not self.match(TokenType.RBRACE):
-            if self.check(TokenType.PRODUCE):
-                self.advance()
-                expr.produce = self.parse_produce_consume_block()
-            elif self.check(TokenType.CONSUME):
-                self.advance()
-                expr.consume = self.parse_produce_consume_block()
-            elif self.check(TokenType.FOR):
-                expr.loops.append(self.parse_loop())
-            else:
-                self.advance()
-        
-        return Loop(iterator=iterator, range_exprs=range_exprs, expression=expr)
-    
-    def parse_range_expression(self) -> Expression:
-        if not self.check(TokenType.IDENTIFIER):
-            raise ValueError(f"Expected identifier at {self.peek()}")
-        
-        first = self.advance()
-        
-        if self.match(TokenType.DOT):
-            # Handle var ref (e.g., a.idx)
-            field = self.expect(TokenType.IDENTIFIER).value
-            expr = Expression(is_symbolic=False, var_ref=VarRef(first.value, field))
-        else:
-            # Handle raw value
-            expr = Expression(is_symbolic=False, raw_value=first.value)
-        
-        # Handle compound expression (e.g., a.idx + a.size)
-        if self.match(TokenType.PLUS):
-            rest = self.parse_range_expression()
-            expr.raw_value = f"{expr.raw_value or f'{expr.var_ref.base}.{expr.var_ref.field}'} + {rest.raw_value or f'{rest.var_ref.base}.{rest.var_ref.field}'}"
-            expr.var_ref = None
-        
-        return expr
-    
-    def parse_produce_consume_block(self) -> Union[ProduceClause, ConsumeClause]:
-        self.expect(TokenType.LBRACE)
-        instances = []
-        
-        while not self.match(TokenType.RBRACE):
-            if self.check(TokenType.IDENTIFIER):
-                instances.append(self.parse_struct_instance())
-            else:
-                self.advance()
-            
-            # Skip commas between instances
-            self.match(TokenType.COMMA)
-        
-        return ProduceClause(instances=instances)
-    
-    def parse_struct_instance(self) -> StructInstance:
-        name = self.expect(TokenType.IDENTIFIER).value
-        self.expect(TokenType.LBRACE)
-        
-        fields = {}
-        while not self.match(TokenType.RBRACE):
-            if self.check(TokenType.IDENTIFIER):
-                field_name = self.advance().value
-                print("field_name = ", field_name)
-                self.expect(TokenType.COLON)
                 
-                if not self.check(TokenType.IDENTIFIER):
-                    raise ValueError(f"Expected identifier at {self.peek()}")
-                
-                value = self.advance().value
-                print("value_name = ", value)
-                
-                if self.match(TokenType.DOT):
-                    print("NO...")
-                    # Handle var ref
-                    field = self.expect(TokenType.IDENTIFIER).value
-                    fields[field_name] = Expression(
-                        is_symbolic=False,
-                        var_ref=VarRef(value, field)
-                    )
-                else:
-                    print("YES...")
-                    # Handle raw value
-                    fields[field_name] = Expression(
-                        is_symbolic=False,
-                        raw_value=value
-                    )
-                    print(fields)
-            else:
-                self.advance()
-            
-            # Skip commas between fields
-            self.match(TokenType.COMMA)
+        self.expect(TokenType.RIGHT_BRACKET)
+        self.expect(TokenType.LEFT_BRACE)
         
-        return StructInstance(name=name, fields=fields)
-    
-    def match(self, type: TokenType) -> bool:
-        if self.check(type):
-            self.advance()
-            return True
-        return False
-    
-    def check(self, type: TokenType) -> bool:
-        if self.is_at_end():
-            return False
-        return self.peek().type == type
-    
-    def advance(self) -> Token:
-        if not self.is_at_end():
-            self.current += 1
-        return self.previous()
-    
-    def is_at_end(self) -> bool:
-        return self.peek().type == TokenType.EOF
-    
-    def peek(self) -> Token:
-        return self.tokens[self.current]
-    
-    def previous(self) -> Token:
-        return self.tokens[self.current - 1]
-    
-    def expect(self, type: TokenType) -> Token:
-        if self.check(type):
-            return self.advance()
-        raise ValueError(f"Expected {type} but got {self.peek()}")
+        nested_loops = []
+        produce_consume_block = None
+        
+        # Check for nested for loops or produce/consume block
+        while self.current < len(self.tokens) and self.tokens[self.current].type != TokenType.RIGHT_BRACE:
+            if self.peek().type == TokenType.FOR:
+                nested_loops.append(self.parse_for_loop())
+            elif self.peek().type == TokenType.PRODUCE:
+                # Parse produce/consume block
+                self.expect(TokenType.PRODUCE)
+                self.expect(TokenType.LEFT_BRACE)
+                produce_objects = []
+                while self.current < len(self.tokens) and self.tokens[self.current].type != TokenType.RIGHT_BRACE:
+                    produce_objects.append(self.parse_object_def())
+                    if self.match(TokenType.COMMA):
+                        continue
+                self.expect(TokenType.RIGHT_BRACE)
+                
+                self.expect(TokenType.WHEN)
+                self.expect(TokenType.CONSUME)
+                self.expect(TokenType.LEFT_BRACE)
+                consume_objects = []
+                while self.current < len(self.tokens) and self.tokens[self.current].type != TokenType.RIGHT_BRACE:
+                    consume_objects.append(self.parse_object_def())
+                    if self.match(TokenType.COMMA):
+                        continue
+                self.expect(TokenType.RIGHT_BRACE)
+                
+                produce_consume_block = ProduceConsumeBlock(produce_objects, consume_objects)
+            else:
+                self.current += 1
+        
+        self.expect(TokenType.RIGHT_BRACE)
+        return ForLoop(iterator, range_values, nested_loops, produce_consume_block)
 
-def print_loop_structure(loop: Loop, indent: int = 0):
-    indent_str = "  " * indent
-    print(f"{indent_str}Loop iterator: {loop.iterator}")
-    print(f"{indent_str}Range expressions: {[expr.raw_value or f'{expr.var_ref.base}.{expr.var_ref.field}' for expr in loop.range_exprs]}")
-    
-    if loop.expression.produce:
-        for instance in loop.expression.produce.instances:
-            print(f"{indent_str}Produce instance: {instance.name}")
-            for field_name, field_value in instance.fields.items():
-                value = field_value.raw_value or f'{field_value.var_ref.base}.{field_value.var_ref.field}' if field_value.var_ref else 'None'
-                print(f"{indent_str}  {field_name}: {value}")
-    
-    if loop.expression.consume:
-        for instance in loop.expression.consume.instances:
-            print(f"{indent_str}Consume instance: {instance.name}")
-            for field_name, field_value in instance.fields.items():
-                value = field_value.raw_value or f'{field_value.var_ref.base}.{field_value.var_ref.field}' if field_value.var_ref else 'None'
-                print(f"{indent_str}  {field_name}: {value}")
-    
-    for nested_loop in loop.expression.loops:
-        print(f"{indent_str}Nested loop:")
-        print_loop_structure(nested_loop, indent + 1)
+    def parse(self) -> FernAnnotation:
+        self.expect(TokenType.ANNOTATION_START)
+        
+        symbols = []
+        loops = []
+        
+        while self.current < len(self.tokens) and self.tokens[self.current].type != TokenType.ANNOTATION_END:
+            if self.match(TokenType.IDENTIFIER):
+                self.current -= 1
+                symbol = self.expect(TokenType.IDENTIFIER).value
+                self.expect(TokenType.COLON)
+                self.expect(TokenType.SYMBOLIC)
+                symbols.append(symbol)
+            elif self.tokens[self.current].type == TokenType.FOR:
+                loops.append(self.parse_for_loop())
+            else:
+                self.current += 1
+        
+        self.expect(TokenType.ANNOTATION_END)
+        return FernAnnotation(symbols, loops)
+
+def parse_fern_annotation(text: str) -> FernAnnotation:
+    tokenizer = Tokenizer(text)
+    tokens = tokenizer.tokenize()
+    parser = Parser(tokens)
+    return parser.parse()
 
 # Example usage
 if __name__ == "__main__":
     test_input = """
-    /*
     <Fern Annotation>
     len : Symbolic
-    len2 : Symbolic
+    size : Symbolic
     for i in [A.idx, A.idx + A.size, len]{
-        for i in [A.idx, A.idx + A.size, len]{
+        for j in [A.idx, A.idx + A.size, len]{
             produce{
                 A {
-                    idx: i,
+                    idx: i + 4,
                     length: len
                 }
             }
             when consume{
                 B {
-                    idx: i,
+                    idx: i + 2,
                     length: len
                 },
                 C {
                     idx: i,
-                    length: len
+                    length: len + 1
                 }
             }
         }
     }
     </Fern Annotation>
-    */
     """
     
     try:
-        # First tokenize
-        tokenizer = Tokenizer(test_input)
-        tokens = tokenizer.tokenize()
+        result = parse_fern_annotation(test_input)
+        print("Parsing successful!")
+        print("Symbols:", result.symbols)
         
-        # Then parse
-        parser = Parser(tokens)
-        result = parser.parse()
+        def print_loop_structure(loop: ForLoop, indent: str = ""):
+            print(f"{indent}Loop (iterator: {loop.iterator})")
+            print(f"{indent}Range values: {loop.range_values}")
+            
+            if loop.nested_loops:
+                print(f"{indent}Nested loops:")
+                for nested_loop in loop.nested_loops:
+                    print_loop_structure(nested_loop, indent + "  ")
+                    
+            if loop.produce_consume_block:
+                print(f"{indent}Produce block:")
+                for obj in loop.produce_consume_block.produce_objects:
+                    print(f"{indent}  {obj.name}: {obj.properties}")
+                print(f"{indent}Consume block:")
+                for obj in loop.produce_consume_block.consume_objects:
+                    print(f"{indent}  {obj.name}: {obj.properties}")
         
-        # Print results
-        print("Symbolic variables:")
-        for var in result.symbolic_vars:
-            print(f"  {var.raw_value}")
-        
-        print("\nLoop structure:")
+        print("\nLoop Structure:")
         for loop in result.loops:
             print_loop_structure(loop)
             
-    except ValueError as e:
-        print(f"Error: {e}")
+    except Exception as e:
+        print(f"Parsing failed: {str(e)}")

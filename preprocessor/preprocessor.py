@@ -2,6 +2,7 @@ import annot_parser
 from annot_parser import parse_annotation_structure
 import expr_parser
 from expr_parser import parse_expression
+from signature_parse import parse_function_signature
 
 
 
@@ -32,6 +33,7 @@ test_input = """
     </Fern Annotation>
     """
 
+signature = "void vadd(Array<float> B, Array<float> C, Array<float> A);"
 
 def cpp_gen_expr(expr_str, declared):
     expr = parse_expression(expr_str)
@@ -58,6 +60,7 @@ def cpp_gen_expr(expr_str, declared):
 def cpp_gen_data_dep(structure):
     declared = set()
     declarations = []
+    constrained_subsets = set()
     for symbol in structure.symbols:
         # Handle Arguments separately
         if symbol not in declared:
@@ -82,9 +85,11 @@ def cpp_gen_data_dep(structure):
             for obj in loop.produce_consume_block.produce_objects:
                 declarations.append(f"fern::DataStructure block_{obj.name}(\"block_{obj.name}\", &{obj.name});")
                 declared.add(f"block_{obj.name}")
+                constrained_subsets.add(obj.name)
             for obj in loop.produce_consume_block.consume_objects:
                 declarations.append(f"fern::DataStructure block_{obj.name}(\"block_{obj.name}\", &{obj.name});")
-                declared.add(f"block_{obj.name}")              
+                declared.add(f"block_{obj.name}")      
+                constrained_subsets.add(obj.name)        
     
     for loop in structure.loops:
         decl_loops(loop)
@@ -121,19 +126,47 @@ def cpp_gen_data_dep(structure):
     assert len(structure.loops) == 1    
     # print(declarations)    
     data_dep = f"{structure.loops[0].iterator}_loop({generate_data_dep(structure.loops[0])});"
-    # print(data_dep)
-    return f"fern::DependencySubset getDataRelationship() const override {{\n"\
-           f"\t{'\n\t'.join(declarations)}\n"\
-           f"\treturn {data_dep}"
+    func_def = f"fern::DependencySubset getDataRelationship() const override {{\n"+\
+           f"\t{'\n\t'.join(declarations)}\n"+\
+           f"\treturn {data_dep} }}"
+    return constrained_subsets, func_def
 
 
+def generate_full_func(signature, data_dep, constrained_subsets):
+    func_name, args  = parse_function_signature(signature)
     
-def parse_fern_annotation(annot: str):
-    try:
+    fern_arguments = []
+    private_vars = []
+    
+    for arg in args:
+        if arg[0] == "int":
+            fern_arguments.append(f"new fern::VariableArg(fern::getNode({arg[1]}))")
+            private_vars.append(f"fern::Variable {arg[1]}")
+        elif arg[1] not in constrained_subsets:
+            fern_arguments.append(f"fern::DataStructureArg(fern::DataStructurePtr(&{arg[1]}))")
+            private_vars.append(f"{arg[0]} {arg[1]}")
+        else:
+            fern_arguments.append(f"new fern::DataStructureArg(fern::DataStructurePtr(&{arg[1]}))")
+            private_vars.append(f"{arg[0]} {arg[1]}")
+    
+    return f"class {func_name} : public fern::AbstractFunctionCall {{\n\n"\
+           f"public:\n"\
+           f"\t{func_name}() = default;\n"\
+           f"\tstd::string getName() const override {{ return {{\"{func_name}\"}}; }}\n\n"\
+           f"\t{data_dep}\n\n"\
+           f"\tstd::vector<fern::Argument> getArguments() override {{\n"\
+           f"\t\treturn {{ {',\n\t\t'.join(fern_arguments)} }}\n\n"\
+           f"{'\n'.join(private_vars)}\n"\
+           f"}};"
+    
+    
+def parse_fern_annotation(signature:str, annot: str):
+    try:    
         structure = parse_annotation_structure(annot)
-        data_dep_func =cpp_gen_data_dep(structure)
-        print(data_dep_func)
+        constrained_subsets, data_dep_func =cpp_gen_data_dep(structure)
+        full_func = generate_full_func(signature, data_dep_func, constrained_subsets)
+        print(full_func)
     except Exception as e:
         print(f"Parsing failed: {str(e)}")
         
-parse_fern_annotation(test_input)
+parse_fern_annotation(signature, test_input)

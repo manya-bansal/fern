@@ -21,4 +21,4 @@ for i in [A.idx, A.idx + A.size, len]{
 }
 </Fern Annotation>
 */
-template <typename T> void vadd(Array<T> B, Array<T> C, Array<T> A);
+void vadd(Array<float> B, Array<float> C, Array<float> A);

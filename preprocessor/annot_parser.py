@@ -270,66 +270,67 @@ class Parser:
         self.expect(TokenType.ANNOTATION_END)
         return FernAnnotation(symbols, loops)
 
-def parse_fern_annotation(text: str) -> FernAnnotation:
+def parse_annotation_structure(text: str) -> FernAnnotation:
     tokenizer = Tokenizer(text)
     tokens = tokenizer.tokenize()
     parser = Parser(tokens)
     return parser.parse()
 
-# Example usage
-if __name__ == "__main__":
-    test_input = """
-    <Fern Annotation>
-    len : Symbolic
-    size : Symbolic
-    for i in [A.idx, A.idx + A.size, len]{
-        for j in [A.idx, A.idx + A.size, len]{
-            produce{
-                A {
-                    idx: i + 4,
-                    length: len
-                }
-            }
-            when consume{
-                B {
-                    idx: i + 2,
-                    length: len
-                },
-                C {
-                    idx: i,
-                    length: len + 1
-                }
-            }
-        }
-    }
-    </Fern Annotation>
-    """
+
+# # Example usage
+# if __name__ == "__main__":
+#     test_input = """
+#     <Fern Annotation>
+#     len : Symbolic
+#     size : Symbolic
+#     for i in [A.idx, A.idx + A.size, len]{
+#         for j in [A.idx, A.idx + A.size, len]{
+#             produce{
+#                 A {
+#                     idx: i + 4,
+#                     length: len
+#                 }
+#             }
+#             when consume{
+#                 B {
+#                     idx: i + 2,
+#                     length: len
+#                 },
+#                 C {
+#                     idx: i,
+#                     length: len + 1
+#                 }
+#             }
+#         }
+#     }
+#     </Fern Annotation>
+#     """
     
-    try:
-        result = parse_fern_annotation(test_input)
-        print("Parsing successful!")
-        print("Symbols:", result.symbols)
+#     try:
+#         result = parse_fern_annotation(test_input)
+#         print("Parsing successful!")
+#         print("Symbols:", result.symbols)
         
-        def print_loop_structure(loop: ForLoop, indent: str = ""):
-            print(f"{indent}Loop (iterator: {loop.iterator})")
-            print(f"{indent}Range values: {loop.range_values}")
+#         def print_loop_structure(loop: ForLoop, indent: str = ""):
+#             print(f"{indent}Loop (iterator: {loop.iterator})")
+#             print(f"{indent}Range values: {loop.range_values}")
             
-            if loop.nested_loops:
-                print(f"{indent}Nested loops:")
-                for nested_loop in loop.nested_loops:
-                    print_loop_structure(nested_loop, indent + "  ")
+#             if loop.nested_loops:
+#                 print(f"{indent}Nested loops:")
+#                 for nested_loop in loop.nested_loops:
+#                     print_loop_structure(nested_loop, indent + "  ")
                     
-            if loop.produce_consume_block:
-                print(f"{indent}Produce block:")
-                for obj in loop.produce_consume_block.produce_objects:
-                    print(f"{indent}  {obj.name}: {obj.properties}")
-                print(f"{indent}Consume block:")
-                for obj in loop.produce_consume_block.consume_objects:
-                    print(f"{indent}  {obj.name}: {obj.properties}")
+#             if loop.produce_consume_block:
+#                 print(f"{indent}Produce block:")
+#                 for obj in loop.produce_consume_block.produce_objects:
+#                     print(f"{indent}  {obj.name}: {obj.properties}")
+#                 print(f"{indent}Consume block:")
+#                 for obj in loop.produce_consume_block.consume_objects:
+#                     print(f"{indent}  {obj.name}: {obj.properties}")
         
-        print("\nLoop Structure:")
-        for loop in result.loops:
-            print_loop_structure(loop)
+#         print("\nLoop Structure:")
+#         for loop in result.loops:
+#             print_loop_structure(loop)
             
-    except Exception as e:
-        print(f"Parsing failed: {str(e)}")
+#     except Exception as e:
+#         print(f"Parsing failed: {str(e)}")

@@ -36,13 +36,13 @@ def cpp_gen_data_dep(structure):
     for symbol in structure.symbols:
         # Handle Arguments separately
         if symbol not in declared:
-            declarations.append(f"fern::Variable {symbol}(false, false, false);")
+            declarations.append(f"fern::Variable {symbol}(\"{symbol}\",false, false, false);")
             declared.add(symbol)
     
 
     def decl_loops(loop):
         if loop.iterator not in declared:
-            declarations.append(f"fern::Variable {loop.iterator}(false, false, false);")
+            declarations.append(f"fern::Variable {loop.iterator}(\"{loop.iterator}\", false, false, false);")
             declarations.append(f"fern::Interval {loop.iterator}_loop({loop.iterator}, " 
                 f"{cpp_gen_expr(loop.range_values[0], declared)}, "
                 f"{cpp_gen_expr(loop.range_values[1], declared)}, "
@@ -85,7 +85,7 @@ def cpp_gen_data_dep(structure):
                 
                     return f"fern::ComputationAnnotation(\n"\
                        f"\t\tfern::Producer({produce}),\n"\
-                       f"\t\tfern::Consumer({',\n\t\t'.join(consume)}))"
+                       f"\t\tfern::Consumer({{{',\n\t\t'.join(consume)}}}))"
 
                         
             case annot_parser.ObjectDef(name, properties):
@@ -115,7 +115,7 @@ def generate_full_func(signature, data_dep, constrained_subsets):
             fern_arguments.append(f"new fern::VariableArg(fern::getNode({arg[1]}))")
             private_vars.append(f"fern::Variable {arg[1]};")
         elif arg[1] not in constrained_subsets:
-            fern_arguments.append(f"fern::DataStructureArg(fern::DataStructurePtr(&{arg[1]}))")
+            fern_arguments.append(f"new fern::DataStructureArg(fern::DataStructurePtr(&{arg[1]}))")
             private_vars.append(f"{arg[0]} {arg[1]};")
         else:
             fern_arguments.append(f"new fern::DataStructureArg(fern::DataStructurePtr(&{arg[1]}))")
@@ -123,7 +123,6 @@ def generate_full_func(signature, data_dep, constrained_subsets):
     
     return f"class {func_name} : public fern::AbstractFunctionCall {{\n\n"\
            f"public:\n"\
-           f"\t{func_name}() = default;\n"\
            f"\tstd::string getName() const override {{ return {{\"{func_name}\"}}; }}\n\n"\
            f"\t{data_dep}\n\n"\
            f"\tstd::vector<fern::Argument> getArguments() override {{\n"\

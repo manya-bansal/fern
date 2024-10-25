@@ -25,5 +25,5 @@ for x in [output.W_start, output.W_start + output.W_len, x_tile]{
 }
 </Fern Annotation>
 */
-void convolution_mkl_test(Weights input, Weights filter, FloatPtr bias,
+void convolution_mkl_test(Weights input, Weights filter, Weights bias,
                           int stride_arg, Weights output);

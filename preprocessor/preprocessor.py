@@ -29,10 +29,14 @@ def cpp_gen_expr(expr_str, declared):
     
     return generate_string(expr)
     
-def cpp_gen_data_dep(structure):
+def cpp_gen_data_dep(structure, arguments):
     declared = set()
     declarations = []
     constrained_subsets = set()
+    
+    for arg in arguments:
+        declared.add(arg[1])
+        
     for symbol in structure.symbols:
         # Handle Arguments separately
         if symbol not in declared:
@@ -113,7 +117,7 @@ def generate_full_func(signature, data_dep, constrained_subsets):
     for arg in args:
         if arg[0] == "int":
             fern_arguments.append(f"new fern::VariableArg(fern::getNode({arg[1]}))")
-            private_vars.append(f"fern::Variable {arg[1]};")
+            private_vars.append(f"fern::Variable {arg[1]}{{\"{arg[1]}\", true}};")
         elif arg[1] not in constrained_subsets:
             fern_arguments.append(f"new fern::DataStructureArg(fern::DataStructurePtr(&{arg[1]}))")
             private_vars.append(f"{arg[0]} {arg[1]};")
@@ -133,13 +137,11 @@ def generate_full_func(signature, data_dep, constrained_subsets):
     
 def parse_fern_annotation(signature:str, annot: str):
     structure = annot_parser.parse_annotation_structure(annot)
-    constrained_subsets, data_dep_func = cpp_gen_data_dep(structure)
+    func_name, args  = signature_parse.parse_function_signature(signature)
+    constrained_subsets, data_dep_func = cpp_gen_data_dep(structure, args)
     full_func = generate_full_func(signature, data_dep_func, constrained_subsets)
     return full_func
         
-
-        
-# parse_fern_annotation(signature, test_input)
 
 
 def main():

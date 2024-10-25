@@ -1,5 +1,6 @@
 
 #include "codegen/codegen.h"
+#include "codegen/codegen_printer.h"
 #include "utils/printer.h"
 
 namespace fern {
@@ -394,6 +395,14 @@ std::vector<Expr> CodeGenerator::generateFunctionHeaderArguments() {
 
   return args;
 }
+
+std::ostream &operator<<(std::ostream &os, const PyCodeGenPrint &pyGen){
+  auto  func =  pyGen.cg.getFullFunction();
+  PyCGPrinter printer(os);
+  func.accept(&printer);
+  return os;
+}
+
 
 } // namespace codegen
 } // namespace fern

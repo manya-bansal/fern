@@ -10,6 +10,9 @@ class TokenType(Enum):
     COLON = "COLON"
     DOT = "DOT"
     PLUS = "PLUS"
+    MUL = "MUL"
+    SUB = "SUB"
+    DIV = "DIV"
     COMMA = "COMMA"
     LEFT_BRACE = "LEFT_BRACE"
     RIGHT_BRACE = "RIGHT_BRACE"
@@ -80,6 +83,16 @@ class Tokenizer:
 
             char = self.text[self.pos]
             
+            if self.text[self.pos:].startswith("/*"):
+                self.pos += len("/*")
+                self.column += len("/*")
+                continue
+            
+            if self.text[self.pos:].startswith("*/"):
+                self.pos += len("*/")
+                self.column += len("*/")
+                continue
+            
             # Handle annotation tags
             if self.text[self.pos:].startswith("<Fern Annotation>"):
                 self.add_token(TokenType.ANNOTATION_START, "<Fern Annotation>")
@@ -122,6 +135,9 @@ class Tokenizer:
                 ':': TokenType.COLON,
                 '.': TokenType.DOT,
                 '+': TokenType.PLUS,
+                '-': TokenType.SUB,
+                '*': TokenType.MUL,
+                '/': TokenType.DIV,
                 ',': TokenType.COMMA,
                 '{': TokenType.LEFT_BRACE,
                 '}': TokenType.RIGHT_BRACE,

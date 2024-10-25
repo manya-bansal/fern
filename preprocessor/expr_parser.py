@@ -202,10 +202,11 @@ def parse_expression(expr: str) -> Union[BinaryOp, StructField, str, int]:
 #         "A.idx",          # Just a struct field
 #         "len + A.idx * 2",
 #         "count % Struct.field + 3",
-#         "A.x + B.y * C.z - 42",
+#         "A.x * B.y",
 #         "1 + 2 * 3",
 #         "length",
-#         "Table.column"
+#         "Table.column",
+#         "x * stridearg"
 #     ]
     
 #     for test in test_cases:
@@ -216,11 +217,4 @@ def parse_expression(expr: str) -> Union[BinaryOp, StructField, str, int]:
 #         except Exception as e:
 #             print(f"Error parsing '{test}': {str(e)}\n")
             
-class ExprVisitor(ABC):
-    @abstractmethod
-    def visit_binary_op(self, node: BinaryOp) -> Any:
-        pass
-        
-    @abstractmethod
-    def visit_struct_field(self, node: StructField) -> Any:
-        pass
+# test_parser()

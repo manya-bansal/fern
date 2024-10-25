@@ -5,37 +5,10 @@ import argparse
 import re
 
 
-test_input = """
-    <Fern Annotation>
-    len : Symbolic
-    size : Symbolic
-    for i in [A.idx, A.idx + A.size, len]{
-        for j in [A.idx, A.idx + A.size, len]{
-            produce{
-                A {
-                    idx: i + 4,
-                    length: len
-                }
-            }
-            when consume{
-                B {
-                    idx: i + 2,
-                    length: len
-                },
-                C {
-                    idx: i,
-                    length: len + 1
-                }
-            }
-        }
-    }
-    </Fern Annotation>
-    """
-
-signature = "void vadd(Array<float> B, Array<float> C, Array<float> A);"
-
 def cpp_gen_expr(expr_str, declared):
+    # print(expr_str)
     expr = expr_parser.parse_expression(expr_str)
+    # print(expr)
     
     def generate_string(expr):
         match expr:
@@ -50,7 +23,7 @@ def cpp_gen_expr(expr_str, declared):
             
             case str(string):
                 if string not in declared:
-                    raise(f"You have not declared {string} before!")
+                    raise Exception(f"You have not declared {string} before!")
                 return string
         raise Exception("Unreachable!")
     
@@ -161,7 +134,7 @@ def generate_full_func(signature, data_dep, constrained_subsets):
     
 def parse_fern_annotation(signature:str, annot: str):
     structure = annot_parser.parse_annotation_structure(annot)
-    constrained_subsets, data_dep_func =cpp_gen_data_dep(structure)
+    constrained_subsets, data_dep_func = cpp_gen_data_dep(structure)
     full_func = generate_full_func(signature, data_dep_func, constrained_subsets)
     return full_func
         

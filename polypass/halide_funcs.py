@@ -65,6 +65,10 @@ def split_into_terms(expr: str) -> List[str]:
             if current_term.strip():
                 terms.append(current_term.strip())
             current_term = ""
+        elif char == '/' and paren_count == 0:
+            if current_term.strip():
+                terms.append(current_term.strip())
+            current_term = ""
         else:
             current_term += char
             
@@ -99,14 +103,21 @@ def parse_expression(expr: str) -> StencilPattern:
 def generate_annotation(pattern: StencilPattern) -> str:
     """Generate Fern annotation for multi-dimensional stencil"""
     # Calculate maximum offsets for each dimension
-    max_offsets = defaultdict(int)
-    min_offsets = defaultdict(int)
     
+    inp_map = {}
     for inp in pattern.inputs:
+        if inp.var_name in inp_map:
+            max_offsets, min_offsets = inp_map[inp.var_name]
+        else:
+            max_offsets = defaultdict(int)
+            min_offsets = defaultdict(int)
+        print(inp)
         for dim, offset in inp.offsets.items():
+            print(offset)
             max_offsets[dim] = max(max_offsets[dim], offset)
             min_offsets[dim] = min(min_offsets[dim], offset)
-            # min_offsets[dim] = min(min_offsets[dim], abs(offset))
+        # Just use name as a hashable string
+        inp_map[inp.var_name] = (max_offsets, min_offsets)
     
     # Build annotation string
     lines = [
@@ -146,6 +157,7 @@ def generate_annotation(pattern: StencilPattern) -> str:
     # Consumer section - collect unique input variables
     seen_vars = set()
     for inp in pattern.inputs:
+        max_offsets, min_offsets = inp_map[inp.var_name]
         if inp.var_name not in seen_vars:
             seen_vars.add(inp.var_name)
             lines.extend([
@@ -182,10 +194,10 @@ def process_stencil(expr: str) -> str:
 # Test cases
 if __name__ == "__main__":
     test_cases = [
-        "y(i, j) = x(i, j) + x(i+1, j) + x(i+2, j) + z(i+2, j)",
+        "y(i, j) = x(i, j) + x(i+1, j) + x(i+2, j) + z(i+1, j)",
         "out(i, j, k) = in(i+1, j, k) + in(i, j, k+2)",
         "result(i, j) = input(i+1, j) + input(i, j) + input(i+1, j)",
-        "result(i, j) = 2*input(i-1, j)"
+        "result(i, j) = input(i+1, j) + input(i-1, j)"
     ]
     
     for test in test_cases:

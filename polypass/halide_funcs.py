@@ -210,6 +210,7 @@ if __name__ == "__main__":
         "result(i, j) = input(i+1, j) + input(i-1, j)",
         "result(i, j) = input(i)",
         "result(i, j) = input(k)",
+        "result(i, j) = input(i, j, k)",
     ]
     
     for test in test_cases:

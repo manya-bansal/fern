@@ -153,15 +153,18 @@ class PolyhedralAnalyzer:
         return "\n".join(result)
 
 # Example usage
+# Assume that this code compiles!
 code = """
 for(i = 0; i < D.cols; i++) {
     for(j = 0; j < D.rows; j++) {
-        tmp = 0
-        for(k = 0; k < i; k++) {
-           tmp += A[i, k] + B[k, j]
-           tmp += A[i, k] + B[k, j]
+        for(k = 0; k < D.rows; k++) {
+            tmp = 0
+            for(k = 0; k < i; k++) {
+            tmp += A[i, k] + B[k, j]
+            tmp += A[i + 1, k] + B[k, j]
+            }
+            D[i,j] = tmp
         }
-        D[i,j] = tmp
     }
 }
 """

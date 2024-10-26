@@ -94,8 +94,8 @@ def parse_expression(expr: str) -> StencilPattern:
     for term in terms:
         var_name, offsets, multiplier = parse_array_access(term)
         # Verify dimensions match
-        if set(offsets.keys()) != set(dimensions):
-            raise ValueError(f"Inconsistent dimensions in term: {term}")
+        # if set(offsets.keys()) != set(dimensions):
+        #     raise ValueError(f"Inconsistent dimensions in term: {term}")
         inputs.append(Access(var_name, offsets, multiplier))
     
     return StencilPattern(output, inputs, dimensions)
@@ -164,12 +164,22 @@ def generate_annotation(pattern: StencilPattern) -> str:
                 f"{indent}    {inp.var_name} {{",
             ])
             
+            i=0
             # Add dimension mappings for input
-            for dim in pattern.dimensions:
-                lines.extend([
-                    f"{indent}        {dim}: {dim} + ({min_offsets[dim]}),",
-                    f"{indent}        length_{dim}: len_{dim} + {max_offsets[dim]}"
-                ])
+            for offset in inp.offsets:
+                dim = offset
+                
+                if dim not in pattern.dimensions:
+                    lines.extend([
+                        f"{indent}        {dim}: 0,",
+                        f"{indent}        length_{dim}: {inp.var_name}.dim[{i}]"
+                    ])
+                else:
+                    lines.extend([
+                        f"{indent}        {dim}: {dim} + ({min_offsets[dim]}),",
+                        f"{indent}        length_{dim}: len_{dim} + {max_offsets[dim]}"
+                    ])
+                i+=1
             
             lines.append(f"{indent}    }},")
     
@@ -197,7 +207,9 @@ if __name__ == "__main__":
         "y(i, j) = x(i, j) + x(i+1, j) + x(i+2, j) + z(i+1, j)",
         "out(i, j, k) = in(i+1, j, k) + in(i, j, k+2)",
         "result(i, j) = input(i+1, j) + input(i, j) + input(i+1, j)",
-        "result(i, j) = input(i+1, j) + input(i-1, j)"
+        "result(i, j) = input(i+1, j) + input(i-1, j)",
+        "result(i, j) = input(i)",
+        "result(i, j) = input(k)",
     ]
     
     for test in test_cases:

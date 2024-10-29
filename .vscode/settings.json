@@ -1,6 +1,5 @@
 {
   "files.associations": {
-    "*.cu": "cuda-cpp",
     "string": "cpp",
     "algorithm": "cpp",
     "__bit_reference": "cpp",
@@ -69,7 +68,14 @@
     "version": "cpp",
     "functional": "cpp",
     "stack": "cpp",
-    "typeindex": "cpp",
-    "valarray": "cpp"
-  }
+    "memory": "cpp",
+    "print": "cpp"
+  },
+  "editor.formatOnSave": true,
+  "clang-format.executable": "/opt/homebrew/bin/clang-format",
+  "editor.detectIndentation": false,
+  "editor.tabSize": 4,
+  // Insert spaces when pressing Tab. This setting is overriden
+  // based on the file contents when `editor.detectIndentation` is true.
+  "editor.insertSpaces": true
 }

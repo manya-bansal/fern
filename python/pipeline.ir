@@ -1,0 +1,4 @@
+x1 in (out.idx, out.idx + out.size, len0)
+	out_q = out.query(x1 , len0 , )
+	a_q0 = a.query(x1 , len0 , )
+	mock::addi(a : a_q0, out : out_q, )

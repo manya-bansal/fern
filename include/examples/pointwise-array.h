@@ -595,6 +595,41 @@ public:
 };
 
 // mock array function calls
+
+class every_other : public fern::AbstractFunctionCall {
+public:
+  every_other()
+      : a(examples::Array<float>("a")),
+        len(fern::Variable("len", false)), out(examples::Array<float>("out")){};
+
+  std::string getName() const override { return "mock::every_other"; }
+
+  fern::DependencySubset getDataRelationship() const override {
+    // PARALLELIZE PRODUCTION BY X
+    // this only shows up in the case that this is the last function
+    fern::Variable x("x", false, false, false);
+    fern::Interval loop(x, out["idx"], out["idx"] + out["size"], len);
+    fern::DataStructure block_out("out", &out);
+    fern::DataStructure block_a("a", &a);
+    return loop(fern::ComputationAnnotation(fern::Producer(block_out(x, (len + 1) / 2)),
+                                            fern::Consumer({
+                                                block_a(x, len),
+                                                // block_b(x, len),
+                                            })));
+  }
+
+  std::vector<fern::Argument> getArguments() override {
+    return {fern::Argument(std::make_shared< fern::DataStructureArg>(fern::DataStructurePtr(&a))),
+            fern::Argument(std::make_shared< fern::VariableArg>(fern::getNode(len))),
+            fern::Argument(std::make_shared< fern::DataStructureArg>(fern::DataStructurePtr(&out)))};
+  }
+
+  examples::Array<float> a;
+  examples::Array<float> b;
+  fern::Variable len;
+  examples::Array<float> out;
+};
+
 class addi_mock : public fern::AbstractFunctionCall {
 public:
   addi_mock()
@@ -742,6 +777,42 @@ public:
   examples::Array<float> out;
 };
 
+class torch_add : public fern::AbstractFunctionCall {
+public:
+  torch_add()
+      : a(examples::Array<float>("a")), b(examples::Array<float>("b")),
+        len(fern::Variable("len", false)), out(examples::Array<float>("out")){};
+
+  std::string getName() const override { return "mock::add"; }
+
+  fern::DependencySubset getDataRelationship() const override {
+    // PARALLELIZE PRODUCTION BY X
+    // this only shows up in the case that this is the last function
+    fern::Variable x("x", false, false, false);
+    fern::Interval loop(x, out["idx"], out["idx"] + out["size"], len);
+    fern::DataStructure block_out("out", &out);
+    fern::DataStructure block_a("a", &a);
+    fern::DataStructure block_b("b", &b);
+    return loop(fern::ComputationAnnotation(fern::Producer(block_out(x, len)),
+                                            fern::Consumer({
+                                                block_a(x, len),
+                                                block_b(x, len),
+                                            })));
+  }
+
+  std::vector<fern::Argument> getArguments() override {
+    return {fern::Argument(std::make_shared< fern::DataStructureArg>(fern::DataStructurePtr(&a))),
+            fern::Argument(std::make_shared< fern::DataStructureArg>(fern::DataStructurePtr(&b))),
+            fern::Argument(std::make_shared< fern::VariableArg>(fern::getNode(len))),
+            fern::Argument(std::make_shared< fern::DataStructureArg>(fern::DataStructurePtr(&out)))};
+  }
+
+  examples::Array<float> a;
+  examples::Array<float> b;
+  fern::Variable len;
+  examples::Array<float> out;
+};
+
 class add_mock : public fern::AbstractFunctionCall {
 public:
   add_mock()
@@ -777,6 +848,45 @@ public:
   fern::Variable len;
   examples::Array<float> out;
 };
+
+// class addVec_mock : public fern::AbstractFunctionCall {
+// public:
+//   addVec_mock()
+//       : len(fern::Variable("len", false)), out(examples::Array<float>("out")), a(std::vector<examples::Array<float>>()){};
+
+//   std::string getName() const override { return "mock::addVec"; }
+
+//   fern::DependencySubset getDataRelationship() const override {
+//     // PARALLELIZE PRODUCTION BY X
+//     // this only shows up in the case that this is the last function
+//     fern::Variable x("x", false, false, false);
+//     fern::Interval loop(x, out["idx"], out["idx"] + out["size"], len);
+//     fern::DataStructure block_out("out", &out);
+// 	std::vector<fern::DependencySubset> consumer_blocks;
+// 	for (int i = 0; i < a.size(); i++) {
+// 		examples::Array<float> ai = a[i];
+// 		fern::DataStructure block_i(std::to_string(i), &ai);
+// 		fern::DependencySubset block = block_i(x, len);
+// 		consumer_blocks.push_back(block);
+// 	}
+    
+//     return loop(fern::ComputationAnnotation(fern::Producer(block_out(x, len)),
+//                                             fern::Consumer(consumer_blocks)));
+//   }
+
+//   std::vector<fern::Argument> getArguments() override {
+// 	std::vector<fern::Argument> args = {fern::Argument(std::make_shared< fern::VariableArg>(fern::getNode(len))),
+//             fern::Argument(std::make_shared< fern::DataStructureArg>(fern::DataStructurePtr(&out)))};
+// 	for (int i = 0; i < a.size(); i++) {
+// 		args.push_back(fern::Argument(std::make_shared< fern::DataStructureArg>(fern::DataStructurePtr(&a[i]))));
+// 	}
+//     return args;
+//   }
+
+//   fern::Variable len;
+//   examples::Array<float> out;
+//   std::vector<examples::Array<float>> a;
+// };
 
 class sub_mock : public fern::AbstractFunctionCall {
 public:

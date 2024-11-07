@@ -1,0 +1,9 @@
+x3 in (out.idx, out.idx + out.size, len2)
+x1=x3
+len0=len2
+	b_q = allocate(x1 , len0 , )
+	a_q0 = a.query(x1 , len0 , )
+	out_q = out.query(x3 , len2 , )
+	mock::addi(a : a_q0, b : b_q, )
+	mock::addi(out : out_q, b : b_q, )
+	b_q.free()

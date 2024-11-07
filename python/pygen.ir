@@ -1,0 +1,6 @@
+x0 in (out.idx, out.idx + out.size, len1)
+	out_q = out.query(x0 , len1 , )
+	b_q1 = b.query(x0 , len1 , )
+	a_q0 = a.query(x0 , len1 , )
+	vadd(out : out_q, a : a_q0, b : b_q1, )
+	out.insert(x0 , len1 , out_q)

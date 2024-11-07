@@ -254,6 +254,7 @@ struct LiteralArg : public Args {
     default:
       break;
     }
+	os << std::endl;
     return os;
   }
 

@@ -23,8 +23,8 @@ public:
   }
   inline Array<T> array_query_no_materialize(int index, int length) const {
 	Array<T> a;
-	a.idx = idx;
-	a.data = data + idx;
+	a.idx = index;
+	a.data = data + index;
 	// for (int i = 0; i < length; i++) {
 	//   a.data[i] = data[index + i];
 	// }
@@ -137,6 +137,12 @@ template <typename T> void cdf(T *data, int64_t len, T *out_data) {
 template <typename T> void vlog(T *data, int64_t len, T *out_data) {
 	for (int i = 0; i < len; i++) {
 		out_data[i] = log(data[i]);
+	}
+}
+
+template <typename T> void every_other(T *data, T *out_data) {
+	for (int i = 0; i < data.logical_size; i += 2) {
+		out_data[i / 2] = data[i];
 	}
 }
 

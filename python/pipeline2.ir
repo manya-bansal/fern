@@ -1,0 +1,21 @@
+x7 in (var4.idx, var4.idx + var4.size, len6)
+x5=x7
+len4=len6
+x3=x5
+len2=len4
+x0=x5
+len1=len4
+x0=x3
+len1=len2
+	var1_q = allocate(x0 , len1 , )
+	var0_q5 = var0.query(x0 , len1 , )
+	var2_q = allocate(x3 , len2 , )
+	var3_q = allocate(x5 , len4 , )
+	var4_q = var4.query(x7 , len6 , )
+	mock::addi(var1 : var1_q, var0 : var0_q5, )
+	mock::addi(var2 : var2_q, var1 : var1_q, )
+	mock::add(var3 : var3_q, var2 : var2_q, var1 : var1_q, )
+	mock::addi(var3 : var3_q, var4 : var4_q, )
+	var1_q.free()
+	var2_q.free()
+	var3_q.free()

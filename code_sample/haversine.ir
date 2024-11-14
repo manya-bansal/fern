@@ -1,40 +1,40 @@
-x91 = 0
-x89=x91
-len88=len90
-x87=x89
-len86=len88
-x85=x87
-len84=len86
-x83=x85
-len82=len84
-x81=x83
-len80=len82
-x73=x83
-len72=len82
-x91=x81
-len90=len80
-x79=x81
-len78=len80
-x77=x79
-len76=len78
-x75=x77
-len74=len76
-x61=x75
-len60=len74
-x71=x73
-len70=len72
-x69=x71
-len68=len70
-x67=x69
-len66=len68
-x65=x67
-len64=len66
-x63=x65
-len62=len64
-x59=x63
-len58=len62
-	dlat_q = allocate(x59 , len58 , )
-	dlon_q = allocate(x61 , len60 , )
+x135 = 0
+x133=x135
+len132=len134
+x130=x133
+len131=len132
+x128=x130
+len129=len131
+x126=x128
+len127=len129
+x124=x126
+len125=len127
+x117=x126
+len116=len127
+x135=x124
+len134=len125
+x122=x124
+len123=len125
+x120=x122
+len121=len123
+x118=x120
+len119=len121
+x105=x118
+len104=len119
+x114=x117
+len115=len116
+x112=x114
+len113=len115
+x110=x112
+len111=len113
+x108=x110
+len109=len111
+x107=x108
+len106=len109
+x103=x107
+len102=len106
+	dlat_q = allocate(x103 , len102 , )
+	dlon_q = allocate(x105 , len104 , )
 	 BLANK 
 	 BLANK 
 	 BLANK 
@@ -44,53 +44,51 @@ len58=len62
 	 BLANK 
 	 BLANK 
 	 BLANK 
-	a2_q = allocate(x81 , len80 , )
+	a2_q = allocate(x124 , len125 , )
 	 BLANK 
 	 BLANK 
 	 BLANK 
 	 BLANK 
 	{
-x91 in (a.idx, a.idx + a.size, len90)
-x89=x91
-len88=len90
-x87=x89
-len86=len88
-x85=x87
-len84=len86
-x83=x85
-len82=len84
-x81=x83
-len80=len82
-x73=x83
-len72=len82
-x91=x81
-len90=len80
-x79=x81
-len78=len80
-x77=x79
-len76=len78
-x75=x77
-len74=len76
-x61=x75
-len60=len74
-x71=x73
-len70=len72
-x69=x71
-len68=len70
-x67=x69
-len66=len68
-x65=x67
-len64=len66
-x63=x65
-len62=len64
-x59=x63
-len58=len62
+x135 in (a.idx, a.idx + a.size, len134)
+x133=x135
+len132=len134
+x130=x133
+len131=len132
+x128=x130
+len129=len131
+x126=x128
+len127=len129
+x124=x126
+len125=len127
+x117=x126
+len116=len127
+x135=x124
+len134=len125
+x122=x124
+len123=len125
+x120=x122
+len121=len123
+x118=x120
+len119=len121
+x105=x118
+len104=len119
+x114=x117
+len115=len116
+x112=x114
+len113=len115
+x110=x112
+len111=len113
+x108=x110
+len109=len111
+x107=x108
+len106=len109
+x103=x107
+len102=len106
 	 BLANK 
-	lat2_q12 = lat2.query(x59 , len58 , )
+	lat2_q22 = lat2.query(x103 , len102 , )
 	 BLANK 
-	lon2_q11 = lon2.query(x61 , len60 , )
-	 BLANK 
-	 BLANK 
+	lon2_q21 = lon2.query(x105 , len104 , )
 	 BLANK 
 	 BLANK 
 	 BLANK 
@@ -99,14 +97,16 @@ len58=len62
 	 BLANK 
 	 BLANK 
 	 BLANK 
-	a_q10 = a.query(x81 , len80 , )
+	 BLANK 
+	 BLANK 
+	a_q20 = a.query(x124 , len125 , )
 	 BLANK 
 	 BLANK 
 	 BLANK 
 	 BLANK 
-	a_q = a.query(x91 , len90 , )
-	ispc::subi_ispc(dlat : dlat_q, lat2 : lat2_q12, )
-	ispc::subi_ispc(dlon : dlon_q, lon2 : lon2_q11, )
+	a_q = a.query(x135 , len134 , )
+	ispc::subi_ispc(dlat : dlat_q, lat2 : lat2_q22, )
+	ispc::subi_ispc(dlon : dlon_q, lon2 : lon2_q21, )
 	ispc::divi_ispc(dlat2 : dlat_q, dlat : dlat_q, )
 	ispc::sin_ispc(dlat3 : dlat_q, dlat2 : dlat_q, )
 	ispc::sin_ispc(dlat4 : dlat_q, dlat3 : dlat_q, )
@@ -116,7 +116,7 @@ len58=len62
 	ispc::divi_ispc(dlon2 : dlon_q, dlon : dlon_q, )
 	ispc::sin_ispc(dlon3 : dlon_q, dlon2 : dlon_q, )
 	ispc::mul_ispc(dlon4 : dlon_q, dlon3 : dlon_q, )
-	ispc::mul_ispc(a2 : a2_q, a : a_q10, dlon4 : dlon_q, )
+	ispc::mul_ispc(a2 : a2_q, a : a_q20, dlon4 : dlon_q, )
 	ispc::add_ispc(a3 : a2_q, a2 : a2_q, dlat7 : dlat_q, )
 	ispc::sqrt_ispc(a4 : a2_q, a3 : a2_q, )
 	ispc::asin_ispc(a5 : a2_q, a4 : a2_q, )

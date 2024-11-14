@@ -90,7 +90,7 @@ public:
 
 class Variable : public DependencyExpr {
 public:
-  Variable() : Variable(util::uniqueName("var")){};
+  Variable() : Variable(util::uniqueName("var")) {};
   explicit Variable(const DependencyVariableNode *);
   explicit Variable(const std::string &name, bool argument = false,
                     bool parallelize = false, bool bound = false);
@@ -345,9 +345,7 @@ public:
 
   template <typename Exprs> ConcreteFunctionCall operator()(Exprs expr) {
     std::vector<Argument> args;
-    std::cout << "here" << std::endl;
     addArguments(args, expr);
-    std::cout << "here 2" << std::endl;
     return ConcreteFunctionCall(getName(), args, this->getDataRelationship(),
                                 this->getArguments());
   }

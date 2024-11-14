@@ -1,43 +1,37 @@
-void my_fused_impl(const Weights<float> filter, const Weights<float> input,
-                   float *bias, Weights<float> output, int64_t stride_arg58,
-                   int64_t maxpool_dim63, int64_t x_tile66, int64_t y_tile67) {
-  int64_t x64 = 0;
-  int64_t y65 = 0;
-  int64_t x59 = x64 * maxpool_dim63;
-  int64_t y60 = y65 * maxpool_dim63;
-  int64_t x_tile61 = x_tile66 * maxpool_dim63;
-  int64_t y_tile62 = y_tile67 * maxpool_dim63;
-  int64_t x54 = x59;
-  int64_t y55 = y60;
-  int64_t x_tile56 = x_tile61;
-  int64_t y_tile57 = y_tile62;
-  Weights<float> output_conv_q = weight_alloc(x54, y55, x_tile56, y_tile57);
-  Weights<float> output_relu_q = weight_alloc(x59, y60, x_tile61, y_tile62);
-  for (int64_t x64 = output.W_start; x64 < output.W_start + output.LW;
-       x64 += x_tile66) {
-    for (int64_t y65 = output.H_start; y65 < output.H_start + output.LH;
-         y65 += y_tile67) {
-      int64_t x59 = x64 * maxpool_dim63;
-      int64_t y60 = y65 * maxpool_dim63;
-      int64_t x_tile61 = x_tile66 * maxpool_dim63;
-      int64_t y_tile62 = y_tile67 * maxpool_dim63;
-      int64_t x54 = x59;
-      int64_t y55 = y60;
-      int64_t x_tile56 = x_tile61;
-      int64_t y_tile57 = y_tile62;
-      Weights<float> input_q15 = input.query_materialize(
-          x54 * stride_arg58, y55 * stride_arg58, x_tile56 + filter.H - 1,
-          y_tile57 + filter.W - 1);
-      Weights<float> output_q =
-          output.query_materialize(x64, y65, x_tile66, y_tile67);
-      conv_no_fern_mkl(input_q15, filter, bias, stride_arg58, output_conv_q);
+void my_fused_impl(const Weights<float> filter, const Weights<float> input, float* bias, Weights<float> output, int64_t stride_arg12, int64_t maxpool_dim21, int64_t x_tile24, int64_t y_tile25){
+  int64_t x22 = 0;
+ int64_t y23 = 0;
+ int64_t x18 = x22*maxpool_dim21;
+ int64_t y19 = y23*maxpool_dim21;
+ int64_t x_tile20 = maxpool_dim21*x_tile24;
+ int64_t y_tile17 = y_tile25*maxpool_dim21;
+ int64_t x13 = x18;
+ int64_t y14 = y19;
+ int64_t x_tile15 = x_tile20;
+ int64_t y_tile16 = y_tile17;
+ Weights<float> output_conv_q = weight_alloc(x13, y14, x_tile15, y_tile16);
+ Weights<float> output_relu_q = weight_alloc(x18, y19, x_tile20, y_tile17);
+ for(int64_t x22 = output.W_start;x22 < output.W_start + output.LW; x22+=x_tile24){
+  for(int64_t y23 = output.H_start;y23 < output.H_start + output.LH; y23+=y_tile25){
+      int64_t x18 = x22*maxpool_dim21;
+   int64_t y19 = y23*maxpool_dim21;
+   int64_t x_tile20 = maxpool_dim21*x_tile24;
+   int64_t y_tile17 = y_tile25*maxpool_dim21;
+   int64_t x13 = x18;
+   int64_t y14 = y19;
+   int64_t x_tile15 = x_tile20;
+   int64_t y_tile16 = y_tile17;
+   Weights<float> input_q5 = input.query_materialize(x13 * stride_arg12, y14 * stride_arg12, x_tile15 + filter.H - 1, y_tile16 + filter.W - 1);
+   Weights<float> output_q = output.query_materialize(x22, y23, x_tile24, y_tile25);
+      conv_no_fern_mkl(input_q5, filter, bias, stride_arg12, output_conv_q);
       relu_material(output_conv_q, output_relu_q);
-      maxpool(output_relu_q, maxpool_dim63, output_q);
-      output.insert_materialize(x64, y65, x_tile66, y_tile67, output_q);
-      input_q15.free_weight();
-    }
-  }
+      maxpool(output_relu_q, maxpool_dim21, output_q);
+      output.insert_materialize(x22, y23, x_tile24, y_tile25, output_q);
+      input_q5.free_weight();
+}
+}
 
   output_conv_q.free_weight();
   output_relu_q.free_weight();
 }
+

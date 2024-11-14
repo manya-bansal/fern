@@ -150,8 +150,6 @@ Stmt CodeGenerator::generateCode() {
   auto lowered_code = Block::make(stmts);
   auto inner_loop_index = pipeline.outer_loops.size() - 1;
 
-  std::cout << Block::make(stmts) << std::endl;
-
   // Move from inner to outer
   for (int i = inner_loop_index; i >= 0; i--) {
     auto loop = pipeline.outer_loops[i];
@@ -185,8 +183,6 @@ Stmt CodeGenerator::generateCode() {
     lowered_code =
         For::make(start, end, step, lowered_code, loop.var.isParallel());
   }
-
-  std::cout << Block::make(lowered_code) << std::endl;
 
   return lowered_code;
 }
@@ -285,8 +281,6 @@ lowerArguments(Argument arg,
 }
 
 Stmt CodeGenerator::generateComputeNode(const ComputeNode *node) const {
-
-  std::cout << node->func << std::endl;
 
   std::vector<Expr> args;
   for (auto arg : node->func.getArguments()) {
@@ -396,13 +390,12 @@ std::vector<Expr> CodeGenerator::generateFunctionHeaderArguments() {
   return args;
 }
 
-std::ostream &operator<<(std::ostream &os, const PyCodeGenPrint &pyGen){
-  auto  func =  pyGen.cg.getFullFunction();
+std::ostream &operator<<(std::ostream &os, const PyCodeGenPrint &pyGen) {
+  auto func = pyGen.cg.getFullFunction();
   PyCGPrinter printer(os);
   func.accept(&printer);
   return os;
 }
-
 
 } // namespace codegen
 } // namespace fern

@@ -446,9 +446,7 @@ std::set<const DependencyVariableNode *> DependencySubset::getVariables() {
     using DependencyVisitor::visit;
     std::set<const DependencyVariableNode *>
     get_symbols(DependencySubset expr) {
-      std::cout << "yolo" << std::endl;
       expr.accept(this);
-      std::cout << "yikes" << std::endl;
       return symbols;
     }
     void visit(const DependencyVariableNode *node) { symbols.insert(node); }
@@ -456,7 +454,6 @@ std::set<const DependencyVariableNode *> DependencySubset::getVariables() {
   };
 
   GetSymbols symbol_set;
-  std::cout << "out help" << std::endl << *this << std::endl;
   return symbol_set.get_symbols(*this);
 }
 

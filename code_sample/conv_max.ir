@@ -1,36 +1,36 @@
-x64 = 0
-y65 = 0
-x59=x64*maxpool_dim63
-y60=y65*maxpool_dim63
-x_tile61=x_tile66*maxpool_dim63
-y_tile62=y_tile67*maxpool_dim63
-x54=x59
-y55=y60
-x_tile56=x_tile61
-y_tile57=y_tile62
-	output_conv_q = allocate(x54 , y55 , x_tile56 , y_tile57 , )
-	output_relu_q = allocate(x59 , y60 , x_tile61 , y_tile62 , )
+x22 = 0
+y23 = 0
+x18=x22*maxpool_dim21
+y19=y23*maxpool_dim21
+x_tile20=maxpool_dim21*x_tile24
+y_tile17=y_tile25*maxpool_dim21
+x13=x18
+y14=y19
+x_tile15=x_tile20
+y_tile16=y_tile17
+	output_conv_q = allocate(x13 , y14 , x_tile15 , y_tile16 , )
+	output_relu_q = allocate(x18 , y19 , x_tile20 , y_tile17 , )
 	{
-x64 in (output.W_start, output.W_start + output.LW, x_tile66)
-y65 in (output.H_start, output.H_start + output.LH, y_tile67)
-x59=x64*maxpool_dim63
-y60=y65*maxpool_dim63
-x_tile61=x_tile66*maxpool_dim63
-y_tile62=y_tile67*maxpool_dim63
-x54=x59
-y55=y60
-x_tile56=x_tile61
-y_tile57=y_tile62
+x22 in (output.W_start, output.W_start + output.LW, x_tile24)
+y23 in (output.H_start, output.H_start + output.LH, y_tile25)
+x18=x22*maxpool_dim21
+y19=y23*maxpool_dim21
+x_tile20=maxpool_dim21*x_tile24
+y_tile17=y_tile25*maxpool_dim21
+x13=x18
+y14=y19
+x_tile15=x_tile20
+y_tile16=y_tile17
 	 BLANK 
-	input_q15 = input.query(x54 * stride_arg58 (Argument)  , y55 * stride_arg58 (Argument)  , x_tile56 + filter.H - 1 , y_tile57 + filter.W - 1 , )
+	input_q5 = input.query(x13 * stride_arg12 (Argument)  , y14 * stride_arg12 (Argument)  , x_tile15 + filter.H - 1 , y_tile16 + filter.W - 1 , )
 	 BLANK 
-	output_q = output.query(x64 , y65 , x_tile66 , y_tile67 , )
-	conv_no_fern_mkl(output_conv : output_conv_q, filter : filter, input : input_q15, )
+	output_q = output.query(x22 , y23 , x_tile24 , y_tile25 , )
+	conv_no_fern_mkl(output_conv : output_conv_q, filter : filter, input : input_q5, )
 	relu_material(output_relu : output_relu_q, output_conv : output_conv_q, )
 	maxpool(output : output_q, output_relu : output_relu_q, )
-	output.insert(x64 , y65 , x_tile66 , y_tile67 , output_q)
+	output.insert(x22 , y23 , x_tile24 , y_tile25 , output_q)
 	 BLANK 
-	input_q15.free()
+	input_q5.free()
 	 BLANK 
 
 }

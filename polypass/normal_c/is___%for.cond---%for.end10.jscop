@@ -1,0 +1,41 @@
+{
+   "arrays": [
+      {
+         "name": "MemRef0",
+         "sizes": [
+            "*"
+         ],
+         "type": "i32"
+      }
+   ],
+   "context": "[p_0] -> {  : -2147483648 <= p_0 <= 2147483647 }",
+   "name": "%for.cond---%for.end10",
+   "statements": [
+      {
+         "accesses": [
+            {
+               "kind": "read",
+               "relation": "[p_0] -> { Stmt2[i0] -> MemRef0[0] }"
+            },
+            {
+               "kind": "write",
+               "relation": "[p_0] -> { Stmt2[i0] -> MemRef0[0] }"
+            }
+         ],
+         "domain": "[p_0] -> { Stmt2[i0] : 0 <= i0 < 2p_0 }",
+         "name": "Stmt2",
+         "schedule": "[p_0] -> { Stmt2[i0] -> [0, i0] }"
+      },
+      {
+         "accesses": [
+            {
+               "kind": "write",
+               "relation": "[p_0] -> { Stmt7[i0] -> MemRef0[1 + i0] }"
+            }
+         ],
+         "domain": "[p_0] -> { Stmt7[i0] : 0 <= i0 < 2p_0 }",
+         "name": "Stmt7",
+         "schedule": "[p_0] -> { Stmt7[i0] -> [1, i0] }"
+      }
+   ]
+}

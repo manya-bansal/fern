@@ -129,9 +129,9 @@ void ConcreteFunctionCall::mangle_abstract_names() {
     if (arg.getArgType() == VARIABLE) {
       auto var = arg.getNode<VariableArg>()->getVariable();
       // if (!(var->argument)) {
-      std::cout << this->getDataRelationship() << std::endl;
-      std::cout << var->name << std::endl;
-      util::printIterable(getAbstractArguments());
+      //   std::cout << this->getDataRelationship() << std::endl;
+      //   std::cout << var->name << std::endl;
+      //   util::printIterable(getAbstractArguments());
       FERN_ASSERT(mangled_names.find(var) != mangled_names.end(),
                   "Function is trying to use an argument that comes out from "
                   "nowhere??");

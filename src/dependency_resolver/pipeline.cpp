@@ -237,7 +237,7 @@ void Pipeline::generateDependency(
     ConcreteFunctionCall call,
     std::vector<std::tuple<std::vector<DependencyExpr>,
                            std::vector<DependencyExpr>>> &dependencies) {
-  std::cout << "Calling generate dependency" << std::endl;
+  //   std::cout << "Calling generate dependency" << std::endl;
   auto inputs = call.getInputs();
   for (const auto &input : inputs) {
     // If input is not another functions output, then we are done,
@@ -351,7 +351,7 @@ Pipeline::corresponding_abstract_var(ConcreteFunctionCall call,
 
 std::ostream &operator<<(std::ostream &os, const Pipeline &pipe) {
 
-  std::cout << "In pipeline" << std::endl;
+  //   std::cout << "In pipeline" << std::endl;
 
   for (auto i : pipe.outer_loops) {
     os << i;
@@ -693,7 +693,7 @@ Pipeline Pipeline::run_reuse_pass(
   auto new_pipe = *this;
 
   for (auto pair : reuse_intermediates) {
-    std::cout << *(pair.second) << std::endl;
+    // std::cout << *(pair.second) << std::endl;
     auto alloc_name = getAllocateNode(pair.second)->name;
     new_pipe = new_pipe.replaceDataStructure(pair.first, alloc_name);
   }
@@ -732,12 +732,12 @@ static bool is_valid_reuse_candidate(const AbstractDataStructure *ds,
 
   // for all the pipeline nodes make this check
   for (auto f : pipe_node->pipeline.pipeline) {
-    std::cout << f << std::endl;
+    // std::cout << f << std::endl;
     if (f.getFuncType() != PIPELINE) {
       continue;
     }
     auto f_node = f.getNode<PipelineNode>();
-    std::cout << f_node->pipeline << std::endl;
+    // std::cout << f_node->pipeline << std::endl;
 
     // Does this pipeline contain a compute on our data-structure?
     for (auto f_i : f_node->pipeline.pipeline) {
@@ -885,7 +885,7 @@ Pipeline Pipeline::generate_reuse() {
     if (!valid_resuse) {
       FERN_ASSERT(false, "tried to mark an illegal data-structure as reusable");
     }
-    std::cout << host_pipeline << std::endl;
+    // std::cout << host_pipeline << std::endl;
     // Also get the index of the child, we will rewrite this to actually
     // perform the copy
     auto index = get_child_pipeline_index(reuse_ds, host_pipeline);
@@ -899,7 +899,7 @@ Pipeline Pipeline::generate_reuse() {
     auto new_host_pipe = host_pipeline_node->pipeline;
     new_host_pipe.pipeline.insert(new_host_pipe.pipeline.begin() + index,
                                   preamble);
-    std::cout << new_host_pipe << std::endl;
+    // std::cout << new_host_pipe << std::endl;
     index++;
 
     // Now that our host pipeline is ready with the relevant start up, compute
@@ -910,7 +910,7 @@ Pipeline Pipeline::generate_reuse() {
         reuse_ds->getVarName() + "_q");
 
     // Replace the old child now
-    std::cout << new_child << std::endl;
+    // std::cout << new_child << std::endl;
     new_host_pipe.pipeline[index] = new_child;
 
     return new_host_pipe;
@@ -1197,7 +1197,7 @@ Pipeline::compute_valid_intersections(FunctionType parent, FunctionType child,
       new InsertNode(ds, move_query_dst, name, name + "_move_src"));
   p.pipeline.push_back(output_move_insert);
 
-  std::cout << p << std::endl;
+  //   std::cout << p << std::endl;
 
   return FunctionType(new PipelineNode(p));
 }
@@ -1427,7 +1427,7 @@ Pipeline::getAllIntermediateConflicts() const {
   for (auto ds : last_use_idx) {
     int final_func = ds.second;
     int start_func = first_use_index[ds.first];
-    std::cout << *(ds.first) << " " << ds.second << std::endl;
+    // std::cout << *(ds.first) << " " << ds.second << std::endl;
     for (int i = start_func + 1; i <= final_func; i++) {
       auto f = functions[i];
 
@@ -1508,7 +1508,7 @@ Pipeline::generate_reuse_substitutes() {
       share[im] = {};
   }
 
-  std::cout << std::endl;
+  //   std::cout << std::endl;
   // For printing out !
   // for (auto c : share) {
   //   std::cout << *(c.first) << std::endl;
@@ -1706,7 +1706,7 @@ void Pipeline::constructMergedPipeline() {
       b_fork.constructPipeline();
       b_fork.pipeline =
           changeQueryToAlloc(b_fork.pipeline, func.getOutput(), func);
-      std::cout << b_fork << std::endl;
+      //   std::cout << b_fork << std::endl;
 
       // Construct a pipeline with the normal nodes
       Pipeline a_fork(after_fork);

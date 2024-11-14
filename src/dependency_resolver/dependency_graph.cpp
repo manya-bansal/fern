@@ -38,8 +38,8 @@ DependencyGraph::DependencyGraph(std::vector<ConcreteFunctionCall> func_calls)
           childMap[parent_func] = std::set<int>();
         }
         childMap[parent_func].insert(i + 1);
-        std::cout << "Inserting @ " << parent_func << " =  " << i + 1
-                  << std::endl;
+        // std::cout << "Inserting @ " << parent_func << " =  " << i + 1
+        //           << std::endl;
       }
     }
 

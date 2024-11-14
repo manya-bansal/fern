@@ -25,7 +25,7 @@ struct DependencyLiteralNode : public DependencyExprNode {
 
   template <typename T> T getVal() const {
     if (getDataType() != type<T>()) {
-      std::cerr << "Attempting to get data of wrong type" << std::endl;
+      //   std::cerr << "Attempting to get data of wrong type" << std::endl;
     }
 
     return *static_cast<T *>(val);
@@ -39,13 +39,13 @@ struct DependencyVariableNode : public DependencyExprNode {
   DependencyVariableNode(const std::string &name, bool argument = false,
                          bool parallelize = false, bool bound = false)
       : type(Datatype::Kind::Int64), name(name), argument(argument),
-        parallelize(parallelize), bound(bound){};
+        parallelize(parallelize), bound(bound) {};
 
   DependencyVariableNode(Datatype type, const std::string &name,
                          bool argument = false, bool parallelize = false,
                          bool bound = false)
       : type(type), name(name), argument(argument), parallelize(parallelize),
-        bound(bound){};
+        bound(bound) {};
 
   void accept(DependencyExprVisitorStrict *v) const { v->visit(this); }
 
@@ -60,7 +60,7 @@ struct DependencyVariableNode : public DependencyExprNode {
 struct MetaDataNode : public DependencyExprNode {
   MetaDataNode() = delete;
   MetaDataNode(const std::string &name, const AbstractDataStructure *ds)
-      : name(name), ds(ds){};
+      : name(name), ds(ds) {};
 
   void accept(DependencyExprVisitorStrict *v) const { v->visit(this); }
 
@@ -161,11 +161,11 @@ struct DataStructureNode : public DependencySubsetNode {
   DataStructureNode() = delete;
   DataStructureNode(const std::string &name,
                     const AbstractDataStructure *abstractData)
-      : name(name), abstractData(abstractData){};
+      : name(name), abstractData(abstractData) {};
   DataStructureNode(const std::string &name,
                     const AbstractDataStructure *abstractData,
                     std::vector<DependencyExpr> annotations)
-      : name(name), abstractData(abstractData), annotations(annotations){};
+      : name(name), abstractData(abstractData), annotations(annotations) {};
 
   void accept(DependencySubsetVisitorStrict *v) const { v->visit(this); }
   std::string name;

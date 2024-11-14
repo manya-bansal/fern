@@ -46,7 +46,7 @@ TEST(Break, Test1) {
   pipeline = pipeline.breakPipeline(1);
   // pipeline = pipeline.finalize();
 
-  std::cout << pipeline << std::endl;
+  //   std::cout << pipeline << std::endl;
 
   codegen::CodeGenerator code(pipeline);
   util::printToFile(code, std::string(SOURCE_DIR) + "/code_sample/break" +
@@ -79,7 +79,7 @@ TEST(Break, Test2) {
   pipeline = pipeline.breakPipeline(2);
   // pipeline = pipeline.finalize();
 
-  std::cout << pipeline << std::endl;
+  //   std::cout << pipeline << std::endl;
 
   codegen::CodeGenerator code(pipeline);
   util::printToFile(code, std::string(SOURCE_DIR) + "/code_sample/break" +
@@ -112,7 +112,7 @@ TEST(Break, Illegal) {
   EXPECT_THROW(pipeline = pipeline.breakPipeline(2), std::runtime_error);
   pipeline = pipeline.finalize();
 
-  std::cout << pipeline << std::endl;
+  //   std::cout << pipeline << std::endl;
 }
 
 TEST(Break, Illegal2) {
@@ -138,5 +138,5 @@ TEST(Break, Illegal2) {
   EXPECT_THROW(pipeline = pipeline.breakPipeline(3), std::runtime_error);
   pipeline = pipeline.finalize();
 
-  std::cout << pipeline << std::endl;
+  //   std::cout << pipeline << std::endl;
 }

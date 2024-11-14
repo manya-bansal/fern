@@ -273,10 +273,7 @@ struct StringArg : public Args {
 struct DataStructureArg : public Args {
   DataStructureArg(DataStructurePtr ds) : Args(DATASTRUCTURE), ds(ds) {}
   DataStructureArg(DataStructurePtr ds, std::string metaData)
-      : Args(DATASTRUCTURE), ds(ds), metaData(metaData), meta(true) {
-    // std::cout << meta << "here" << std::endl;
-    std::cout << *(ds.dsPtr()) << std::endl;
-  }
+      : Args(DATASTRUCTURE), ds(ds), metaData(metaData), meta(true) {}
   DataStructureArg(AbstractDataStructure *ds, std::string metaData, bool meta)
       : Args(DATASTRUCTURE), ds(DataStructurePtr(ds)), metaData(metaData),
         meta(meta) {}

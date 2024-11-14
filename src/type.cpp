@@ -89,7 +89,8 @@ int Datatype::getNumBits() const {
   case UInt128:
     return 128;
   default:
-    std::cerr << "Bits for data type not set: " << getKind() << std::endl;
+
+    // std::cerr << "Bits for data type not set: " << getKind() << std::endl;
     return -1;
   }
 }

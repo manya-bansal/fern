@@ -38,6 +38,7 @@ TEST(Eval, HalideBlur) {
       blury(&out1, &out2),
   });
 
+  auto start = std::chrono::high_resolution_clock::now();
   // Step one is to always construct a pipeline
   pipeline.constructPipeline();
 
@@ -66,8 +67,12 @@ TEST(Eval, HalideBlur) {
   // Indicate the end of scheduling code and the beginning of opt
   // passes
   pipeline = pipeline.finalize();
-  std::cout << "*********" << std::endl;
-  std::cout << pipeline << std::endl;
+  //   std::cout << "*********" << std::endl;
+  //   std::cout << pipeline << std::endl;
+
+  auto end = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double, std::milli> duration = end - start;
+  std::cout << "Time taken: " << duration.count() << " ms" << std::endl;
 
   util::printToFile(pipeline, std::string(SOURCE_DIR) + "/code_sample" +
                                   "/halide_blur.ir");
@@ -261,8 +266,15 @@ TEST(Eval, FusedConvMaxTanh) {
       tanh(&output, &output_tan),
   });
 
+  auto start = std::chrono::high_resolution_clock::now();
+
   pipeline.constructPipeline();
   pipeline = pipeline.finalize();
+
+  auto end = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double, std::milli> duration = end - start;
+  std::cout << "Time taken: " << duration.count() << " ms" << std::endl;
+
   // std::cout << pipeline << std::endl;
 
   util::printToFile(pipeline,
@@ -557,9 +569,14 @@ TEST(Eval, ReuseHaversine) {
                 DataStructureArg(&a, "data")),
   });
 
+  auto start = std::chrono::high_resolution_clock::now();
   pipeline.constructPipeline();
   pipeline.runAutomaticIntermediateReuse();
   pipeline = pipeline.finalize();
+
+  auto end = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double, std::milli> duration = end - start;
+  std::cout << "Time taken: " << duration.count() << " ms" << std::endl;
 
   util::printToFile(pipeline, std::string(SOURCE_DIR) + "/code_sample" +
                                   "/reuse_haversine.ir");

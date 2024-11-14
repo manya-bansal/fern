@@ -1,28 +1,28 @@
-x39 = 0
-x37=x39
-len36=len38
-x34=x39
-len35=len38
-x34=x37
-len35=len36
-	r1_q = allocate(x34 , len35 , )
-	r2_q = allocate(x37 , len36 , )
+x79 = 0
+x77=x79
+len76=len78
+x74=x79
+len75=len78
+x74=x77
+len75=len76
+	r1_q = allocate(x74 , len75 , )
+	r2_q = allocate(x77 , len76 , )
 	{
-x39 in (r3.idx, r3.idx + r3.size, len38)
-x37=x39
-len36=len38
-x34=x39
-len35=len38
-x34=x37
-len35=len36
+x79 in (r3.idx, r3.idx + r3.size, len78)
+x77=x79
+len76=len78
+x74=x79
+len75=len78
+x74=x77
+len75=len76
 	 BLANK 
-	a_q7 = a.query(x34 , len35 , )
-	b_q6 = b.query(x34 , len35 , )
+	a_q16 = a.query(x74 , len75 , )
+	b_q15 = b.query(x74 , len75 , )
 	 BLANK 
-	c_q5 = c.query(x37 , len36 , )
-	r3_q = r3.query(x39 , len38 , )
-	vadd(r1 : r1_q, b : b_q6, a : a_q7, )
-	vadd(r2 : r2_q, r1 : r1_q, c : c_q5, )
+	c_q14 = c.query(x77 , len76 , )
+	r3_q = r3.query(x79 , len78 , )
+	vadd(r1 : r1_q, b : b_q15, a : a_q16, )
+	vadd(r2 : r2_q, r1 : r1_q, c : c_q14, )
 	vadd(r3 : r3_q, r2 : r2_q, r1 : r1_q, )
 	 BLANK 
 	 BLANK 

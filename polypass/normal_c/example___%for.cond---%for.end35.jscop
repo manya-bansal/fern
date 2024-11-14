@@ -1,0 +1,54 @@
+{
+   "arrays": [
+      {
+         "name": "MemRef0",
+         "sizes": [
+            "*",
+            "(zext i32 %M to i64)"
+         ],
+         "type": "i32"
+      },
+      {
+         "name": "MemRef1",
+         "sizes": [
+            "*",
+            "(zext i32 %M to i64)"
+         ],
+         "type": "i32"
+      }
+   ],
+   "context": "[p_0, p_1] -> {  : -2147483648 <= p_0 <= 2147483647 and -2147483648 <= p_1 <= 2147483647 }",
+   "name": "%for.cond---%for.end35",
+   "statements": [
+      {
+         "accesses": [
+            {
+               "kind": "read",
+               "relation": "[p_0, p_1] -> { Stmt2[i0, i1] -> MemRef0[1 + i0, i1] }"
+            },
+            {
+               "kind": "write",
+               "relation": "[p_0, p_1] -> { Stmt2[i0, i1] -> MemRef1[i0, i1] }"
+            }
+         ],
+         "domain": "[p_0, p_1] -> { Stmt2[i0, i1] : 0 <= i0 < p_0 and 0 <= i1 < p_1 }",
+         "name": "Stmt2",
+         "schedule": "[p_0, p_1] -> { Stmt2[i0, i1] -> [0, i0, i1] }"
+      },
+      {
+         "accesses": [
+            {
+               "kind": "read",
+               "relation": "[p_0, p_1] -> { Stmt6[i0, i1] -> MemRef0[1 + i0, i1] }"
+            },
+            {
+               "kind": "write",
+               "relation": "[p_0, p_1] -> { Stmt6[i0, i1] -> MemRef1[i0, i1] }"
+            }
+         ],
+         "domain": "[p_0, p_1] -> { Stmt6[i0, i1] : 0 <= i0 < p_0 and 0 <= i1 < p_1 }",
+         "name": "Stmt6",
+         "schedule": "[p_0, p_1] -> { Stmt6[i0, i1] -> [1, i0, i1] }"
+      }
+   ]
+}

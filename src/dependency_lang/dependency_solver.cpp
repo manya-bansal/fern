@@ -53,16 +53,16 @@ void SolveDependency::solve() {
 
   // std::cout << "verbose " << verbose << std::endl;
   // PRINT OUT SOLUTIONS FOR DEBUGGING
-  if (verbose) {
-    std::cout << "Solutions:" << std::endl;
-    for (auto sol : solutions) {
-      std::cout << DependencyExpr(sol.var) << " = " << sol.solution
-                << std::endl;
-      // Right now skip
-      // convertToDependency(sol.solution);
-    }
-    std::cout << "-------------" << std::endl;
-  }
+  //   if (verbose) {
+  //     std::cout << "Solutions:" << std::endl;
+  //     for (auto sol : solutions) {
+  //       std::cout << DependencyExpr(sol.var) << " = " << sol.solution
+  //                 << std::endl;
+  //       // Right now skip
+  //       // convertToDependency(sol.solution);
+  //     }
+  //     std::cout << "-------------" << std::endl;
+  //   }
 
   // Figure out the "free variables in the solutions"
   std::set<const DependencyVariableNode *> defined;
@@ -76,13 +76,13 @@ void SolveDependency::solve() {
     }
   }
 
-  if (verbose) {
-    std::cout << "Undefined :" << std::endl;
-    for (auto undef : undefined) {
-      std::cout << DependencyExpr(undef) << std::endl;
-    }
-    std::cout << "-------------" << std::endl;
-  }
+  //   if (verbose) {
+  //     std::cout << "Undefined :" << std::endl;
+  //     for (auto undef : undefined) {
+  //       std::cout << DependencyExpr(undef) << std::endl;
+  //     }
+  //     std::cout << "-------------" << std::endl;
+  //   }
 }
 
 // COME BACK LATER, RN CAN GET AWAY WITH NOT CONVERTING BACK
@@ -103,7 +103,7 @@ DependencySubset SolveDependency::convertToDependency(GiNaC::ex g) {
     void visit(const GiNaC::symbol &x) {
       FERN_ASSERT(symbol_mappings.find(x) != symbol_mappings.end(),
                   "Symbol mapping not found");
-      std::cout << "called with a symbol object " << x << std::endl;
+      //   std::cout << "called with a symbol object " << x << std::endl;
       // symbols.insert(x);
     }
 
@@ -115,16 +115,16 @@ DependencySubset SolveDependency::convertToDependency(GiNaC::ex g) {
         // std::cout << x.op(i).coeff() << std::endl;
         // std::cout << x.get_var(i) << std::endl;
       }
-      std::cout << "called with a add object " << x << std::endl;
+      //   std::cout << "called with a add object " << x << std::endl;
       // symbols.insert(x);
     }
 
     void visit(const GiNaC::mul &x) {
-      std::cout << "called with a mul object " << x << std::endl;
+      //   std::cout << "called with a mul object " << x << std::endl;
     }
 
     void visit(const GiNaC::numeric &x) {
-      std::cout << "called with a numeric object " << x << std::endl;
+      //   std::cout << "called with a numeric object " << x << std::endl;
     }
 
     std::map<GiNaC::symbol, const DependencyVariableNode *> symbol_mappings;
@@ -157,10 +157,10 @@ SolveDependency::list_of_unbound_variables(GiNaC::lst chained_deps) {
     undefined_symbols = symbol_set.get_symbols(expr);
   }
 
-  std::cout << "All the undefined symbols" << std::endl;
-  for (auto var : undefined_symbols) {
-    std::cout << var->name << " " << var->argument << std::endl;
-  }
+  //   std::cout << "All the undefined symbols" << std::endl;
+  //   for (auto var : undefined_symbols) {
+  //     std::cout << var->name << " " << var->argument << std::endl;
+  //   }
 
   return undefined_symbols;
 }
@@ -223,7 +223,7 @@ GiNaC::ex SolveDependency::generate_ginac(DependencyExpr expr) {
     void visit(const ModNode *op) { std::cerr << "Not supported" << std::endl; }
 
     void visit(const MetaDataNode *op) {
-      std::cout << MetaData(op) << std::endl;
+      //   std::cout << MetaData(op) << std::endl;
       std::stringstream ss;
       ss << MetaData(op);
       ginac_expr = GiNaC::symbol(ss.str());
@@ -246,7 +246,7 @@ void SolveDependency::populate_names() {
     PopulateNames(
         std::map<const DependencyVariableNode *, GiNaC::symbol> &names_temp,
         const std::string &suffix)
-        : names_temp(names_temp), suffix(suffix){};
+        : names_temp(names_temp), suffix(suffix) {};
     void populate_names(DependencyExpr expr) { expr.accept(this); }
 
     void visit(const DependencyVariableNode *node) {

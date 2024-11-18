@@ -67,6 +67,8 @@
     "vector": "cpp",
     "version": "cpp",
     "functional": "cpp",
-    "stack": "cpp"
+    "stack": "cpp",
+    "memory": "cpp",
+    "print": "cpp"
   }
 }

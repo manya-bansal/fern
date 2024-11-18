@@ -46,9 +46,16 @@ private:
 
 std::ostream &operator<<(std::ostream &, const CodeGenerator &);
 
+class PyCodeGenPrint{
+public:
+  PyCodeGenPrint(CodeGenerator cg) : cg(cg) {};
+  CodeGenerator cg;
+};
+
+std::ostream &operator<<(std::ostream &, const PyCodeGenPrint &);
+
 } // namespace codegen
 } // namespace fern
 
-// The actual codegen class goes here.
 
 #endif

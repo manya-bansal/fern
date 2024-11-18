@@ -142,9 +142,9 @@ public:
     return os;
   };
 
-  DummyDataStructure *dsPtr() const { return ds.get(); };
+  DummyDataStructure *dsPtr() const { return ds; };
 
-  std::shared_ptr<DummyDataStructure> ds;
+  DummyDataStructure* ds;
 };
 
 // Different types of arguments for Functions.

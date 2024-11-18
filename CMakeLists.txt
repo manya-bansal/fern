@@ -28,9 +28,7 @@ include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
 # ADD_SUBDIRECTORY (benchmark)
 
-link_directories(/Users/manyab/openvdb/install_dir/lib/
-/opt/homebrew/opt/tbb/lib
-/opt/homebrew/lib)
+link_directories(/opt/homebrew/lib)
 
 add_executable(test_exec main.cpp)
 
@@ -48,7 +46,7 @@ target_compile_options(test_exec PRIVATE
 
 target_link_libraries(test_exec
 ${CMAKE_DL_LIBS}
-"libtbb.dylib"
+# "libtbb.dylib"
 "libginac.a"
 ${Boost_LIBRARIES})
 

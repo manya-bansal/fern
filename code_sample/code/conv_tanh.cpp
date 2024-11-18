@@ -1,43 +1,43 @@
-void my_fused_impl(const Weights<float> filter, const Weights<float> input, float* bias, Weights<float> output_tan, int64_t x_tile137, int64_t y_tile139, int64_t stride_arg122, int64_t maxpool_dim131){
-  int64_t x136 = 0;
- int64_t y138 = 0;
- int64_t x135 = x136;
- int64_t y132 = y138;
- int64_t x_tile133 = x_tile137;
- int64_t y_tile134 = y_tile139;
- int64_t x128 = x135*maxpool_dim131;
- int64_t y127 = y132*maxpool_dim131;
- int64_t x_tile129 = maxpool_dim131*x_tile133;
- int64_t y_tile130 = y_tile134*maxpool_dim131;
- int64_t x123 = x128;
- int64_t y124 = y127;
- int64_t x_tile125 = x_tile129;
- int64_t y_tile126 = y_tile130;
- Weights<float> output_conv_q = weight_alloc(x123, y124, x_tile125, y_tile126);
- Weights<float> output_relu_q = weight_alloc(x128, y127, x_tile129, y_tile130);
- Weights<float> output_q = weight_alloc(x135, y132, x_tile133, y_tile134);
- for(int64_t x136 = output_tan.W_start;x136 < output_tan.W_start + output_tan.LW; x136+=x_tile137){
-  for(int64_t y138 = output_tan.H_start;y138 < output_tan.H_start + output_tan.LH; y138+=y_tile139){
-      int64_t x135 = x136;
-   int64_t y132 = y138;
-   int64_t x_tile133 = x_tile137;
-   int64_t y_tile134 = y_tile139;
-   int64_t x128 = x135*maxpool_dim131;
-   int64_t y127 = y132*maxpool_dim131;
-   int64_t x_tile129 = maxpool_dim131*x_tile133;
-   int64_t y_tile130 = y_tile134*maxpool_dim131;
-   int64_t x123 = x128;
-   int64_t y124 = y127;
-   int64_t x_tile125 = x_tile129;
-   int64_t y_tile126 = y_tile130;
-   Weights<float> input_q28 = input.query_materialize(x123 * stride_arg122, y124 * stride_arg122, x_tile125 + filter.H - 1, y_tile126 + filter.W - 1);
-   Weights<float> output_tan_q = output_tan.query_materialize(x136, y138, x_tile137, y_tile139);
-      conv_no_fern_mkl(input_q28, filter, bias, stride_arg122, output_conv_q);
+void my_fused_impl(const Weights<float> filter, const Weights<float> input, float* bias, Weights<float> output_tan, int64_t stride_arg142, int64_t maxpool_dim151, int64_t x_tile157, int64_t y_tile159){
+  int64_t x158 = 0;
+ int64_t y156 = 0;
+ int64_t x153 = x158;
+ int64_t y154 = y156;
+ int64_t x_tile152 = x_tile157;
+ int64_t y_tile155 = y_tile159;
+ int64_t x150 = x153*maxpool_dim151;
+ int64_t y149 = maxpool_dim151*y154;
+ int64_t x_tile147 = maxpool_dim151*x_tile152;
+ int64_t y_tile148 = maxpool_dim151*y_tile155;
+ int64_t x143 = x150;
+ int64_t y144 = y149;
+ int64_t x_tile145 = x_tile147;
+ int64_t y_tile146 = y_tile148;
+ Weights<float> output_conv_q = weight_alloc(x143, y144, x_tile145, y_tile146);
+ Weights<float> output_relu_q = weight_alloc(x150, y149, x_tile147, y_tile148);
+ Weights<float> output_q = weight_alloc(x153, y154, x_tile152, y_tile155);
+ for(int64_t x158 = output_tan.W_start;x158 < output_tan.W_start + output_tan.LW; x158+=x_tile157){
+  for(int64_t y156 = output_tan.H_start;y156 < output_tan.H_start + output_tan.LH; y156+=y_tile159){
+      int64_t x153 = x158;
+   int64_t y154 = y156;
+   int64_t x_tile152 = x_tile157;
+   int64_t y_tile155 = y_tile159;
+   int64_t x150 = x153*maxpool_dim151;
+   int64_t y149 = maxpool_dim151*y154;
+   int64_t x_tile147 = maxpool_dim151*x_tile152;
+   int64_t y_tile148 = maxpool_dim151*y_tile155;
+   int64_t x143 = x150;
+   int64_t y144 = y149;
+   int64_t x_tile145 = x_tile147;
+   int64_t y_tile146 = y_tile148;
+   Weights<float> input_q34 = input.query_materialize(x143 * stride_arg142, y144 * stride_arg142, x_tile145 + filter.H - 1, y_tile146 + filter.W - 1);
+   Weights<float> output_tan_q = output_tan.query_materialize(x158, y156, x_tile157, y_tile159);
+      conv_no_fern_mkl(input_q34, filter, bias, stride_arg142, output_conv_q);
       relu_material(output_conv_q, output_relu_q);
-      maxpool(output_relu_q, maxpool_dim131, output_q);
+      maxpool(output_relu_q, maxpool_dim151, output_q);
       tanh(output_q, output_tan_q);
-      output_tan.insert_materialize(x136, y138, x_tile137, y_tile139, output_tan_q);
-      input_q28.free_weight();
+      output_tan.insert_materialize(x158, y156, x_tile157, y_tile159, output_tan_q);
+      input_q34.free_weight();
 }
 }
 

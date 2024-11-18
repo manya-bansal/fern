@@ -1,28 +1,28 @@
-void my_fused_impl(const Array<float> a, Array<float> c, int64_t len228, int64_t len230){
-  int64_t x229 = 0;
- int64_t x227 = x229;
- int64_t len226 = len228;
- int64_t x225 = x227;
- int64_t len224 = len226;
- Array<float> out_a_q = array_alloc<float>(x225, len224);
- Array<float> b_q = array_alloc<float>(x227, len226);
- for(int64_t x229 = c.idx;x229 < c.idx + c.size; x229+=len228){
-    int64_t x227 = x229;
-  int64_t len226 = len228;
-  int64_t x225 = x227;
-  int64_t len224 = len226;
-  Array<float> a_q43 = a.array_query_no_materialize(x225, len224);
-  Array<float> c_q = c.array_query_no_materialize(x229, len228);
-    ispc::addi_ispc(a_q43.data, 0, len224, out_a_q.data);
-    int64_t x231 = 0;
-  for(int64_t x231 = b_q.idx;x231 < b_q.idx + b_q.size; x231+=len230){
-      Array<float> b_q_q = b_q.array_query_no_materialize(x231, len230);
-   Array<float> out_a_q44 = out_a.array_query_no_materialize(x231, len230);
-      ispc::addi_ispc(out_a_q44.data, 0, len230, b_q_q);
+void my_fused_impl(const Array<float> a, Array<float> c, int64_t len258, int64_t len260){
+  int64_t x259 = 0;
+ int64_t x257 = x259;
+ int64_t len256 = len258;
+ int64_t x255 = x257;
+ int64_t len254 = len256;
+ Array<float> out_a_q = array_alloc<float>(x255, len254);
+ Array<float> b_q = array_alloc<float>(x257, len256);
+ for(int64_t x259 = c.idx;x259 < c.idx + c.size; x259+=len258){
+    int64_t x257 = x259;
+  int64_t len256 = len258;
+  int64_t x255 = x257;
+  int64_t len254 = len256;
+  Array<float> a_q54 = a.array_query_no_materialize(x255, len254);
+  Array<float> c_q = c.array_query_no_materialize(x259, len258);
+    ispc::addi_ispc(a_q54.data, 0.000000f, len254, out_a_q.data);
+    int64_t x261 = 0;
+  for(int64_t x261 = b_q.idx;x261 < b_q.idx + b_q.size; x261+=len260){
+      Array<float> b_q_q = b_q.array_query_no_materialize(x261, len260);
+   Array<float> out_a_q55 = out_a.array_query_no_materialize(x261, len260);
+      ispc::addi_ispc(out_a_q55.data, 0.000000f, len260, b_q_q);
 }
 
 
-    ispc::addi_ispc(b_q.data, 0, len228, c_q.data);
+    ispc::addi_ispc(b_q.data, 0.000000f, len258, c_q.data);
 }
 
   out_a_q.destroy();

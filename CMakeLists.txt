@@ -20,6 +20,10 @@ ADD_SUBDIRECTORY (googletest)
 enable_testing()
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
+# ADD_SUBDIRECTORY (benchmark)
+
+link_directories(/opt/homebrew/lib)
+
 add_executable(test_exec main.cpp)
 
 # Add compiler flags for the test executable

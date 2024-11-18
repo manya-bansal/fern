@@ -105,8 +105,10 @@ public:
   }
 
   std::vector<fern::Argument> getArguments() override {
-    return {new fern::DataStructureArg(fern::DataStructurePtr(&input)),
-            new fern::DataStructureArg(fern::DataStructurePtr(&output))};
+    return {
+      fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&input))),
+      fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&output))),
+    };
   }
 
   DbArray input;

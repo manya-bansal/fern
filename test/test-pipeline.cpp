@@ -136,7 +136,6 @@ TEST(Eval, StackedFusedConvMax) {
 
   pipeline.constructPipeline();
   pipeline = pipeline.finalize();
-  // std::cout << pipeline << std::endl;
 
   util::printToFile(pipeline, std::string(SOURCE_DIR) + "/code_sample" +
                                   "/stacked_conv_max.ir");
@@ -281,9 +280,10 @@ TEST(Eval, DBProcessing) {
 
   Pipeline pipeline({sigmoidProcessing(&input, &output)});
 
+  std::cout << "Where?" << std::endl;
+  
   pipeline.constructPipeline();
   pipeline = pipeline.finalize();
-  // std::cout << pipeline << std::endl;
 
   util::printToFile(pipeline, std::string(SOURCE_DIR) + "/code_sample" +
                                   "/db_processing.ir");
@@ -658,6 +658,7 @@ TEST(Eval, ReuseHaversine) {
   pipeline.constructPipeline();
   pipeline.runAutomaticIntermediateReuse();
   pipeline = pipeline.finalize();
+
 
   util::printToFile(pipeline, std::string(SOURCE_DIR) + "/code_sample" +
                                   "/reuse_haversine.ir");

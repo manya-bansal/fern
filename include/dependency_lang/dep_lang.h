@@ -4,6 +4,7 @@
 #include <cassert>
 #include <set>
 
+
 #include "dependency_lang/data-structure-interface.h"
 #include "dependency_lang/dep_lang_nodes_abstract.h"
 #include "utils/instrusive_ptr.h"
@@ -279,6 +280,13 @@ inline void addArg(std::vector<Argument> &argument, std::string str) {
   argument.push_back(new StringArg(str));
 }
 
+inline void addArg(std::vector<Argument> &argument, DependencyExpr e) {
+  auto sym = e.getSymbols();
+  FERN_ASSERT(sym.size() == 1, "Only one variable allowed!");
+  argument.push_back(new VariableArg((*(sym.begin()))));
+}
+
+
 inline void addArguments(std::vector<Argument> &arg) {
   // do nothing
   (void)arg;
@@ -345,9 +353,7 @@ public:
 
   template <typename Exprs> ConcreteFunctionCall operator()(Exprs expr) {
     std::vector<Argument> args;
-    std::cout << "here" << std::endl;
     addArguments(args, expr);
-    std::cout << "here 2" << std::endl;
     return ConcreteFunctionCall(getName(), args, this->getDataRelationship(),
                                 this->getArguments());
   }

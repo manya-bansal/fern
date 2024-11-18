@@ -93,10 +93,10 @@ TEST(Eval, ConvMax) {
   Variable maxpool_dim("maxpool_dim", true);
 
   Pipeline pipeline({
-      convolution_mkl(&input, &filter, &bias, getNode(stride_arg),
+      convolution_mkl(&input, &filter, &bias, stride_arg,
                       &output_conv),
       relu_material(&output_conv, &output_relu),
-      maxpool(&output_relu, getNode(maxpool_dim), &output),
+      maxpool(&output_relu, maxpool_dim, &output),
   });
 
   pipeline.constructPipeline();
@@ -126,12 +126,12 @@ TEST(Eval, StackedFusedConvMax) {
   Variable maxpool_dim("maxpool_dim", true);
 
   Pipeline pipeline({
-      convolution_mkl_fused(&input, &filter, &bias, getNode(stride_arg),
+      convolution_mkl_fused(&input, &filter, &bias, stride_arg,
                             &output_conv1),
-      maxpool(&output_conv1, getNode(maxpool_dim), &output_max1),
-      convolution_mkl_fused(&output_max1, &filter, &bias, getNode(stride_arg),
+      maxpool(&output_conv1, maxpool_dim, &output_max1),
+      convolution_mkl_fused(&output_max1, &filter, &bias, stride_arg,
                             &output_conv2),
-      maxpool(&output_conv2, getNode(maxpool_dim), &output),
+      maxpool(&output_conv2, maxpool_dim, &output),
   });
 
   pipeline.constructPipeline();
@@ -252,12 +252,12 @@ TEST(Eval, FusedConvMaxTanh) {
 
   Variable stride_arg("stride_arg", true);
   Variable maxpool_dim("maxpool_dim", true);
-
+ 
   Pipeline pipeline({
-      convolution_mkl(&input, &filter, &bias, getNode(stride_arg),
+      convolution_mkl(&input, &filter, &bias, stride_arg,
                       &output_conv),
       relu_material(&output_conv, &output_relu),
-      maxpool(&output_relu, getNode(maxpool_dim), &output),
+      maxpool(&output_relu, maxpool_dim, &output),
       tanh(&output, &output_tan),
   });
 
@@ -342,43 +342,43 @@ TEST(Eval, Haversine) {
   examples::muli_ispc_8 muli_ispc_8;
 
   Pipeline pipeline({
-      subi_ispc(DataStructureArg(&lat2, "data"), lat1, getNode(arg_len),
+      subi_ispc(DataStructureArg(&lat2, "data"), lat1, arg_len,
                 DataStructureArg(&dlat, "data")),
-      subi_ispc(DataStructureArg(&lon2, "data"), lon1, getNode(arg_len),
+      subi_ispc(DataStructureArg(&lon2, "data"), lon1, arg_len,
                 DataStructureArg(&dlon, "data")),
-      divi_ispc(DataStructureArg(&dlat, "data"), 2.0f, getNode(arg_len),
+      divi_ispc(DataStructureArg(&dlat, "data"), 2.0f, arg_len,
                 DataStructureArg(&dlat2, "data")),
-      sin_ispc(DataStructureArg(&dlat2, "data"), getNode(arg_len),
+      sin_ispc(DataStructureArg(&dlat2, "data"), arg_len,
                DataStructureArg(&dlat3, "data")),
-      sin_ispc(DataStructureArg(&dlat3, "data"), getNode(arg_len),
+      sin_ispc(DataStructureArg(&dlat3, "data"), arg_len,
                DataStructureArg(&dlat4, "data")),
       mul_ispc(DataStructureArg(&dlat4, "data"),
-               DataStructureArg(&dlat4, "data"), getNode(arg_len),
+               DataStructureArg(&dlat4, "data"), arg_len,
                DataStructureArg(&dlat5, "data")),
-      cos_ispc(DataStructureArg(&dlat5, "data"), getNode(arg_len),
+      cos_ispc(DataStructureArg(&dlat5, "data"), arg_len,
                DataStructureArg(&dlat6, "data")),
-      muli_ispc(DataStructureArg(&dlat6, "data"), lat1_cos, getNode(arg_len),
+      muli_ispc(DataStructureArg(&dlat6, "data"), lat1_cos, arg_len,
                 DataStructureArg(&dlat7, "data")),
-      divi_ispc(DataStructureArg(&dlon, "data"), 2.0f, getNode(arg_len),
+      divi_ispc(DataStructureArg(&dlon, "data"), 2.0f, arg_len,
                 DataStructureArg(&dlon2, "data")),
-      sin_ispc(DataStructureArg(&dlon2, "data"), getNode(arg_len),
+      sin_ispc(DataStructureArg(&dlon2, "data"), arg_len,
                DataStructureArg(&dlon3, "data")),
       mul_ispc(DataStructureArg(&dlon3, "data"),
-               DataStructureArg(&dlon3, "data"), getNode(arg_len),
+               DataStructureArg(&dlon3, "data"), arg_len,
                DataStructureArg(&dlon4, "data")),
       mul_ispc(DataStructureArg(&a, "data"), DataStructureArg(&dlon4, "data"),
-               getNode(arg_len), DataStructureArg(&a2, "data")),
+               arg_len, DataStructureArg(&a2, "data")),
       add_ispc(DataStructureArg(&a2, "data"), DataStructureArg(&dlat7, "data"),
-               getNode(arg_len), DataStructureArg(&a3, "data")),
-      sqrt_ispc(DataStructureArg(&a3, "data"), getNode(arg_len),
+               arg_len, DataStructureArg(&a3, "data")),
+      sqrt_ispc(DataStructureArg(&a3, "data"), arg_len,
                 DataStructureArg(&a4, "data")),
-      asin_ispc(DataStructureArg(&a4, "data"), getNode(arg_len),
+      asin_ispc(DataStructureArg(&a4, "data"), arg_len,
                 DataStructureArg(&a5, "data")),
-      muli_ispc(DataStructureArg(&a5, "data"), 2.0f, getNode(arg_len),
+      muli_ispc(DataStructureArg(&a5, "data"), 2.0f, arg_len,
                 DataStructureArg(&a6, "data")),
       // muli_ispc(DataStructureArg(&a6, "data"), MILES_CONST, (int64_t)8,
       //           DataStructureArg(&a7, "data")),
-      muli_ispc(DataStructureArg(&a6, "data"), MILES_CONST, getNode(arg_len),
+      muli_ispc(DataStructureArg(&a6, "data"), MILES_CONST, arg_len,
                 DataStructureArg(&a, "data")),
   });
 
@@ -432,18 +432,18 @@ TEST(Eval, WorstCase) {
   examples::add_ispc add_ispc;
 
   Pipeline pipeline({
-      addi_ispc(DataStructureArg(&c, "data"), 0.0f, getNode(len),
+      addi_ispc(DataStructureArg(&c, "data"), 0.0f, len,
                 DataStructureArg(&add_1, "data")),
       add_ispc(DataStructureArg(&a, "data"), DataStructureArg(&add_1, "data"),
-               getNode(len), DataStructureArg(&add_2, "data")),
+               len, DataStructureArg(&add_2, "data")),
       add_ispc(DataStructureArg(&b, "data"), DataStructureArg(&add_2, "data"),
-               getNode(len), DataStructureArg(&add_3, "data")),
+               len, DataStructureArg(&add_3, "data")),
       add_ispc(DataStructureArg(&b, "data"), DataStructureArg(&add_3, "data"),
-               getNode(len), DataStructureArg(&add_4, "data")),
+               len, DataStructureArg(&add_4, "data")),
       add_ispc(DataStructureArg(&a, "data"), DataStructureArg(&add_4, "data"),
-               getNode(len), DataStructureArg(&add_5, "data")),
+               len, DataStructureArg(&add_5, "data")),
       add_ispc(DataStructureArg(&c, "data"), DataStructureArg(&add_6, "data"),
-               getNode(len), DataStructureArg(&add_7, "data")),
+               len, DataStructureArg(&add_7, "data")),
   });
 
   std::map<const AbstractDataStructure *, const AbstractDataStructure *>
@@ -517,43 +517,43 @@ TEST(Eval, ReuseHaversine) {
   examples::muli_ispc_8 muli_ispc_8;
 
   Pipeline pipeline({
-      subi_ispc(DataStructureArg(&lat2, "data"), lat1, getNode(arg_len),
+      subi_ispc(DataStructureArg(&lat2, "data"), lat1, arg_len,
                 DataStructureArg(&dlat, "data")),
-      subi_ispc(DataStructureArg(&lon2, "data"), lon1, getNode(arg_len),
+      subi_ispc(DataStructureArg(&lon2, "data"), lon1, arg_len,
                 DataStructureArg(&dlon, "data")),
-      divi_ispc(DataStructureArg(&dlat, "data"), 2.0f, getNode(arg_len),
+      divi_ispc(DataStructureArg(&dlat, "data"), 2.0f, arg_len,
                 DataStructureArg(&dlat2, "data")),
-      sin_ispc(DataStructureArg(&dlat2, "data"), getNode(arg_len),
+      sin_ispc(DataStructureArg(&dlat2, "data"), arg_len,
                DataStructureArg(&dlat3, "data")),
-      sin_ispc(DataStructureArg(&dlat3, "data"), getNode(arg_len),
+      sin_ispc(DataStructureArg(&dlat3, "data"), arg_len,
                DataStructureArg(&dlat4, "data")),
       mul_ispc(DataStructureArg(&dlat4, "data"),
-               DataStructureArg(&dlat4, "data"), getNode(arg_len),
+               DataStructureArg(&dlat4, "data"), arg_len,
                DataStructureArg(&dlat5, "data")),
-      cos_ispc(DataStructureArg(&dlat5, "data"), getNode(arg_len),
+      cos_ispc(DataStructureArg(&dlat5, "data"), arg_len,
                DataStructureArg(&dlat6, "data")),
-      muli_ispc(DataStructureArg(&dlat6, "data"), lat1_cos, getNode(arg_len),
+      muli_ispc(DataStructureArg(&dlat6, "data"), lat1_cos, arg_len,
                 DataStructureArg(&dlat7, "data")),
-      divi_ispc(DataStructureArg(&dlon, "data"), 2.0f, getNode(arg_len),
+      divi_ispc(DataStructureArg(&dlon, "data"), 2.0f, arg_len,
                 DataStructureArg(&dlon2, "data")),
-      sin_ispc(DataStructureArg(&dlon2, "data"), getNode(arg_len),
+      sin_ispc(DataStructureArg(&dlon2, "data"), arg_len,
                DataStructureArg(&dlon3, "data")),
       mul_ispc(DataStructureArg(&dlon3, "data"),
-               DataStructureArg(&dlon3, "data"), getNode(arg_len),
+               DataStructureArg(&dlon3, "data"), arg_len,
                DataStructureArg(&dlon4, "data")),
       mul_ispc(DataStructureArg(&a, "data"), DataStructureArg(&dlon4, "data"),
-               getNode(arg_len), DataStructureArg(&a2, "data")),
+               arg_len, DataStructureArg(&a2, "data")),
       add_ispc(DataStructureArg(&a2, "data"), DataStructureArg(&dlat7, "data"),
-               getNode(arg_len), DataStructureArg(&a3, "data")),
-      sqrt_ispc(DataStructureArg(&a3, "data"), getNode(arg_len),
+               arg_len, DataStructureArg(&a3, "data")),
+      sqrt_ispc(DataStructureArg(&a3, "data"), arg_len,
                 DataStructureArg(&a4, "data")),
-      asin_ispc(DataStructureArg(&a4, "data"), getNode(arg_len),
+      asin_ispc(DataStructureArg(&a4, "data"), arg_len,
                 DataStructureArg(&a5, "data")),
-      muli_ispc(DataStructureArg(&a5, "data"), 2.0f, getNode(arg_len),
+      muli_ispc(DataStructureArg(&a5, "data"), 2.0f, arg_len,
                 DataStructureArg(&a6, "data")),
       // muli_ispc(DataStructureArg(&a6, "data"), MILES_CONST, (int64_t)8,
       //           DataStructureArg(&a7, "data")),
-      muli_ispc(DataStructureArg(&a6, "data"), MILES_CONST, getNode(arg_len),
+      muli_ispc(DataStructureArg(&a6, "data"), MILES_CONST, arg_len,
                 DataStructureArg(&a, "data")),
   });
 

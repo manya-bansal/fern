@@ -1,12 +1,12 @@
-x143 = 0
-y140 = 0
+x160 = 0
+y161 = 0
 	{
-x143 in (0, output.logical_rows, x_tile141)
-y140 in (0, output.logical_cols, y_tile142)
-	output_q = output.query(x143 , y140 , x_tile141 , y_tile142 , )
-	input_q29 = input.query(x143 , y140 , x_tile141 , y_tile142 , )
-	sigmoid_processing(output : output_q, input : input_q29, )
-	input_q29.free()
+x160 in (0, output.logical_rows, x_tile162)
+y161 in (0, output.logical_cols, y_tile163)
+	output_q = output.query(x160 , y161 , x_tile162 , y_tile163 , )
+	input_q35 = input.query(x160 , y161 , x_tile162 , y_tile163 , )
+	sigmoid_processing(output : output_q, input : input_q35, )
+	input_q35.free()
 
 }
 

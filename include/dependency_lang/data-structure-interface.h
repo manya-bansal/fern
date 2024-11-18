@@ -237,7 +237,7 @@ struct LiteralArg : public Args {
       std::cerr << "Not supported" << std::endl;
       break;
     case Datatype::Float32:
-      os << this->getVal<float>();
+      os << std::fixed << this->getVal<float>() << 'f';
       break;
     case Datatype::Float64:
       os << this->getVal<double>();

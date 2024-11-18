@@ -280,9 +280,10 @@ TEST(Eval, DBProcessing) {
 
   Pipeline pipeline({sigmoidProcessing(&input, &output)});
 
+  std::cout << "Where?" << std::endl;
+  
   pipeline.constructPipeline();
   pipeline = pipeline.finalize();
-  // std::cout << pipeline << std::endl;
 
   util::printToFile(pipeline, std::string(SOURCE_DIR) + "/code_sample" +
                                   "/db_processing.ir");

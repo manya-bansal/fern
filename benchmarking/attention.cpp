@@ -25,8 +25,8 @@ inline __attribute__((always_inline)) void my_fused_impl(const Tensor<float> l_k
  int64_t j_len6 = j_len16;
  Tensor<float> t_q = Tensor<float>(i4, j7, i_len5, j_len6);
  Tensor<float> matmul_q = Tensor<float>(i13, j14, i_len15, j_len16);
- Tensor<float> truediv_q = Tensor<float>(i22, j23, i_len24, j_len25);
- Tensor<float> softmax_q = Tensor<float>(i29, 0, i_len30, width31);
+//  Tensor<float> truediv_q = Tensor<float>(i22, j23, i_len24, j_len25);
+//  Tensor<float> softmax_q = Tensor<float>(i29, 0, i_len30, width31);
  for(int64_t j38 = 0;j38 < matmul_1.width; j38+=j_len40){
   for(int64_t i37 = 0;i37 < matmul_1.height; i37+=i_len39){
       int64_t i29 = i37;
@@ -50,9 +50,9 @@ inline __attribute__((always_inline)) void my_fused_impl(const Tensor<float> l_k
    Tensor<float> l_v__q3 = l_v_.matrix_query(0, j38, shared_len41, j_len40);
       transpose(l_k__q5, t_q);
       matmul(l_q__q4, t_q, matmul_q);
-      divn(matmul_q, _sym_sqrt, truediv_q);
-      softmax(truediv_q, softmax_q);
-      matmul(softmax_q, l_v__q3, matmul_1_q);
+      divn(matmul_q, _sym_sqrt, matmul_q);
+      softmax(matmul_q, matmul_q);
+      matmul(matmul_q, l_v__q3, matmul_1_q);
       matmul_1.matrix_insert(i37, j38, i_len39, j_len40, matmul_1_q);
 }
 }
@@ -76,22 +76,22 @@ inline __attribute__((always_inline)) void attn_unfused(const Tensor<float> q, c
 
 
 const float EPSILON = 1e-5;
-#define NUM_TRIALS 25
-#define TRIALS_COUNTED 20
+#define NUM_TRIALS 50
+#define TRIALS_COUNTED 40
 
 int main()
 {
 	ofstream naive_output("./attention_data/hand");
 	ofstream fused_output("./attention_data/fused");
 
-	int nk = 4096;
-	int dk = 200;
+	int nk = 2048;
+	int dk = 256;
 
-	for (int tile_sz = 16; tile_sz <= nk; tile_sz *= 2) {
+	for (int tile_sz = 32; tile_sz <= 640; tile_sz += 64) {
 		int naive_sum = 0;
 		int fused_sum = 0;
 		for (int trial = 0; trial < NUM_TRIALS; trial++) {
-			cout << trial << endl;
+			// cout << trial << endl;
 			Tensor<float> q = Tensor<float>(0, 0, nk, dk);
 			Tensor<float> k = Tensor<float>(0, 0, nk, dk);
 			Tensor<float> v = Tensor<float>(0, 0, nk, dk);
@@ -104,7 +104,7 @@ int main()
 			attn_unfused(q, k, v, sqrt(q.width), out);
 			auto t2 = chrono::high_resolution_clock::now();
 			auto ms = chrono::duration_cast<chrono::milliseconds>(t2 - t1);
-			// cout << "naive time: " << ms.count() << endl;
+			cout << "naive time: " << ms.count() << " ";
 			if (trial >= NUM_TRIALS - TRIALS_COUNTED) {
 				naive_sum += ms.count();
 			}
@@ -115,7 +115,7 @@ int main()
 			my_fused_impl(k, q, v, sqrt(q.width), fused_out, q.width, q.width, tile_sz, v.height);
 			t2 = chrono::high_resolution_clock::now();
 			ms = chrono::duration_cast<chrono::milliseconds>(t2 - t1);
-			// cout << "fused time: " << ms.count() << endl;
+			cout << "fused time: " << ms.count() << endl;
 			if (trial >= NUM_TRIALS - TRIALS_COUNTED) {
 				fused_sum += ms.count();
 			}

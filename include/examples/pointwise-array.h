@@ -50,6 +50,279 @@ private:
   std::string name;
 };
 
+template <typename T> class Matrix : public fern::AbstractDataStructure {
+public:
+  Matrix() : name(fern::util::uniqueName("var")) {}
+  Matrix(const std::string &name) : name(name) {}
+
+  std::string getTypeName() const override { return "Tensor<float>"; }
+
+  std::vector<std::string> getMetaData() const override {
+    return {"H_idx", "W_idx", "H_len", "W_len"};
+  }
+
+  bool insertQueried() const override { return true; }
+
+  std::string getDataQueryInterface() const override { return {"matrix_query"}; }
+
+  std::string getDataInsertInterface() const override {
+    return {"matrix_insert"};
+  }
+
+  std::string getAllocData() const override { return {"Tensor<float>"}; };
+
+  std::string getVarName() const override { return name; }
+
+  bool isTranslationInvariant(int index) const override {
+    if (index < 2) {
+      return true;
+    }
+    return false;
+  }
+
+private:
+  std::string name;
+};
+
+class Float : public fern::DummyDataStructure {
+public:
+  Float(const std::string &name) : name(name) {}
+
+  std::string getTypeName() const { return "float"; }
+
+  std::string getVarName() const { return name; }
+
+  void setRef(bool r) { ref = r; }
+
+  void setConst(bool c) { is_const = c; }
+
+  int numRef() const { return ref; }
+
+  bool isConst() const { return is_const; }
+
+private:
+  std::string name;
+  int ref = 0;
+  bool is_const = false;
+};
+
+class mmul : public fern::AbstractFunctionCall {
+public:
+  mmul()
+      : a(examples::Matrix<float>("a")), b(examples::Matrix<float>("b")),
+        out(examples::Matrix<float>("out")) {};
+
+  std::string getName() const override { return "matmul"; }
+
+  fern::DependencySubset getDataRelationship() const override {
+    // PARALLELIZE PRODUCTION BY X
+    // this only shows up in the case that this is the last function
+    fern::Variable i("i", false, false, false);
+    fern::Variable j("j", false, false, false);
+    fern::Variable i_len("i_len", false, false, false);
+    fern::Variable j_len("j_len", false, false, false);
+	fern::Variable shared_len("shared_len", false, false, false);
+    fern::Interval i_loop(i, 0, out["height"], i_len);
+    fern::Interval j_loop(j, 0, out["width"], j_len);
+    fern::DataStructure block_out("out", &out);
+    fern::DataStructure block_a("a", &a);
+    fern::DataStructure block_b("b", &b);
+	return j_loop(
+		i_loop(
+			fern::ComputationAnnotation(
+				fern::Producer(block_out(i, j, i_len, j_len)),
+				fern::Consumer({
+					block_a(i, 0, i_len, shared_len),
+					block_b(0, j, shared_len, j_len)
+				})
+			)
+		)
+	);
+  }
+
+  std::vector<fern::Argument> getArguments() override {
+     return {fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&a))),
+            fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&b))),
+            fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&out)))};
+  }
+
+  examples::Matrix<float> a;
+  examples::Matrix<float> b;
+  examples::Matrix<float> out;
+};
+
+class transpose : public fern::AbstractFunctionCall {
+public:
+  transpose()
+      : a(examples::Matrix<float>("a")),
+        out(examples::Matrix<float>("out")) {};
+
+  std::string getName() const override { return "transpose"; }
+
+  fern::DependencySubset getDataRelationship() const override {
+    // PARALLELIZE PRODUCTION BY X
+    // this only shows up in the case that this is the last function
+    fern::Variable i("i", false, false, false);
+    fern::Variable j("j", false, false, false);
+    fern::Variable i_len("i_len", false, false, false);
+    fern::Variable j_len("j_len", false, false, false);
+    fern::Interval i_loop(i, 0, out["height"], i_len);
+    fern::Interval j_loop(j, 0, out["width"], j_len);
+    fern::DataStructure block_out("out", &out);
+    fern::DataStructure block_a("a", &a);
+	return j_loop(
+		i_loop(
+			fern::ComputationAnnotation(
+				fern::Producer(block_out(i, j, i_len, j_len)),
+				fern::Consumer({
+					block_a(j, i, j_len, i_len),
+				})
+			)
+		)
+	);
+  }
+
+  std::vector<fern::Argument> getArguments() override {
+     return {fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&a))),
+            fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&out)))};
+  }
+
+  examples::Matrix<float> a;
+  examples::Matrix<float> out;
+};
+
+class divn : public fern::AbstractFunctionCall {
+public:
+  divn()
+      : a(examples::Matrix<float>("a")),
+	  	n(examples::Float("n")),
+        out(examples::Matrix<float>("out")) {};
+
+  std::string getName() const override { return "divn"; }
+
+  fern::DependencySubset getDataRelationship() const override {
+    // PARALLELIZE PRODUCTION BY X
+    // this only shows up in the case that this is the last function
+    fern::Variable i("i", false, false, false);
+    fern::Variable j("j", false, false, false);
+    fern::Variable i_len("i_len", false, false, false);
+    fern::Variable j_len("j_len", false, false, false);
+    fern::Interval i_loop(i, 0, out["height"], i_len);
+    fern::Interval j_loop(j, 0, out["width"], j_len);
+    fern::DataStructure block_out("out", &out);
+    fern::DataStructure block_a("a", &a);
+	return j_loop(
+		i_loop(
+			fern::ComputationAnnotation(
+				fern::Producer(block_out(i, j, i_len, j_len)),
+				fern::Consumer({
+					block_a(i, j, i_len, j_len),
+				})
+			)
+		)
+	);
+  }
+
+  std::vector<fern::Argument> getArguments() override {
+     return {fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&a))),
+	        // fern::Argument(std::make_shared<fern::LiteralArg>(fern::Datatype::Float32, 0.0f)),
+	 		fern::Argument(std::make_shared<fern::DummyDataStructureArg>(fern::DummyDataStructurePtr(&n))),
+            fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&out)))};
+  }
+
+  examples::Matrix<float> a;
+  Float n;
+  examples::Matrix<float> out;
+};
+
+class softmax : public fern::AbstractFunctionCall {
+public:
+  softmax()
+      : a(examples::Matrix<float>("a")),
+        out(examples::Matrix<float>("out")) {};
+
+  std::string getName() const override { return "softmax"; }
+
+  fern::DependencySubset getDataRelationship() const override {
+    // PARALLELIZE PRODUCTION BY X
+    // this only shows up in the case that this is the last function
+    fern::Variable i("i", false, false, false);
+    fern::Variable i_len("i_len", false, false, false);
+	fern::Variable width("width", false, false, false);
+    fern::Interval i_loop(i, 0, out["height"], i_len);
+    fern::DataStructure block_out("out", &out);
+    fern::DataStructure block_a("a", &a);
+	return i_loop(
+		fern::ComputationAnnotation(
+			fern::Producer(block_out(i, 0, i_len, width)),
+			fern::Consumer({
+				block_a(i, 0, i_len, width),
+			})
+		)
+	);
+  }
+
+  std::vector<fern::Argument> getArguments() override {
+     return {fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&a))),
+            fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&out)))};
+  }
+
+  examples::Matrix<float> a;
+  examples::Matrix<float> out;
+};
+
+class attention : public fern::AbstractFunctionCall {
+public:
+  attention()
+      : q(examples::Matrix<float>("q")), k(examples::Matrix<float>("k")),
+        v(examples::Matrix<float>("v")), out(examples::Matrix<float>("out")) {};
+
+  std::string getName() const override { return "q_kt_v"; }
+
+  fern::DependencySubset getDataRelationship() const override {
+    // PARALLELIZE PRODUCTION BY X
+    // this only shows up in the case that this is the last function
+    fern::Variable i("i", false, false, false);
+    fern::Variable j("j", false, false, false);
+    fern::Variable i_len("i_len", false, false, false);
+    fern::Variable j_len("j_len", false, false, false);
+    fern::Interval i_loop(i, 0, out["height"], i_len);
+    fern::Interval j_loop(j, 0, out["width"], j_len);
+    fern::DataStructure block_out("out", &out);
+    fern::DataStructure block_q("q", &q);
+    fern::DataStructure block_k("k", &k);
+    fern::DataStructure block_v("v", &v);
+	return j_loop(
+		i_loop(
+			fern::ComputationAnnotation(
+				fern::Producer(block_out(i, j, i_len, j_len)),
+				fern::Consumer({
+                    block_q(i, 0, i_len, dim2),
+                    block_k(0, 0, dim1, dim2),
+                    block_v(0, j, dim2, j_len)
+				})
+			)
+		)
+	);
+  }
+
+  std::vector<fern::Argument> getArguments() override {
+     return {fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&q))),
+            fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&k))),
+            fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&v))),
+            fern::Argument(std::make_shared< fern::VariableArg>(fern::getNode(dim1))),
+            fern::Argument(std::make_shared< fern::VariableArg>(fern::getNode(dim2))),
+            fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&out)))};
+  }
+
+  examples::Matrix<float> q;
+  examples::Matrix<float> k;
+  examples::Matrix<float> v;
+  fern::Variable dim1;
+  fern::Variable dim2;
+  examples::Matrix<float> out;
+};
+
 class vadd : public fern::AbstractFunctionCall {
 public:
   vadd()

@@ -250,6 +250,10 @@ inline void addArg(std::vector<Argument> &argument, DummyDataStructure *ds) {
   argument.push_back(Argument(std::make_shared<DummyDataStructureArg>(ds)));
 }
 
+inline void addArg(std::vector<Argument> &argument, DummyDataStructureArg ds_arg) {
+  argument.push_back(Argument(std::make_shared<DummyDataStructureArg>(ds_arg.ds)));
+}
+
 inline void addArg(std::vector<Argument> &argument, DataStructurePtr ds) {
   argument.push_back(Argument(std::make_shared<DataStructureArg>(ds)));
 }

@@ -276,6 +276,7 @@ struct StringArg : public Args {
 // function.
 struct DataStructureArg : public Args {
   DataStructureArg(DataStructurePtr ds) : Args(DATASTRUCTURE), ds(ds) {}
+  DataStructureArg(AbstractDataStructure *ds) : Args(DATASTRUCTURE), ds(ds) {}
   DataStructureArg(DataStructurePtr ds, std::string metaData)
       : Args(DATASTRUCTURE), ds(ds), metaData(metaData), meta(true) {
     // std::cout << meta << "here" << std::endl;

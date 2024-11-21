@@ -1256,6 +1256,7 @@ void Pipeline::run_hoisting_pass() {
       auto p_alloc = p.getNode<AllocateNode>();
       if (hoist_able(p_alloc)) {
         // Add to hoisted
+		std::cout << "hoistable" << std::endl;
         to_be_hoisted.insert(p_alloc->ds);
       }
     }
@@ -1752,15 +1753,6 @@ void Pipeline::constructMergedPipeline() {
 
 #include "examples/pointwise-array.h"
 #include "examples/py-pointwise-array.h"
-// PYBIND11_DECLARE_HOLDER_TYPE(T, fern::util::IntrusivePtr<T>, true);
-
-fern::ConcreteFunctionCall getConcreteFuncCall() {
-	examples::Array<float> * a_ptr = new examples::Array<float>("a");
-  	examples::Array<float> * out_ptr = new examples::Array<float>("out");
-	examples::addi_mock addi_mock;	
-	fern::Variable arg_len("arg_len", true);
-	return addi_mock(fern::DataStructureArg(a_ptr, "data"), 1.0f, fern::getNode(arg_len), fern::DataStructureArg(out_ptr, "data"));
-}
 
 PYBIND11_MODULE(fern_py, m) {
 	pybind11::class_<fern::Pipeline>(m, "Pipeline")
@@ -1771,7 +1763,8 @@ PYBIND11_MODULE(fern_py, m) {
 			})
 		)
 		.def("constructPipeline", &fern::Pipeline::constructPipeline)
-		.def("finalize", &fern::Pipeline::finalize);
+		.def("finalize", &fern::Pipeline::finalize)
+		.def("bind", &fern::Pipeline::bind);
 	
 	pybind11::class_<fern::codegen::CodeGenerator>(m, "CodeGenerator")
 		.def(pybind11::init<fern::Pipeline>());
@@ -1785,13 +1778,18 @@ PYBIND11_MODULE(fern_py, m) {
 
 	pybind11::class_<fern::AbstractDataStructure>(m, "AbstractDataStructure");
 	pybind11::class_<fern::DataStructurePtr>(m, "DataStructurePtr");
+	pybind11::class_<fern::DummyDataStructure>(m, "DummyDataStructure");
+	pybind11::class_<fern::DummyDataStructurePtr>(m, "DummyDataStructurePtr");
 	pybind11::class_<examples::Array<float>, fern::AbstractDataStructure>(m, "Array")
 		.def("init", [](std::string &name) { return new examples::Array<float>(name); }, pybind11::return_value_policy::reference)
 		.def("init", []() { return new examples::Array<float>(); }, pybind11::return_value_policy::reference);
 
-	pybind11::class_<examples::PyMatrix<float>, fern::AbstractDataStructure>(m, "Matrix")
+	pybind11::class_<examples::Matrix<float>, fern::AbstractDataStructure>(m, "Matrix")
 		.def("init", [](std::string &name) { return new examples::Matrix<float>(name); }, pybind11::return_value_policy::reference)
 		.def("init", []() { return new examples::Matrix<float>(); }, pybind11::return_value_policy::reference);
+	
+	pybind11::class_<examples::Float, fern::DummyDataStructure>(m, "FloatArg")
+		.def("init", [](std::string &name) { return new examples::Float(name); }, pybind11::return_value_policy::reference);
 
 	pybind11::class_<examples::PyArray<float>, fern::AbstractDataStructure>(m, "PyArray")
 		.def("init", [](std::string &name) { return new examples::PyArray<float>(name); }, pybind11::return_value_policy::reference)
@@ -1805,6 +1803,9 @@ PYBIND11_MODULE(fern_py, m) {
 	pybind11::class_<fern::DataStructureArg>(m, "DataStructureArg")
 		.def(pybind11::init<fern::AbstractDataStructure *, std::string>())
 		.def(pybind11::init<fern::AbstractDataStructure *>());
+	
+	pybind11::class_<fern::DummyDataStructureArg>(m, "DummyDataStructureArg")
+		.def(pybind11::init<fern::DummyDataStructure *>());
 	
 	pybind11::class_<fern::Variable>(m, "Variable")
 		.def(pybind11::init<const std::string &, bool>());
@@ -1846,15 +1847,35 @@ PYBIND11_MODULE(fern_py, m) {
 		return pytorchMadd(a, b, out);
 	});
 
-	m.def("torch_mmul", [](fern::DataStructureArg a, fern::DataStructureArg b, fern::Variable len_var, fern::DataStructureArg out){
+	m.def("torch_mmul", [](fern::DataStructureArg a, fern::DataStructureArg b, fern::DataStructureArg out){
 		examples::PytorchMmul pytorchMmul;
-		return pytorchMmul(a, b, fern::getNode(len_var), out);
+		return pytorchMmul(a, b, out);
 	});
 
 	// c++ functions
-	m.def("mmul", [](fern::DataStructureArg a, fern::DataStructureArg b, fern::Variable len_var, fern::DataStructureArg out){
+	m.def("mmul", [](fern::DataStructureArg a, fern::DataStructureArg b, fern::DataStructureArg out){
 		examples::mmul mmul;
-		return mmul(a, b, fern::getNode(len_var), out);
+		return mmul(a, b, out);
+	});
+
+	m.def("transpose", [](fern::DataStructureArg a, fern::DataStructureArg out){
+		examples::transpose transpose;
+		return transpose(a, out);
+	});
+
+	m.def("divn", [](fern::DataStructureArg a, fern::DummyDataStructureArg n, fern::DataStructureArg out){
+		examples::divn divn;
+		return divn(a, n, out);
+	});
+
+	m.def("softmax", [](fern::DataStructureArg a, fern::DataStructureArg out){
+		examples::softmax softmax;
+		return softmax(a, out);
+	});
+
+	m.def("attention", [](fern::DataStructureArg q, fern::DataStructureArg k, fern::DataStructureArg v, fern::Variable dim1, fern::Variable dim2, fern::DataStructureArg out){
+		examples::attention attention;
+		return attention(q, k, v, fern::getNode(dim1), fern::getNode(dim2), out);
 	});
 
 	m.def("addi_mock", [](fern::DataStructureArg a, float i, fern::Variable len_var, fern::DataStructureArg out){

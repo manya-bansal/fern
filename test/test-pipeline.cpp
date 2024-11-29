@@ -292,6 +292,86 @@ TEST(Eval, DBProcessing) {
                               "/db_processing.cpp");
 }
 
+TEST(Eval, BlackScholes) {
+    examples::Array<float> stock_price("stock_price");
+    examples::Array<float> strike_price("strike_price");
+    examples::Array<float> s_over_k("s_over_k");
+    examples::Array<float> log_res("log_res");
+
+    examples::Array<float> volatility("volatility");
+    examples::Array<float> vol_sq("vol_sq");
+    examples::Array<float> vol_sq_half("vol_sq_half");
+    examples::Array<float> vol_sq_half_plusr("vol_sq_half_plusr");
+    examples::Array<float> vol_inter("vol_inter");
+    examples::Array<float> d1_inter("d1_inter");
+    examples::Array<float> d1("d1");
+
+    examples::Array<float> vol_sqrt_T("vol_sqrt_T");
+
+    examples::Array<float> d2("d2");
+    examples::Array<float> k_scaled("k_scaled");
+
+    examples::Array<float> d1_cdf("d1_cdf");
+    examples::Array<float> d2_cdf("d2_cdf");
+
+    examples::Array<float> part1("part1");
+    examples::Array<float> part2("part2");
+
+    examples::Array<float> out("out");
+    Variable arg_len("arg_len", true);
+
+    examples::cdf_mock cdf_mock;
+    examples::log_mock log_mock;
+
+    examples::add_mock add_mock;
+    examples::sub_mock sub_mock;
+    examples::mul_mock mul_mock;
+    examples::div_mock div_mock;
+
+    examples::addi_mock addi_mock;
+    examples::subi_mock subi_mock;
+    examples::muli_mock muli_mock;
+    examples::divi_mock divi_mock;
+
+    float r = 0.01;
+    float T = 0.25;
+
+    Pipeline pipeline({
+        div_mock(DataStructureArg(&stock_price, "data"), DataStructureArg(&strike_price, "data"), getNode(arg_len), DataStructureArg(&s_over_k, "data")),
+        log_mock(DataStructureArg(&s_over_k, "data"), getNode(arg_len), DataStructureArg(&log_res, "data")),
+
+        mul_mock(DataStructureArg(&volatility, "data"), DataStructureArg(&volatility, "data"), getNode(arg_len), DataStructureArg(&vol_sq, "data")),
+        divi_mock(DataStructureArg(&vol_sq, "data"), 2.0f, getNode(arg_len), DataStructureArg(&vol_sq_half, "data")),
+        addi_mock(DataStructureArg(&vol_sq_half, "data"), r, getNode(arg_len), DataStructureArg(&vol_sq_half_plusr, "data")),
+        muli_mock(DataStructureArg(&vol_sq_half_plusr, "data"), T, getNode(arg_len), DataStructureArg(&vol_inter, "data")),
+
+        add_mock(DataStructureArg(&log_res, "data"), DataStructureArg(&vol_inter, "data"), getNode(arg_len), DataStructureArg(&d1_inter, "data")),
+
+        muli_mock(DataStructureArg(&volatility, "data"), sqrt(T), getNode(arg_len), DataStructureArg(&vol_sqrt_T, "data")),
+
+        div_mock(DataStructureArg(&d1_inter, "data"), DataStructureArg(&vol_sqrt_T, "data"), getNode(arg_len), DataStructureArg(&d1, "data")),
+
+        cdf_mock(DataStructureArg(&d1, "data"), getNode(arg_len), DataStructureArg(&d1_cdf, "data")),
+        mul_mock(DataStructureArg(&d1_cdf, "data"), DataStructureArg(&stock_price, "data"), getNode(arg_len), DataStructureArg(&part1, "data")),
+
+        sub_mock(DataStructureArg(&d1, "data"), DataStructureArg(&vol_sqrt_T, "data"), getNode(arg_len), DataStructureArg(&d2, "data")),
+        cdf_mock(DataStructureArg(&d2, "data"), getNode(arg_len), DataStructureArg(&d2_cdf, "data")),
+        muli_mock(DataStructureArg(&strike_price, "data"), exp(-r * T), getNode(arg_len), DataStructureArg(&k_scaled, "data")),
+        mul_mock(DataStructureArg(&d2_cdf, "data"), DataStructureArg(&k_scaled, "data"), getNode(arg_len), DataStructureArg(&part2, "data")),
+
+        sub_mock(DataStructureArg(&part1, "data"), DataStructureArg(&part2, "data"), getNode(arg_len), DataStructureArg(&out, "data"))
+    });
+
+    pipeline.constructPipeline();
+    pipeline = pipeline.finalize();
+
+    util::printToFile(pipeline,
+                      std::string(SOURCE_DIR) + "/code_sample" + "/black_scholes.ir");
+    codegen::CodeGenerator code(pipeline);
+    util::printToFile(code, std::string(SOURCE_DIR) + "/code_sample/code" +
+                              "/black_scholes_impl.cpp");
+}
+
 TEST(Eval, Haversine) {
   float lat1 = 0.70984286;
   float lon1 = -1.23892197;

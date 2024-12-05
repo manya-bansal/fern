@@ -4,6 +4,7 @@
 #include <iostream>
 #include <cmath>
 #include <vector>
+#include <Accelerate/Accelerate.h>
 // #include <cassert>
 
 namespace mock {
@@ -53,9 +54,6 @@ public:
 	}
   }
 
-  void destroy() {
-
-  }
   inline __attribute__((always_inline)) T get(int i, int j) const {
     return data[(i_idx + i) * logical_width + (j_idx + j)];
   }
@@ -113,32 +111,33 @@ std::ostream &operator<<(std::ostream &os, Tensor<T> const &a) {
   return os;
 }
 
-template <typename T> inline __attribute__((always_inline)) void matmul(Tensor<T> a, Tensor<T> b, Tensor<T> out) {
-    for (int i = 0; i < a.height; i++) {
-        for (int j = 0; j < b.width; j++) {
-			// std::cout << a.height << " " << b.width << std::endl;
-            T acc = 0;
-            for (int k = 0; k < a.width; k++) {
-                acc += a.get(i, k) * b.get(k, j);
-            }
-            out.set(i, j, acc);
-        }
-    }
+template <typename T> __attribute__((noinline)) void matmul(Tensor<T> a, Tensor<T> b, Tensor<T> out) {
+	cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, a.height, b.width, a.width, 1, a.data + a.i_idx * a.logical_width + a.j_idx, a.logical_width, b.data + b.i_idx * b.logical_width + b.j_idx, b.logical_width, 1, out.data + out.i_idx * out.logical_width + out.j_idx, out.logical_width);
+    // for (int i = 0; i < a.height; i++) {
+    //     for (int j = 0; j < b.width; j++) {
+	// 		// std::cout << a.height << " " << b.width << std::endl;
+    //         T acc = 0;
+    //         for (int k = 0; k < a.width; k++) {
+    //             acc += a.get(i, k) * b.get(k, j);
+    //         }
+    //         out.set(i, j, acc);
+    //     }
+    // }
 }
 
-template <typename T> void softmax(Tensor<T> a, Tensor<T> out) {
+template <typename T> __attribute__((noinline)) void softmax(Tensor<T> a, Tensor<T> out) {
     for (int i = 0; i < a.height; i++) {
         float exp_sum = 0;	
         for (int j = 0; j < a.width; j++) {
-            exp_sum += exp(a.get(i, j));
+            exp_sum += a.get(i, j);
         }
         for (int j = 0; j < a.width; j++) {
-            out.set(i, j, exp(a.get(i, j)) / exp_sum);
+            out.set(i, j, a.get(i, j) / exp_sum);
         }
     }
 }
 
-template <typename T> void transpose(Tensor<T> a, Tensor<T> out) {
+template <typename T> __attribute__((noinline)) void transpose(Tensor<T> a, Tensor<T> out) {
     for (int i = 0; i < a.height; i++) {
         for (int j = 0; j < a.width; j++) {
             out.set(j, i, a.get(i, j));
@@ -146,7 +145,7 @@ template <typename T> void transpose(Tensor<T> a, Tensor<T> out) {
     }
 }
 
-template <typename T> void divn(Tensor<T> a, float n, Tensor<T> out) {
+template <typename T> __attribute__((noinline)) void divn(Tensor<T> a, float n, Tensor<T> out) {
     for (int i = 0; i < a.height; i++) {
         for (int j = 0; j < a.width; j++) {
             out.set(i, j, a.get(i, j) / n);

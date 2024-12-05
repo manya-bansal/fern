@@ -15,8 +15,11 @@ target_compile_options(fern_benchmarks PRIVATE
 -stdlib=libc++
 -O3
 -Wl,-no_compact_unwind
+-DACCELERATE_NEW_LAPACK
+-DACCELERATE_LAPACK_ILP64
 )
 
 target_link_libraries(fern_benchmarks
 benchmark::benchmark
+"-framework Accelerate"
 )

@@ -5,6 +5,66 @@
 using namespace mock;
 using namespace std;
 
+__attribute__((noinline)) void two_mmul_unfused(const Tensor<float> a, const Tensor<float> b, const Tensor<float> c, Tensor<float> out) {
+	Tensor<float> out1 = Tensor<float>(0, 0, a.height, b.width);
+	matmul(a, b, out1);
+	matmul(out1, c, out);
+}
+
+__attribute__((noinline)) void two_mmul_fused(const Tensor<float> x, const Tensor<float> y, const Tensor<float> z, Tensor<float> matmul_1, int64_t var1351, int64_t var1557, int64_t i_len60, int64_t j_len61) {
+  int64_t j59 = 0;
+ int64_t i58 = 0;
+ int64_t i47 = i58;
+ int64_t j48 = 0;
+ int64_t i_len49 = i_len60;
+ int64_t j_len50 = var1557;
+ Tensor<float> matmul_q = Tensor<float>(i47, j48, i_len49, j_len50);
+ for(int64_t j59 = 0;j59 < matmul_1.width; j59+=j_len61){
+  for(int64_t i58 = 0;i58 < matmul_1.height; i58+=i_len60){
+      int64_t i47 = i58;
+   int64_t j48 = 0;
+   int64_t i_len49 = i_len60;
+   int64_t j_len50 = var1557;
+   Tensor<float> y_q21 = y.matrix_query(0, j48, var1351, j_len50);
+   Tensor<float> x_q20 = x.matrix_query(i47, 0, i_len49, var1351);
+   Tensor<float> matmul_1_q = matmul_1.matrix_query(i58, j59, i_len60, j_len61);
+   Tensor<float> z_q19 = z.matrix_query(0, j59, var1557, j_len61);
+      matmul(x_q20, y_q21, matmul_q);
+      matmul(matmul_q, z_q19, matmul_1_q);
+      matmul_1.matrix_insert(i58, j59, i_len60, j_len61, matmul_1_q);
+}
+}
+}
+
+#define MATMUL_ARRAY_SZ 1024
+
+static void BM_TwoUnfusedMatmul(benchmark::State& state) {
+    Tensor<float> a = Tensor<float>(0, 0, MATMUL_ARRAY_SZ, MATMUL_ARRAY_SZ);
+    Tensor<float> b = Tensor<float>(0, 0, MATMUL_ARRAY_SZ, MATMUL_ARRAY_SZ);
+    Tensor<float> c = Tensor<float>(0, 0, MATMUL_ARRAY_SZ, MATMUL_ARRAY_SZ);
+    a.init_rand();
+    b.init_rand();
+	c.init_rand();
+    Tensor<float> out = Tensor<float>(0, 0, MATMUL_ARRAY_SZ, MATMUL_ARRAY_SZ);
+    for (auto _ : state) {
+        two_mmul_unfused(a, b, c, out);
+    }
+}
+
+static void BM_TwoFusedMatmul(benchmark::State& state) {
+    Tensor<float> a = Tensor<float>(0, 0, MATMUL_ARRAY_SZ, MATMUL_ARRAY_SZ);
+    Tensor<float> b = Tensor<float>(0, 0, MATMUL_ARRAY_SZ, MATMUL_ARRAY_SZ);
+    Tensor<float> c = Tensor<float>(0, 0, MATMUL_ARRAY_SZ, MATMUL_ARRAY_SZ);
+    a.init_rand();
+    b.init_rand();
+    c.init_rand();
+    Tensor<float> out = Tensor<float>(0, 0, MATMUL_ARRAY_SZ, MATMUL_ARRAY_SZ);
+    for (auto _ : state) {
+        two_mmul_fused(a, b, c, out, MATMUL_ARRAY_SZ, MATMUL_ARRAY_SZ, state.range(0), MATMUL_ARRAY_SZ);
+    }
+}
+
+
 __attribute__((noinline)) void mmul_unfused(const Tensor<float> a, const Tensor<float> b, Tensor<float> out) {
 	matmul(a, b, out);
 }
@@ -21,7 +81,6 @@ __attribute__((noinline)) void mmul_fused(const Tensor<float> a, const Tensor<fl
 	}
 }
 
-#define MATMUL_ARRAY_SZ 1024
 
 static void BM_UnfusedMatmul(benchmark::State& state) {
     Tensor<float> a = Tensor<float>(0, 0, MATMUL_ARRAY_SZ, MATMUL_ARRAY_SZ);
@@ -113,7 +172,7 @@ __attribute__((noinline)) void attn_unfused(const Tensor<float> q, const Tensor<
 
 
 #define nk 1024
-#define dk 256
+#define dk 64
 
 static void BM_Attention_Unfused(benchmark::State& state) {
     Tensor<float> q = Tensor<float>(0, 0, nk, dk);
@@ -144,8 +203,14 @@ static void BM_Attention_Fused(benchmark::State& state) {
 
 // BENCHMARK(BM_UnfusedMatmul)->MinTime(10)->MinWarmUpTime(10)->Iterations(10)->Repetitions(5);
 // BENCHMARK(BM_FusedMatmul)->MinTime(10)->MinWarmUpTime(10)->Iterations(10)->Repetitions(5)->RangeMultiplier(2)->Range(16, MATMUL_ARRAY_SZ);
-BENCHMARK(BM_Attention_Unfused)->MinTime(10)->MinWarmUpTime(10)->Iterations(10)->Repetitions(5);
-BENCHMARK(BM_Attention_Fused)->MinTime(10)->MinWarmUpTime(10)->Iterations(10)->Repetitions(5)->RangeMultiplier(2)->Range(16, nk);
+// BENCHMARK(BM_Attention_Unfused)->MinTime(10)->MinWarmUpTime(10)->Iterations(10)->Repetitions(5);
+// BENCHMARK(BM_Attention_Fused)->MinTime(10)->MinWarmUpTime(10)->Iterations(10)->Repetitions(5)->RangeMultiplier(2)->Range(16, nk);
+// BENCHMARK(BM_Attention_Fused)->MinTime(10)->MinWarmUpTime(10)->Iterations(10)->Arg(64);
 
+// BENCHMARK(BM_TwoUnfusedMatmul)->Repetitions(20);
+// BENCHMARK(BM_TwoFusedMatmul)->Repetitions(20)->RangeMultiplier(2)->Range(16, MATMUL_ARRAY_SZ);
+
+BENCHMARK(BM_Attention_Unfused)->Repetitions(20)->Iterations(40);
+BENCHMARK(BM_Attention_Fused)->Repetitions(20)->Iterations(40)->RangeMultiplier(2)->Range(16, nk);
 
 BENCHMARK_MAIN();

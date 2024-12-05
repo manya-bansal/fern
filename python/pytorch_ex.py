@@ -1,62 +1,35 @@
 import torch
 import torch.fx
-from torch.fx import symbolic_trace
 import fern_py
 import operator
+from generate_torch_compile_pipeline import FnInterface, gen
+import math
+
+add_fn_interface = FnInterface(fern_py.torch_madd, fern_py.torch_madd, (fern_py.Variable("shared_len", True),))
+mmul_fn_interface = FnInterface(fern_py.torch_mmul, fern_py.mmul)
+transpose_fn_interface = FnInterface(fern_py.torch_transpose, fern_py.transpose)
+divn_fn_interface = FnInterface(fern_py.torch_divn, fern_py.divn)
+softmax_fn_interface = FnInterface(fern_py.torch_softmax, fern_py.softmax)
 
 torch_to_fern = {
-    torch.add: fern_py.torch_madd,
-    operator.add: fern_py.torch_madd,
-    torch.matmul: fern_py.torch_mmul,
-    operator.matmul: fern_py.torch_mmul
+    torch.add: add_fn_interface,
+    operator.add: add_fn_interface,
+    torch.matmul: mmul_fn_interface,
+    operator.matmul: mmul_fn_interface,
+    torch.t: transpose_fn_interface,
+    operator.truediv: divn_fn_interface,
+    torch.nn.functional.softmax: softmax_fn_interface
 }
 
-shared_len = fern_py.Variable("shared_len", True)
-
 class M(torch.nn.Module):
-    def forward(self, x, y, z):
-        # return torch.add(x, y)
-        return x @ y @ z
+    def forward(self, q, k, v):
+        return torch.nn.functional.softmax((q @ torch.t(k)) / math.sqrt(q.size(dim=1))) @ v
 
-module = M()
-symbolic_traced : torch.fx.GraphModule = symbolic_trace(module)
+if __name__ == "__main__":
+    gen(M, torch_to_fern, torch.randn((1024, 64)), torch.randn((1024, 64)), torch.randn((1024, 64)), name="torch_compile_attention")
 
-# a = torch.rand(10)
-# b = torch.rand(10)
-# print(a)
-# print(b)
-# print(module(a, b))
-# print(symbolic_traced.code)
+# class N(torch.nn.Module):
+#     def forward(self, x, y, z):
+#         return x @ y @ z
 
-env = {}
-fn_calls = []
-
-for node in symbolic_traced.graph.nodes:
-    print(node.name)
-    print(node.op)
-    if node.op == "placeholder":
-        env[node.name] = fern_py.DataStructureArg(fern_py.PyMatrix.init(node.name))
-    elif node.op == "call_function":
-        print(node.target)
-        print(node.args)
-        if node.target in torch_to_fern:
-            fern_func = torch_to_fern[node.target]
-            evaled_args = [env[arg.name] if isinstance(arg, torch.fx.Node) else arg for arg in node.args]
-            result = fern_py.DataStructureArg(fern_py.PyMatrix.init(node.name))
-            fn_calls.append(fern_func(*evaled_args, shared_len, result))
-            print("FERN FUNC", fern_func)
-            print("args", (*evaled_args, result))
-            env[node.name] = result
-
-print(fn_calls)
-
-pipeline = fern_py.Pipeline(fn_calls)
-
-pipeline.constructPipeline()
-pipeline.finalize(True)
-
-fern_py.printToFile(pipeline, "pytorch_pipeline.ir")
-code = fern_py.CodeGenerator(pipeline)
-fern_py.printToFile(code, "pytorch_pipeline_fused.cpp")
-printer = fern_py.PyCodeGenPrint(code)
-fern_py.printToFile(printer, "pytorch_pipeline_fused.py")
+# gen(N, torch_to_fern, "matmul")

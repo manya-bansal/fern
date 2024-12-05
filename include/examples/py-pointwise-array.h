@@ -243,6 +243,126 @@ public:
   examples::PyMatrix<float> out;
 };
 
+class PytorchTranspose : public fern::AbstractFunctionCall {
+public:
+  PytorchTranspose()
+      : a(examples::PyMatrix<float>("a")),
+        out(examples::PyMatrix<float>("out")) {};
+
+  std::string getName() const override { return "Tensor.transpose"; }
+
+  fern::DependencySubset getDataRelationship() const override {
+    // PARALLELIZE PRODUCTION BY X
+    // this only shows up in the case that this is the last function
+    fern::Variable i("i", false, false, false);
+    fern::Variable j("j", false, false, false);
+    fern::Variable i_len("i_len", false, false, false);
+    fern::Variable j_len("j_len", false, false, false);
+    fern::Interval i_loop(i, 0, out["height"], i_len);
+    fern::Interval j_loop(j, 0, out["width"], j_len);
+    fern::DataStructure block_out("out", &out);
+    fern::DataStructure block_a("a", &a);
+	return j_loop(
+		i_loop(
+			fern::ComputationAnnotation(
+				fern::Producer(block_out(i, j, i_len, j_len)),
+				fern::Consumer({
+					block_a(j, i, j_len, i_len),
+				})
+			)
+		)
+	);
+  }
+
+  std::vector<fern::Argument> getArguments() override {
+     return {fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&a))),
+            fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&out)))};
+  }
+
+  examples::PyMatrix<float> a;
+  examples::PyMatrix<float> out;
+};
+
+class PytorchDivn : public fern::AbstractFunctionCall {
+public:
+  PytorchDivn()
+      : a(examples::PyMatrix<float>("a")),
+	  	n(examples::Float("n")),
+        out(examples::PyMatrix<float>("out")) {};
+
+  std::string getName() const override { return "Tensor.divn"; }
+
+  fern::DependencySubset getDataRelationship() const override {
+    // PARALLELIZE PRODUCTION BY X
+    // this only shows up in the case that this is the last function
+    fern::Variable i("i", false, false, false);
+    fern::Variable j("j", false, false, false);
+    fern::Variable i_len("i_len", false, false, false);
+    fern::Variable j_len("j_len", false, false, false);
+    fern::Interval i_loop(i, 0, out["height"], i_len);
+    fern::Interval j_loop(j, 0, out["width"], j_len);
+    fern::DataStructure block_out("out", &out);
+    fern::DataStructure block_a("a", &a);
+	return j_loop(
+		i_loop(
+			fern::ComputationAnnotation(
+				fern::Producer(block_out(i, j, i_len, j_len)),
+				fern::Consumer({
+					block_a(i, j, i_len, j_len),
+				})
+			)
+		)
+	);
+  }
+
+  std::vector<fern::Argument> getArguments() override {
+     return {fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&a))),
+	        // fern::Argument(std::make_shared<fern::LiteralArg>(fern::Datatype::Float32, 0.0f)),
+	 		fern::Argument(std::make_shared<fern::DummyDataStructureArg>(fern::DummyDataStructurePtr(&n))),
+            fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&out)))};
+  }
+
+  examples::PyMatrix<float> a;
+  Float n;
+  examples::PyMatrix<float> out;
+};
+
+class PytorchSoftmax : public fern::AbstractFunctionCall {
+public:
+  PytorchSoftmax()
+      : a(examples::PyMatrix<float>("a")),
+        out(examples::PyMatrix<float>("out")) {};
+
+  std::string getName() const override { return "Tensor.softmax"; }
+
+  fern::DependencySubset getDataRelationship() const override {
+    // PARALLELIZE PRODUCTION BY X
+    // this only shows up in the case that this is the last function
+    fern::Variable i("i", false, false, false);
+    fern::Variable i_len("i_len", false, false, false);
+	fern::Variable width("width", false, false, false);
+    fern::Interval i_loop(i, 0, out["height"], i_len);
+    fern::DataStructure block_out("out", &out);
+    fern::DataStructure block_a("a", &a);
+	return i_loop(
+		fern::ComputationAnnotation(
+			fern::Producer(block_out(i, 0, i_len, width)),
+			fern::Consumer({
+				block_a(i, 0, i_len, width),
+			})
+		)
+	);
+  }
+
+  std::vector<fern::Argument> getArguments() override {
+     return {fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&a))),
+            fern::Argument(std::make_shared<fern::DataStructureArg>(fern::DataStructurePtr(&out)))};
+  }
+
+  examples::PyMatrix<float> a;
+  examples::PyMatrix<float> out;
+};
+
 } // namespace examples
 
 #endif

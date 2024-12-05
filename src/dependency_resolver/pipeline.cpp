@@ -1852,6 +1852,21 @@ PYBIND11_MODULE(fern_py, m) {
 		return pytorchMmul(a, b, out);
 	});
 
+	m.def("torch_transpose", [](fern::DataStructureArg a, fern::DataStructureArg out){
+		examples::PytorchTranspose transpose;
+		return transpose(a, out);
+	});
+
+	m.def("torch_divn", [](fern::DataStructureArg a, fern::DummyDataStructureArg n, fern::DataStructureArg out){
+		examples::PytorchDivn divn;
+		return divn(a, n, out);
+	});
+
+	m.def("torch_softmax", [](fern::DataStructureArg a, fern::DataStructureArg out){
+		examples::PytorchSoftmax softmax;
+		return softmax(a, out);
+	});
+
 	// c++ functions
 	m.def("mmul", [](fern::DataStructureArg a, fern::DataStructureArg b, fern::DataStructureArg out){
 		examples::mmul mmul;
@@ -1871,11 +1886,6 @@ PYBIND11_MODULE(fern_py, m) {
 	m.def("softmax", [](fern::DataStructureArg a, fern::DataStructureArg out){
 		examples::softmax softmax;
 		return softmax(a, out);
-	});
-
-	m.def("attention", [](fern::DataStructureArg q, fern::DataStructureArg k, fern::DataStructureArg v, fern::Variable dim1, fern::Variable dim2, fern::DataStructureArg out){
-		examples::attention attention;
-		return attention(q, k, v, fern::getNode(dim1), fern::getNode(dim2), out);
 	});
 
 	m.def("addi_mock", [](fern::DataStructureArg a, float i, fern::Variable len_var, fern::DataStructureArg out){

@@ -155,6 +155,10 @@ __attribute__((noinline)) void attention_my_fused_impl(const Tensor<float> l_k_,
       matmul_1.matrix_insert(i37, j38, i_len39, j_len40, matmul_1_q);
 }
 }
+t_q.destroy();
+matmul_q.destroy();
+truediv_q.destroy();
+softmax_q.destroy();
 
 }
 
@@ -168,6 +172,10 @@ __attribute__((noinline)) void attn_unfused(const Tensor<float> q, const Tensor<
 	divn(q_kt, sqrt_dk, softmax_in);
 	softmax(softmax_in, softmax_out);
 	matmul(softmax_out, v, out);
+	kt.destroy();
+	q_kt.destroy();
+	softmax_in.destroy();
+	softmax_out.destroy();
 }
 
 
@@ -210,7 +218,7 @@ static void BM_Attention_Fused(benchmark::State& state) {
 // BENCHMARK(BM_TwoUnfusedMatmul)->Repetitions(20);
 // BENCHMARK(BM_TwoFusedMatmul)->Repetitions(20)->RangeMultiplier(2)->Range(16, MATMUL_ARRAY_SZ);
 
-BENCHMARK(BM_Attention_Unfused)->Repetitions(20)->Iterations(40);
-BENCHMARK(BM_Attention_Fused)->Repetitions(20)->Iterations(40)->RangeMultiplier(2)->Range(16, nk);
+BENCHMARK(BM_Attention_Unfused)->Repetitions(20)->Iterations(100);
+BENCHMARK(BM_Attention_Fused)->Repetitions(20)->Iterations(100)->RangeMultiplier(2)->Range(16, nk);
 
 BENCHMARK_MAIN();

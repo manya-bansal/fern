@@ -27,6 +27,14 @@ public:
   explicit Tensor(int i, int j, int i_len, int j_len) : i_idx(i), j_idx(j), height(i_len), logical_height(i_len), width(j_len), logical_width(j_len) {
     data = (T *)malloc(sizeof(T) * i_len * j_len);
   }
+
+  inline void destroy() {
+	if (data != NULL) {
+		free(data);
+		data = NULL;
+	}
+  }
+
   void empty(int i, int j, int i_len, int j_len) {
     i_idx = i;
     j_idx = j;
@@ -113,16 +121,6 @@ std::ostream &operator<<(std::ostream &os, Tensor<T> const &a) {
 
 template <typename T> __attribute__((noinline)) void matmul(Tensor<T> a, Tensor<T> b, Tensor<T> out) {
 	cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, a.height, b.width, a.width, 1, a.data + a.i_idx * a.logical_width + a.j_idx, a.logical_width, b.data + b.i_idx * b.logical_width + b.j_idx, b.logical_width, 1, out.data + out.i_idx * out.logical_width + out.j_idx, out.logical_width);
-    // for (int i = 0; i < a.height; i++) {
-    //     for (int j = 0; j < b.width; j++) {
-	// 		// std::cout << a.height << " " << b.width << std::endl;
-    //         T acc = 0;
-    //         for (int k = 0; k < a.width; k++) {
-    //             acc += a.get(i, k) * b.get(k, j);
-    //         }
-    //         out.set(i, j, acc);
-    //     }
-    // }
 }
 
 template <typename T> __attribute__((noinline)) void softmax(Tensor<T> a, Tensor<T> out) {
